@@ -176,6 +176,9 @@
                     const data = await res.json().catch(() => ({}));
                     
                     if (res.ok) {
+                        // Guardar la información completa del usuario en el navegador (incluyendo rol, email e id)
+                        localStorage.setItem('user_data', JSON.stringify(data));
+                        
                         // Login successful - redirect based on role
                         const role = data.role || 'CLIENTE';
                         

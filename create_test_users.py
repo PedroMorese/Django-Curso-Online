@@ -1,9 +1,3 @@
-"""
-Script para crear usuarios de prueba para la plataforma EduPlatform.
-
-Ejecutar con: python manage.py shell < create_test_users.py
-"""
-
 import os
 import django
 
@@ -22,7 +16,7 @@ test_users = [
         'password': 'admin123',
         'first_name': 'Admin',
         'last_name': 'Principal',
-        'rol': 'ADMIN',
+        'role': 'ADMIN',
         'is_staff': True,
         'is_superuser': True,
     },
@@ -30,17 +24,17 @@ test_users = [
         'email': 'profesor@eduplatform.com',
         'password': 'profesor123',
         'first_name': 'Carlos',
-        'last_name': 'Martínez',
-        'rol': 'PROFESOR',
+        'last_name': 'Martinez',
+        'role': 'PROFESOR',
         'is_staff': False,
         'is_superuser': False,
     },
     {
         'email': 'alumno@eduplatform.com',
         'password': 'alumno123',
-        'first_name': 'María',
-        'last_name': 'García',
-        'rol': 'CLIENTE',
+        'first_name': 'Maria',
+        'last_name': 'Garcia',
+        'role': 'CLIENTE',
         'is_staff': False,
         'is_superuser': False,
     },
@@ -52,11 +46,11 @@ print("=" * 60)
 
 for user_data in test_users:
     email = user_data['email']
-    username = email.split('@')[0]  # Use email prefix as username
+    username = email.split('@')[0]
     
     # Verificar si el usuario ya existe
     if User.objects.filter(email=email).exists():
-        print(f"❌ Usuario {email} ya existe. Eliminando...")
+        print(f"Usuario {email} ya existe. Eliminando...")
         User.objects.filter(email=email).delete()
     
     # Crear el usuario
@@ -69,37 +63,13 @@ for user_data in test_users:
     )
     
     # Asignar rol y permisos
-    user.rol = user_data['rol']
+    user.role = user_data['role']
     user.is_staff = user_data['is_staff']
     user.is_superuser = user_data['is_superuser']
     user.save()
     
-    print(f"✅ Usuario creado: {email}")
-    print(f"   Username: {username}")
-    print(f"   Nombre: {user.first_name} {user.last_name}")
-    print(f"   Rol: {user.rol}")
-    print(f"   Password: {user_data['password']}")
-    print()
+    print(f"Usuario creado: {email} (Rol: {user.role})")
 
 print("=" * 60)
-print("RESUMEN DE USUARIOS DE PRUEBA")
-print("=" * 60)
-print()
-print("🔐 ADMINISTRADOR")
-print("   Email: admin@eduplatform.com")
-print("   Password: admin123")
-print("   Acceso: Dashboard Admin + Django Admin")
-print()
-print("👨‍🏫 PROFESOR")
-print("   Email: profesor@eduplatform.com")
-print("   Password: profesor123")
-print("   Acceso: Dashboard Profesor + Crear Cursos")
-print()
-print("👨‍🎓 ALUMNO")
-print("   Email: alumno@eduplatform.com")
-print("   Password: alumno123")
-print("   Acceso: Ver cursos + Suscribirse")
-print()
-print("=" * 60)
-print("✅ USUARIOS CREADOS EXITOSAMENTE")
+print("USUARIOS CREADOS EXITOSAMENTE")
 print("=" * 60)

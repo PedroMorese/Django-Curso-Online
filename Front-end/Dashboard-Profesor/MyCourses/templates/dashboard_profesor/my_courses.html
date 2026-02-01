@@ -45,8 +45,8 @@
         <div
             class="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 transition-all hover:shadow-lg hover:-translate-y-1">
             <!-- Course Thumbnail -->
-            <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 bg-cover bg-center" {% if
-                course.imagen_portada %}style="background-image: url('{{ course.imagen_portada }}')" {% endif %}>
+            <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 bg-cover bg-center" 
+                 {% if course.imagen_portada %} style="background-image: url('{{ course.imagen_portada }}')" {% endif %}>
                 {% if not course.imagen_portada %}
                 <div class="w-full h-full flex items-center justify-center">
                     <span class="material-symbols-outlined text-slate-400 text-4xl">school</span>

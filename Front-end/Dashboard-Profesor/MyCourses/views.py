@@ -29,7 +29,7 @@ def profesor_required(view_func):
         
         is_profesor = (
             request.user.is_staff or 
-            (hasattr(request.user, 'rol') and request.user.rol in ['PROFESOR', 'ADMIN'])
+            (hasattr(request.user, 'role') and request.user.role in ['PROFESOR', 'ADMIN'])
         )
         
         if not is_profesor:
