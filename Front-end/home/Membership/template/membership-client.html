@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Membership{% endblock %}
+{% extends "base/base.html" %}
+{% block title %}Membership Plans - EduMinimal{% endblock %}
 {% block content %}
 <div class="min-h-screen flex flex-col items-center justify-center p-6">
     <header class="mb-12 text-center">
@@ -7,93 +7,99 @@
             <div class="size-8 text-primary">
                 <span class="material-symbols-outlined text-3xl">auto_stories</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">CourseStream</h2>
+            <h2 class="text-2xl font-bold tracking-tight">EduMinimal</h2>
         </div>
         <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">Unlock Your Potential</h1>
         <p class="text-[#9dabb9] text-lg max-w-xl mx-auto">
             Choose the plan that works best for your learning journey. Get unlimited access to all courses, resources, and community.
         </p>
     </header>
-    <div class="flex items-center gap-4 mb-12 bg-card-dark p-1 rounded-full border border-border-dark">
-        <button class="px-6 py-2 rounded-full text-sm font-bold bg-primary text-white transition-all">
-            Monthly
-        </button>
-        <button class="px-6 py-2 rounded-full text-sm font-medium text-[#9dabb9] hover:text-white transition-all">
-            Yearly
-        </button>
+    
+    {% if user_membership %}
+    <div class="mb-8 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 max-w-md">
+        <p class="text-emerald-400 text-sm font-medium text-center">
+            <span class="material-symbols-outlined text-sm align-middle">check_circle</span>
+            You have an active {{ user_membership.plan.name }} membership
+        </p>
     </div>
+    {% endif %}
+    
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-        <div class="bg-card-dark border border-border-dark rounded-2xl p-8 flex flex-col transition-transform hover:scale-[1.02]">
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-2">Monthly</h3>
-                <p class="text-[#9dabb9] text-sm">Flexibility to learn at your own pace.</p>
-            </div>
-            <div class="mb-8">
-                <div class="flex items-baseline gap-1">
-                    <span class="text-4xl font-black">$29</span>
-                    <span class="text-[#9dabb9]">/month</span>
-                </div>
-            </div>
-            <ul class="space-y-4 mb-10 flex-1">
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">All-Access to all courses</span>
-                </li>
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">Downloadable resources</span>
-                </li>
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">Course completion certificates</span>
-                </li>
-            </ul>
-            <button class="w-full py-4 bg-white text-background-dark hover:bg-gray-200 font-black rounded-xl transition-colors">
-                Subscribe Now
-            </button>
-        </div>
-        <div class="bg-card-dark border-2 border-primary rounded-2xl p-8 flex flex-col relative glow-border transition-transform hover:scale-[1.02]">
+        {% for plan in plans %}
+        <div class="bg-card-dark border {% if plan.is_featured %}border-2 border-primary glow-border{% else %}border-border-dark{% endif %} rounded-2xl p-8 flex flex-col relative transition-transform hover:scale-[1.02]">
+            {% if plan.is_featured %}
             <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] uppercase font-black tracking-widest px-4 py-1.5 rounded-full">
                 Best Value
             </div>
+            {% endif %}
+            
             <div class="mb-8">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Annual</h3>
-                        <p class="text-[#9dabb9] text-sm">Maximum value for serious learners.</p>
-                    </div>
-                </div>
+                <h3 class="text-xl font-bold mb-2">{{ plan.name }}</h3>
+                <p class="text-[#9dabb9] text-sm">{{ plan.description }}</p>
             </div>
+            
             <div class="mb-8">
-                <div class="flex items-baseline gap-1">
-                    <span class="text-4xl font-black">$249</span>
-                    <span class="text-[#9dabb9]">/year</span>
+                <div class="flex items-baseline gap-2">
+                    {% if plan.original_price and plan.original_price > plan.price %}
+                    <span class="text-lg text-[#9dabb9] line-through">${{ plan.original_price|floatformat:0 }}</span>
+                    {% endif %}
+                    <span class="text-4xl font-black">${{ plan.price|floatformat:0 }}</span>
+                    <span class="text-[#9dabb9]">/{% if plan.plan_type == 'MONTHLY' %}month{% else %}year{% endif %}</span>
                 </div>
-                <p class="text-primary text-xs font-bold mt-1">Save $99 per year</p>
+                {% if plan.savings and plan.savings > 0 %}
+                <p class="text-primary text-xs font-bold mt-1">Save ${{ plan.savings|floatformat:0 }} per year</p>
+                {% endif %}
             </div>
+            
             <ul class="space-y-4 mb-10 flex-1">
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">All-Access to all courses</span>
-                </li>
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">Downloadable resources</span>
-                </li>
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">Course completion certificates</span>
-                </li>
-                <li class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                    <span class="text-sm font-medium">Priority support access</span>
-                </li>
+                {% if plan.features %}
+                    {% for feature in plan.features %}
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                        <span class="text-sm font-medium">{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                        <span class="text-sm font-medium">All-Access to all courses</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                        <span class="text-sm font-medium">Downloadable resources</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
+                        <span class="text-sm font-medium">Course completion certificates</span>
+                    </li>
+                {% endif %}
             </ul>
-            <button class="w-full py-4 bg-primary hover:bg-primary/90 text-white font-black rounded-xl transition-colors">
-                Subscribe Now
-            </button>
+            
+            {% if user.is_authenticated %}
+                {% if user_membership %}
+                    <button disabled class="w-full py-4 bg-border-dark text-[#9dabb9] font-black rounded-xl cursor-not-allowed">
+                        Already Subscribed
+                    </button>
+                {% else %}
+                    <a href="{% url 'membership_ux:subscribe' plan.slug %}" 
+                       class="w-full py-4 {% if plan.is_featured %}bg-primary hover:bg-primary/90 text-white{% else %}bg-white text-background-dark hover:bg-gray-200{% endif %} font-black rounded-xl transition-colors text-center block">
+                        Subscribe Now
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'Auth:login' %}?next={% url 'membership_ux:subscribe' plan.slug %}" 
+                   class="w-full py-4 {% if plan.is_featured %}bg-primary hover:bg-primary/90 text-white{% else %}bg-white text-background-dark hover:bg-gray-200{% endif %} font-black rounded-xl transition-colors text-center block">
+                    Login to Subscribe
+                </a>
+            {% endif %}
         </div>
+        {% empty %}
+        <div class="col-span-2 text-center py-12">
+            <p class="text-[#9dabb9]">No membership plans available at the moment.</p>
+        </div>
+        {% endfor %}
     </div>
+    
     <footer class="mt-16 text-center">
         <p class="text-[#9dabb9] text-sm flex items-center justify-center gap-2">
             <span class="material-symbols-outlined text-sm">lock</span>

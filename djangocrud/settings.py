@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'Back-end.membership.apps.MembershipConfig',
     'Back-end.Auth.apps.AuthConfig',
     'Back-end.Media.apps.MediaConfig',
+    # Frontend Apps
+    'Front-end.Documentation.apps.DocumentationConfig',
 ]
 
 
@@ -74,6 +76,8 @@ TEMPLATES = [
             BASE_DIR / 'Front-end' / 'home' / 'Course-preview' / 'template',
             BASE_DIR / 'Front-end' / 'home' / 'Full-Course' / 'template',
             BASE_DIR / 'Front-end' / 'Profile' / 'templates',
+            # Documentation templates
+            BASE_DIR / 'Front-end' / 'Documentation' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

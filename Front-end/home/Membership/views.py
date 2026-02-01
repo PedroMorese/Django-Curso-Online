@@ -44,7 +44,7 @@ def membership_plans(request):
                 'original_price': p.original_price,
                 'savings': p.savings,
                 'plan_type': p.plan_type,
-                'features': p.features_list,
+                'features': p.features if p.features else [],
                 'is_featured': p.is_featured
             }
             plans.append(plan_data)

@@ -1,0 +1,257 @@
+{% extends "base/base.html" %}
+
+{% block title %}{{ page_title }} - Documentation{% endblock %}
+
+{% block main %}
+<div class="flex-1 flex bg-background-dark">
+    <!-- Sidebar Navigation -->
+    <aside class="w-72 bg-card-dark border-r border-border-dark h-screen sticky top-0 overflow-y-auto">
+        <div class="p-6 border-b border-border-dark">
+            <h2 class="text-white text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">description</span>
+                Documentación
+            </h2>
+            <p class="text-[#637588] text-xs mt-1 uppercase tracking-widest font-bold">Technical Docs</p>
+        </div>
+        
+        <nav class="p-4">
+            <ul class="space-y-1">
+                {% for doc in docs %}
+                <li>
+                    <a href="{% url 'documentation:view' doc_slug=doc.slug %}" 
+                       class="block px-4 py-2.5 rounded-lg text-sm transition-all
+                              {% if current_doc == doc.slug %}
+                                  bg-primary/10 text-primary font-semibold border-l-2 border-primary
+                              {% else %}
+                                  text-[#9dabb9] hover:bg-white/5 hover:text-white
+                              {% endif %}">
+                        {{ doc.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        
+        <div class="p-6 border-t border-border-dark mt-auto">
+            <a href="{% url 'home:index' %}" class="flex items-center gap-2 text-[#637588] hover:text-primary text-sm transition-colors">
+                <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
+                Volver al Home
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto">
+        <div class="max-w-4xl mx-auto p-10">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-sm text-[#637588] mb-8">
+                <a href="{% url 'documentation:index' %}" class="hover:text-primary transition-colors">Docs</a>
+                <span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+                <span class="text-white">{{ page_title }}</span>
+            </div>
+            
+            <!-- Markdown Content -->
+            <article class="markdown-content">
+                {{ content|safe }}
+            </article>
+            
+            <!-- Footer -->
+            <div class="mt-16 pt-8 border-t border-border-dark">
+                <p class="text-[#637588] text-sm text-center">
+                    Use el menú lateral para navegar entre documentos
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Scrollbar personalizado para sidebar */
+    aside::-webkit-scrollbar {
+        width: 6px;
+    }
+    aside::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    aside::-webkit-scrollbar-thumb {
+        background: #232d38;
+        border-radius: 3px;
+    }
+    aside::-webkit-scrollbar-thumb:hover {
+        background: #2d3a4a;
+    }
+    
+    /* Markdown Content Styles */
+    article h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #232d38;
+    }
+    
+    article h2 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: white;
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #232d38;
+    }
+    
+    article h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    article h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #9dabb9;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    article p {
+        color: #9dabb9;
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+    
+    article a {
+        color: #137fec;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s;
+    }
+    
+    article a:hover {
+        border-bottom-color: #137fec;
+    }
+    
+    article strong {
+        color: white;
+        font-weight: 600;
+    }
+    
+    article em {
+        color: #9dabb9;
+        font-style: italic;
+    }
+    
+    /* Lists */
+    article ul, article ol {
+        color: #9dabb9;
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    
+    article li {
+        margin-bottom: 0.5rem;
+        line-height: 1.7;
+    }
+    
+    article li::marker {
+        color: #137fec;
+    }
+    
+    /* Code blocks */
+    article code {
+        background: rgba(255, 255, 255, 0.05);
+        color: #137fec;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-size: 0.9em;
+        font-family: 'Courier New', monospace;
+    }
+    
+    article pre {
+        background: #131c26;
+        border: 1px solid #232d38;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+    
+    article pre code {
+        background: transparent;
+        padding: 0;
+        color: #9dabb9;
+        font-size: 0.875rem;
+        line-height: 1.7;
+    }
+    
+    /* Blockquotes */
+    article blockquote {
+        border-left: 4px solid #137fec;
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        color: #9dabb9;
+        font-style: italic;
+    }
+    
+    /* Tables */
+    article table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        border: 1px solid #232d38;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    article thead {
+        background: #131c26;
+    }
+    
+    article th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 700;
+        color: white;
+        border-bottom: 2px solid #232d38;
+    }
+    
+    article td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #232d38;
+        color: #9dabb9;
+    }
+    
+    article tr:last-child td {
+        border-bottom: none;
+    }
+    
+    article tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    
+    /* Horizontal rule */
+    article hr {
+        border: none;
+        border-top: 1px solid #232d38;
+        margin: 2rem 0;
+    }
+    
+    /* Images */
+    article img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    /* Emoji and icons */
+    article h1::before,
+    article h2::before {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}

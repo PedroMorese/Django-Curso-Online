@@ -12,6 +12,8 @@ app_name = 'membership_api'
 
 urlpatterns = [
     # API endpoints del dominio
+    # IMPORTANTE: Rutas específicas ANTES de rutas con parámetros dinámicos
+    path('plans/update/', views.update_plan_settings, name='update_plan_settings'),
     path('plans/', views.list_plans, name='list_plans'),
     path('plans/<slug:slug>/', views.plan_detail, name='plan_detail'),
     path('my-membership/', views.user_membership, name='user_membership'),

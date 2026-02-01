@@ -3,6 +3,8 @@ Pillow>=10.0.0
 django-environ
 python-dotenv
 sqlite3
+markdown>=3.4.0
+Pygments>=2.15.0
 # Dependencias recomendadas para desarrollo premium
 django-tailwind
 django-browser-reload

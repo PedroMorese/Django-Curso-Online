@@ -240,3 +240,77 @@ def reports(request):
     }
     
     return render(request, 'dashboard_admin/reports.html', context)
+
+
+@admin_required
+def membership_settings(request):
+    """
+    Vista de configuración de membresías.
+    Permite al admin configurar precios y disponibilidad de planes.
+    """
+    try:
+        MembershipPlan = apps.get_model('membership', 'MembershipPlan')
+        
+        # Obtener o crear planes
+        monthly_plan, _ = MembershipPlan.objects.get_or_create(
+            slug='monthly',
+            defaults={
+                'name': 'Monthly',
+                'plan_type': 'MONTHLY',
+                'price': 29.00,
+                'is_active': True,
+                'description': 'Flexibility to learn at your own pace.'
+            }
+        )
+        
+        annual_plan, _ = MembershipPlan.objects.get_or_create(
+            slug='annual',
+            defaults={
+                'name': 'Annual',
+                'plan_type': 'ANNUAL',
+                'price': 249.00,
+                'original_price': 348.00,
+                'is_active': True,
+                'is_featured': True,
+                'description': 'Maximum value for serious learners.'
+            }
+        )
+        
+        if request.method == 'POST':
+            # Actualizar plan mensual
+            monthly_plan.price = float(request.POST.get('monthly_price', 29.00))
+            monthly_plan.original_price = float(request.POST.get('monthly_original_price') or 0) or None
+            monthly_plan.is_active = request.POST.get('monthly_active') == '1'
+            monthly_plan.save()
+            
+            # Actualizar plan anual
+            annual_plan.price = float(request.POST.get('annual_price', 249.00))
+            annual_plan.original_price = float(request.POST.get('annual_original_price') or 0) or None
+            annual_plan.is_active = request.POST.get('annual_active') == '1'
+            annual_plan.save()
+            
+            from django.contrib import messages
+            messages.success(request, 'Membership settings updated successfully!')
+            return redirect('dashboard_admin:membership_settings')
+            
+    except Exception as e:
+        # Fallback si el modelo no existe
+        monthly_plan = {
+            'price': 29.00,
+            'original_price': None,
+            'is_active': True
+        }
+        annual_plan = {
+            'price': 249.00,
+            'original_price': 348.00,
+            'is_active': True
+        }
+    
+    context = {
+        'active_nav': 'settings',
+        'page_title': 'Membership Settings',
+        'monthly_plan': monthly_plan,
+        'annual_plan': annual_plan,
+    }
+    
+    return render(request, 'dashboard_admin/membership_settings.html', context)

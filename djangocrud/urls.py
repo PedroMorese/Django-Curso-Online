@@ -30,6 +30,11 @@ urlpatterns = [
     path('profile/', include('Front-end.Profile.urls')),
     
     # ===========================================
+    # FRONTEND - Documentation
+    # ===========================================
+    path('documentation/', include('Front-end.Documentation.urls')),
+    
+    # ===========================================
     # FRONTEND - UX URLs (Home)
     # La home se encarga de todas las rutas UX públicas
     # ===========================================
