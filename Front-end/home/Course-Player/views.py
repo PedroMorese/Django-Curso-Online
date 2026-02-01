@@ -27,7 +27,7 @@ def course_player(request, course_id, class_id=None):
     Muestra el video de la clase con navegación
     entre lecciones y recursos disponibles.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     # Obtener el curso
     course = get_object_or_404(Course, id=course_id, publicado=True)
@@ -113,7 +113,7 @@ def course_overview(request, course_id):
     """
     Vista general del curso (lista de clases).
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     course = get_object_or_404(Course, id=course_id, publicado=True)
     

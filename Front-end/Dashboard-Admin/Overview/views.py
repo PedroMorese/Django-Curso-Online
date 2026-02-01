@@ -65,7 +65,7 @@ def overview(request):
         try:
             spec = importlib.util.spec_from_file_location(
                 "services",
-                str(django_apps.get_app_config('Course').path.parent / 'Analytics' / 'services.py')
+                str(django_apps.get_app_config('course_app').path.parent / 'Analytics' / 'services.py')
             )
             if spec and spec.loader:
                 analytics_module = importlib.util.module_from_spec(spec)
@@ -148,7 +148,7 @@ def courses_list(request):
     """
     Vista de catálogo de cursos (admin).
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     courses = Course.objects.select_related('profesor').all().order_by('-fecha_creacion')[:50]
     total_courses = Course.objects.count()
@@ -206,7 +206,7 @@ def reports(request):
     Vista de reportes de ingresos.
     """
     User = get_user_model()
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     # Calculate basic stats
     from django.utils import timezone

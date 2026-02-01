@@ -34,7 +34,7 @@ def course_catalog(request):
     Vista del catálogo de cursos públicos.
     Muestra todos los cursos publicados para que los usuarios exploren.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     courses = Course.objects.filter(publicado=True).select_related('profesor').order_by('-fecha_creacion')
     
@@ -62,7 +62,7 @@ def course_preview(request, course_id):
     Vista de preview/detalle de un curso.
     Muestra información del curso antes de suscribirse.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     course = get_object_or_404(Course, id=course_id, publicado=True)
     
@@ -234,7 +234,7 @@ def membership_subscribe_redirect(request, plan_slug):
 @login_required
 def course_player_redirect(request, course_id):
     """Vista del reproductor de clase."""
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     course = get_object_or_404(Course, id=course_id, publicado=True)
     
@@ -283,7 +283,7 @@ def course_player_redirect(request, course_id):
 @login_required
 def course_player_class_redirect(request, course_id, class_id):
     """Vista del reproductor con clase específica."""
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     course = get_object_or_404(Course, id=course_id, publicado=True)
     

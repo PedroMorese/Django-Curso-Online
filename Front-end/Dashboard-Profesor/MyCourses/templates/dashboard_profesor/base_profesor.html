@@ -25,11 +25,6 @@
 
     <!-- Actions & User Profile -->
     <div class="flex items-center gap-6">
-        <!-- Search bar (subtle) -->
-        <div class="hidden lg:flex items-center bg-charcoal border border-border-dark rounded-lg px-3 py-1.5 gap-2 w-64 group focus-within:border-primary transition-all">
-            <span class="material-symbols-outlined text-sm text-[#637588]">search</span>
-            <input type="text" placeholder="Search courses..." class="bg-transparent border-none p-0 text-xs text-white focus:ring-0 placeholder:text-[#637588] w-full">
-        </div>
 
         <!-- New Course CTA -->
         <a href="{% url 'dashboard_profesor:create_course' %}" 

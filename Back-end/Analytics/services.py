@@ -180,7 +180,7 @@ class AnalyticsService:
             Lista de cursos top
         """
         try:
-            Course = apps.get_model('Course', 'Course')
+            Course = apps.get_model('course_app', 'Course')
             
             # Por ahora, ordenamos por fecha de creación
             courses = Course.objects.filter(
@@ -243,7 +243,7 @@ class AnalyticsService:
             Dict con estadísticas de cursos
         """
         try:
-            Course = apps.get_model('Course', 'Course')
+            Course = apps.get_model('course_app', 'Course')
             
             total_courses = Course.objects.count()
             published_courses = Course.objects.filter(publicado=True).count()

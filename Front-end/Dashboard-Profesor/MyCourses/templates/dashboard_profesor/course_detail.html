@@ -1,0 +1,230 @@
+{% extends "dashboard_profesor/base_profesor.html" %}
+
+{% block title %}{{ course.titulo }} - Course Management{% endblock %}
+{% block page_name %}Course Architect{% endblock %}
+{% block page_title %}{{ course.titulo }}{% endblock %}
+{% block container_class %}max-w-[1400px]{% endblock %}
+
+{% block page_actions %}
+<div class="flex items-center gap-4">
+    <a href="{% url 'dashboard_profesor:toggle_publish' course.id %}" 
+       class="px-4 py-2 rounded-lg {% if course.publicado %}bg-emerald-500/10 text-emerald-500{% else %}bg-amber-500/10 text-amber-500{% endif %} text-xs font-bold uppercase tracking-widest transition-all">
+        {% if course.publicado %}Published{% else %}Draft Mode{% endif %}
+    </a>
+</div>
+{% endblock %}
+
+{% block teacher_content %}
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-8 pb-32">
+    <!-- Main Content: Class List -->
+    <div class="xl:col-span-3 space-y-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-white">Curriculum Structure</h2>
+                <p class="text-sm text-[#637588]">Organize your lessons and educational assets.</p>
+            </div>
+            <button onclick="openModal('add-class-modal')" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
+                + Add New Lesson
+            </button>
+        </div>
+
+        <!-- Lessons Container -->
+        <div class="space-y-4">
+            {% for class in classes %}
+            <div class="bg-card-dark/40 border border-border-dark rounded-2xl p-6 flex items-center gap-6 group hover:border-primary/40 transition-all">
+                <div class="size-12 rounded-xl bg-background-dark flex items-center justify-center text-[#232d38] font-bold text-lg">
+                    {{ class.orden }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-white font-bold truncate">{{ class.titulo }}</h3>
+                    <p class="text-xs text-[#637588] mt-1">{{ class.duracion_estimada }} min • {{ class.descripcion|truncatechars:60 }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    {% if class.video_url %}
+                    <span class="material-symbols-outlined text-primary text-sm opacity-60">video_library</span>
+                    {% endif %}
+                    {% if class.imagen_portada %}
+                    <span class="material-symbols-outlined text-emerald-500 text-sm opacity-60">image</span>
+                    {% endif %}
+                    <button class="p-2 text-[#232d38] hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button class="p-2 text-[#232d38] hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="border-2 border-dashed border-border-dark rounded-3xl p-20 flex flex-col items-center justify-center text-center">
+                <div class="bg-card-dark size-20 rounded-full flex items-center justify-center text-[#232d38] mb-6">
+                    <span class="material-symbols-outlined text-4xl">inventory_2</span>
+                </div>
+                <h3 class="text-white font-bold opacity-60 uppercase tracking-widest text-sm">No lessons registered</h3>
+                <p class="text-[10px] text-[#637588] mt-2 uppercase tracking-[0.2em]">Start building your syllabus by adding the first class</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sidebar: Course Stats -->
+    <div class="xl:col-span-1 space-y-6">
+        <div class="bg-card-dark border border-border-dark rounded-2xl p-8 space-y-6">
+            <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#637588]">Performance Hub</h3>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#9dabb9]">Total Lessons</span>
+                    <span class="text-white font-bold">{{ classes|length }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#9dabb9]">Estimated Time</span>
+                    <span class="text-white font-bold">12h 45m</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-[#9dabb9]">Asset Weight</span>
+                    <span class="text-white font-bold">2.4 GB</span>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-border-dark">
+                <button class="w-full py-3 rounded-xl bg-white/5 border border-border-dark text-white text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+                    Manage Resources
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add New Class -->
+<div id="add-class-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+        <div class="p-6 border-b border-border-dark flex justify-between items-center bg-primary/5">
+            <div>
+                <h3 class="text-lg font-bold text-white">Register New Lesson</h3>
+                <p class="text-[9px] text-[#637588] uppercase tracking-widest font-bold mt-0.5">Class Configuration Unit</p>
+            </div>
+            <button onclick="closeModal('add-class-modal')" class="text-[#637588] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <form id="add-class-form" method="POST" class="p-6 space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_class">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Title -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Lesson Title</label>
+                    <input type="text" name="titulo" required
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                        placeholder="e.g. Setting up the environment">
+                </div>
+                <!-- Order -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Sorting Order</label>
+                    <input type="number" name="orden" value="{{ classes|length|add:1 }}"
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="space-y-3">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Lesson Preview Asset</label>
+                
+                <div onclick="document.getElementById('file-input-class').click()" 
+                    class="border-2 border-dashed border-border-dark rounded-xl p-5 flex items-center gap-4 group hover:border-primary/50 transition-all cursor-pointer bg-background-dark/30">
+                    <input type="file" id="file-input-class" class="hidden" accept="image/*" onchange="handleClassUpload(this)">
+                    
+                    <div class="bg-primary/10 size-10 rounded-lg flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-xl" id="class-upload-icon">add_photo_alternate</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider" id="class-upload-text">Upload Local Image</h4>
+                        <p class="text-[8px] text-[#637588] mt-0.5 uppercase tracking-widest font-bold">Recommended: 16:9 Aspect Ratio</p>
+                    </div>
+                    <div id="class-upload-indicator" class="hidden">
+                        <div class="size-2 bg-primary rounded-full animate-ping"></div>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="imagen_portada" id="class_cover_url">
+            </div>
+
+            <div class="pt-5 border-t border-border-dark flex justify-end gap-3">
+                <button type="button" onclick="closeModal('add-class-modal')" class="px-5 py-2 rounded-lg text-[10px] font-bold text-[#637588] hover:text-white uppercase tracking-widest transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-primary text-white px-7 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
+                    Register Lesson
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        const container = modal.querySelector('#modal-container');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            container.classList.remove('scale-95');
+        }, 10);
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        const container = modal.querySelector('#modal-container');
+        modal.classList.add('opacity-0');
+        container.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    async function handleClassUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const indicator = document.getElementById('class-upload-indicator');
+        const icon = document.getElementById('class-upload-icon');
+        const text = document.getElementById('class-upload-text');
+        const urlInput = document.getElementById('class_cover_url');
+
+        indicator.classList.remove('hidden');
+        icon.innerText = 'sync';
+        icon.classList.add('animate-spin');
+        text.innerText = 'Uploading...';
+
+        try {
+            const response = await fetch('/api/media/upload/', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                urlInput.value = data.url;
+                icon.innerText = 'verified';
+                icon.classList.remove('animate-spin');
+                icon.classList.add('text-emerald-500');
+                text.innerText = 'Asset Linked Successfully';
+                text.classList.add('text-emerald-500');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed');
+            icon.innerText = 'error';
+        } finally {
+            indicator.classList.add('hidden');
+            icon.classList.remove('animate-spin');
+        }
+    }
+</script>
+{% endblock %}

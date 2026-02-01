@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/courses/', include('Back-end.Course.urls')),
     path('api/classes/', include('Back-end.Class.urls')),
     path('api/membership/', include('Back-end.membership.urls')),
+    path('api/media/', include('Back-end.Media.urls')),
     
     # ===========================================
     # FRONTEND - Dashboard URLs
@@ -34,3 +35,10 @@ urlpatterns = [
     # ===========================================
     path('', include('Front-end.home.urls')),
 ]
+
+# Servir archivos media en desarrollo
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

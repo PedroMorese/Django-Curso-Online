@@ -48,7 +48,7 @@ def my_courses(request):
     Muestra todos los cursos creados por el profesor,
     con opción de filtrar por estado (publicado/borrador).
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     # Filtrar cursos del profesor autenticado
     courses = Course.objects.filter(
@@ -77,7 +77,7 @@ def create_course(request):
     """
     Vista para crear un nuevo curso.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     if request.method == 'POST':
         titulo = request.POST.get('titulo', '').strip()
@@ -117,16 +117,31 @@ def course_detail(request, course_id):
     """
     Vista de detalle y gestión de un curso específico.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
+    Class = apps.get_model('class_app', 'Class')
     
     course = get_object_or_404(Course, id=course_id, profesor=request.user)
     
+    # Manejar creación de clases (POST)
+    if request.method == 'POST' and request.POST.get('action') == 'add_class':
+        titulo = request.POST.get('titulo', '').strip()
+        orden = request.POST.get('orden', '1')
+        imagen_portada = request.POST.get('imagen_portada', '').strip()
+        
+        if titulo:
+            Class.objects.create(
+                curso=course,
+                titulo=titulo,
+                orden=int(orden),
+                imagen_portada=imagen_portada or None
+            )
+            messages.success(request, f'Clase "{titulo}" añadida exitosamente.')
+            return redirect('dashboard_profesor:course_detail', course_id=course.id)
+        else:
+            messages.error(request, 'El título de la clase es obligatorio.')
+    
     # Obtener clases del curso
-    try:
-        Class = apps.get_model('class_app', 'Class')
-        classes = Class.objects.filter(curso=course).order_by('orden')
-    except:
-        classes = []
+    classes = Class.objects.filter(curso=course).order_by('orden')
     
     context = {
         'active_nav': 'courses',
@@ -143,7 +158,7 @@ def toggle_publish(request, course_id):
     """
     Alterna el estado de publicación de un curso.
     """
-    Course = apps.get_model('Course', 'Course')
+    Course = apps.get_model('course_app', 'Course')
     
     course = get_object_or_404(Course, id=course_id, profesor=request.user)
     

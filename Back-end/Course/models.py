@@ -51,6 +51,7 @@ class Course(models.Model):
     
     class Meta:
         db_table = 'curso'
+        app_label = 'course_app'
         verbose_name = 'Curso'
         verbose_name_plural = 'Cursos'
         ordering = ['-fecha_creacion']

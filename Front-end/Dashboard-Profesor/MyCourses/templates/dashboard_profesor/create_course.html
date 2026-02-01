@@ -1,82 +1,253 @@
 {% extends "dashboard_profesor/base_profesor.html" %}
 
-{% block title %}Create New Course - EduMinimal Teacher{% endblock %}
-{% block page_name %}New Course{% endblock %}
-{% block page_title %}Create New Course{% endblock %}
+{% block title %}Register New Course - EduMinimal Teacher{% endblock %}
+{% block page_name %}Creation Console{% endblock %}
+{% block page_title %}Platform Asset Registry{% endblock %}
+{% block container_class %}max-w-[1200px]{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="text-[#637588] hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
+    Discard Draft
+</button>
+{% endblock %}
 
 {% block teacher_content %}
-<div class="max-w-3xl">
-    <div class="bg-charcoal border border-border-dark rounded-2xl overflow-hidden">
-        <div class="p-8 border-b border-border-dark bg-primary/5">
-            <h3 class="text-xl font-bold text-white mb-2">Course Information</h3>
-            <p class="text-sm text-[#9dabb9]">Fill in the details below to start building your new educational track.</p>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-32">
+    <!-- Form Side -->
+    <div class="lg:col-span-2 space-y-10">
+        <div>
+            <h1 class="text-2xl font-bold text-white mb-2">Course Core Details</h1>
+            <p class="text-sm text-[#9dabb9]">Define the fundamental attributes of your educational content.</p>
         </div>
-        
-        <form method="POST" class="p-8 space-y-10">
+
+        <form id="course-form" method="POST" class="space-y-10">
             {% csrf_token %}
-
-            <!-- Title Section -->
-            <div class="flex flex-col gap-3">
-                <label for="titulo" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
-                    Course Title <span class="text-primary">*</span>
-                </label>
-                <input type="text" id="titulo" name="titulo" 
-                    class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-3 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white placeholder:text-[#232d38]" 
-                    placeholder="e.g. Advanced Python for Data Science" required>
+            
+            <!-- Title Input -->
+            <div class="space-y-3">
+                <label class="block text-[9px] font-black uppercase tracking-[0.2em] text-[#637588]" for="title">Course Title</label>
+                <input class="w-full bg-card-dark/40 border border-border-dark rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-[#232d38] font-medium" 
+                    id="title" name="titulo" placeholder="e.g. Advanced Graphic Design Fundamentals" type="text" required oninput="updatePreview()"/>
             </div>
 
-            <!-- Description Section -->
-            <div class="flex flex-col gap-3">
-                <label for="descripcion" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
-                    Full Description
-                </label>
-                <textarea id="descripcion" name="descripcion" rows="4" 
-                    class="bg-background-dark border border-border-dark rounded-xl p-4 text-base font-medium focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white placeholder:text-[#637588] resize-none"
-                    placeholder="What will students learn in this course?"></textarea>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Instructor (Locked) -->
+                <div class="space-y-3">
+                    <label class="block text-[9px] font-black uppercase tracking-[0.2em] text-[#637588]" for="instructor">Instructor Entity</label>
+                    <div class="relative">
+                        <input class="w-full bg-background-dark/80 border border-border-dark rounded-xl px-4 py-4 text-[#637588] font-bold cursor-not-allowed outline-none" 
+                            disabled id="instructor" value="Prof. {{ user.last_name|default:user.username }}"/>
+                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#232d38] text-lg">lock</span>
+                    </div>
+                </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <!-- Level Section -->
-                <div class="flex flex-col gap-3">
-                    <label for="nivel" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
-                        Difficulty Level
-                    </label>
-                    <select id="nivel" name="nivel" 
-                        class="bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white appearance-none cursor-pointer">
+                <!-- Difficulty Level -->
+                <div class="space-y-3">
+                    <label class="block text-[9px] font-black uppercase tracking-[0.2em] text-[#637588]" for="nivel">Difficulty Metric</label>
+                    <select class="w-full bg-card-dark/40 border border-border-dark rounded-xl px-4 py-4 text-white font-bold cursor-pointer outline-none focus:ring-1 focus:ring-primary transition-all appearance-none" 
+                        id="nivel" name="nivel" onchange="updatePreview()">
                         {% for value, label in nivel_choices %}
-                        <option value="{{ value }}" class="bg-charcoal">{{ label }}</option>
+                        <option value="{{ value }}" class="bg-card-dark text-white">{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <!-- Cover Image Section -->
-                <div class="flex flex-col gap-3">
-                    <label for="imagen_portada" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
-                        Cover Image URL
-                    </label>
-                    <input type="url" id="imagen_portada" name="imagen_portada" 
-                        class="bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm font-medium focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white placeholder:text-[#637588]"
-                        placeholder="https://images.unsplash.com/...">
-                </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="pt-10 flex items-center justify-between border-t border-border-dark/50">
-                <p class="text-[10px] text-[#637588] font-bold uppercase tracking-widest">
-                    <span class="text-primary">*</span> Marked fields are required
-                </p>
-                <div class="flex gap-4">
-                    <a href="{% url 'dashboard_profesor:my_courses' %}" 
-                       class="px-6 py-3 rounded-lg text-sm font-bold text-[#637588] hover:text-white transition-colors">
-                        Discard Draft
-                    </a>
-                    <button type="submit" 
-                        class="bg-white text-background-dark px-8 py-3 rounded-lg font-bold text-sm uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-black/20">
-                        Create & Continue
-                    </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- Description -->
+                <div class="space-y-3">
+                    <label class="block text-[9px] font-black uppercase tracking-[0.2em] text-[#637588]" for="description">Content Synthesis</label>
+                    <textarea class="w-full bg-card-dark/40 border border-border-dark rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-[#232d38] min-h-[160px] resize-none leading-relaxed" 
+                        id="description" name="descripcion" placeholder="Describe the educational path and objectives..." oninput="updatePreview()"></textarea>
+                </div>
+
+                <!-- Visual Upload Placeholder -->
+                <div class="space-y-3">
+                    <label class="block text-[9px] font-black uppercase tracking-[0.2em] text-[#637588]">Cover Image Asset</label>
+                    <div onclick="document.getElementById('file-input').click()" 
+                        class="border-2 border-dashed border-border-dark rounded-2xl p-6 flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-all cursor-pointer bg-card-dark/20 border-gradient relative overflow-hidden min-h-[160px]">
+                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="handleFileUpload(this)">
+                        
+                        <div id="drop-zone-content">
+                            <div class="relative inline-block">
+                                <div class="bg-primary/10 size-12 rounded-full flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-primary/5">
+                                    <span class="material-symbols-outlined text-2xl" id="upload-icon">upload_file</span>
+                                </div>
+                                <!-- Upload Indicator -->
+                                <div id="upload-indicator" class="hidden absolute -top-1 -right-1">
+                                    <div class="size-2.5 bg-primary rounded-full animate-ping"></div>
+                                </div>
+                            </div>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-widest" id="upload-text">Upload Image</h3>
+                            <p class="text-[9px] font-bold text-[#637588] mt-1 uppercase tracking-[0.1em]">Recommended: 1920x1080</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- Hidden field for the URL -->
+            <input type="hidden" id="cover_url" name="imagen_portada">
         </form>
     </div>
+
+    <!-- Preview Side -->
+    <div class="lg:col-span-1">
+        <div class="sticky top-32 space-y-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#637588]">Real-time Sandbox</h2>
+                <div class="flex gap-1.5">
+                    <div class="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <div class="size-1 rounded-full bg-emerald-500/40"></div>
+                </div>
+            </div>
+
+            <!-- Course Card Preview -->
+            <div class="bg-card-dark rounded-2xl overflow-hidden border border-border-dark shadow-2xl shadow-black/60 group hover:border-primary/30 transition-all duration-500">
+                <div class="aspect-video w-full bg-background-dark flex items-center justify-center text-[#232d38] overflow-hidden relative" id="preview-image-container">
+                    <span class="material-symbols-outlined text-7xl group-hover:scale-110 transition-transform duration-700 opacity-20">movie_edit</span>
+                    <img id="preview-img" src="" class="hidden absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card-dark to-transparent opacity-60"></div>
+                </div>
+                <div class="p-8">
+                    <div class="flex items-center gap-2 mb-5">
+                        <span class="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">Syncing Draft</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4 line-clamp-2 leading-tight min-h-[56px]" id="preview-title">Synthetic Course Placeholder</h3>
+                    <p class="text-xs text-[#9dabb9] line-clamp-3 mb-10 min-h-[48px] leading-relaxed" id="preview-desc">The description summary will manifest here as you populate the core data fields.</p>
+                    
+                    <div class="flex items-center justify-between pt-6 border-t border-border-dark/60">
+                        <div class="flex items-center gap-3">
+                            <div class="size-8 rounded-full bg-primary/10 border border-border-dark flex items-center justify-center text-[10px] font-bold text-primary">
+                                {{ user.last_name|slice:":1"|upper|default:"P" }}
+                            </div>
+                            <span class="text-[11px] font-bold text-white tracking-wide">Prof. {{ user.last_name|default:user.username }}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-primary bg-primary/5 px-3 py-1 rounded-full">
+                            <span class="material-symbols-outlined text-xs">new_releases</span>
+                            <span class="text-[9px] font-black uppercase tracking-widest" id="preview-level">Principiante</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Assurance Box -->
+            <div class="bg-primary/5 border border-primary/10 rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute -right-8 -bottom-8 size-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
+                <div class="flex gap-4 relative z-10">
+                    <span class="material-symbols-outlined text-primary/60">info</span>
+                    <p class="text-[10px] font-bold leading-relaxed text-[#9dabb9] uppercase tracking-wider">
+                        Strategic Note: Your curriculum will undergo a <span class="text-white">peer-review validation</span> phase post-creation to ensure platform standards alignment.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Sticky Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-40 bg-background-dark/80 backdrop-blur-xl border-t border-border-dark px-10 py-6">
+    <div class="max-w-[1200px] mx-auto w-full flex items-center justify-between">
+        <div class="hidden md:block">
+            <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest">Current Status: <span class="text-amber-500">Internal Draft</span></p>
+        </div>
+        <div class="flex items-center gap-6">
+            <button type="button" class="text-xs font-bold text-[#9dabb9] hover:text-white uppercase tracking-widest transition-colors">
+                Auto-save enabled
+            </button>
+            <div class="size-1 w-1 rounded-full bg-border-dark"></div>
+            <button type="submit" form="course-form" 
+                class="px-10 py-3 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold text-xs uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                Commit & Create
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function handleFileUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const indicator = document.getElementById('upload-indicator');
+        const uploadIcon = document.getElementById('upload-icon');
+        const uploadText = document.getElementById('upload-text');
+        const coverUrlInput = document.getElementById('cover_url');
+
+        // UI Feedback: Start
+        indicator.classList.remove('hidden');
+        uploadIcon.innerText = 'sync';
+        uploadIcon.classList.add('animate-spin');
+        uploadText.innerText = 'Uploading Asset...';
+
+        try {
+            const response = await fetch('/api/media/upload/', {
+                method: 'POST',
+                body: formData,
+                // No necesitamos headers Content-Type para FormData, el navegador lo pone con el boundary
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Actualizar el input de la URL con la ruta retornada
+                coverUrlInput.value = data.url;
+                // Disparar la actualización de la vista previa
+                updatePreview();
+                
+                // UI Feedback: Success
+                uploadIcon.innerText = 'check_circle';
+                uploadIcon.classList.remove('animate-spin', 'text-primary');
+                uploadIcon.classList.add('text-emerald-500');
+                uploadText.innerText = 'Upload Complete';
+                setTimeout(() => {
+                    uploadIcon.innerText = 'upload_file';
+                    uploadIcon.classList.remove('text-emerald-500');
+                    uploadIcon.classList.add('text-primary');
+                    uploadText.innerText = 'Asset Manager upload';
+                }, 3000);
+            } else {
+                throw new Error(data.message || 'Error uploading file');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed: ' + error.message);
+            uploadIcon.innerText = 'error';
+            uploadText.innerText = 'Upload Failed';
+        } finally {
+            indicator.classList.add('hidden');
+            uploadIcon.classList.remove('animate-spin');
+        }
+    }
+
+    function updatePreview() {
+        const title = document.getElementById('title').value;
+        const desc = document.getElementById('description').value;
+        const coverUrl = document.getElementById('cover_url').value;
+        const nivelSelect = document.getElementById('nivel');
+        const levelText = nivelSelect.options[nivelSelect.selectedIndex].text;
+        
+        const previewTitle = document.getElementById('preview-title');
+        const previewDesc = document.getElementById('preview-desc');
+        const previewImg = document.getElementById('preview-img');
+        const previewLevel = document.getElementById('preview-level');
+        const previewContainer = document.getElementById('preview-image-container');
+        const icon = previewContainer.querySelector('span');
+
+        previewTitle.innerText = title || 'Synthetic Course Placeholder';
+        previewDesc.innerText = desc || 'The description summary will manifest here as you populate the core data fields.';
+        previewLevel.innerText = levelText;
+        
+        if (coverUrl) {
+            previewImg.src = coverUrl;
+            previewImg.classList.remove('hidden');
+            icon.classList.add('hidden');
+        } else {
+            previewImg.classList.add('hidden');
+            icon.classList.remove('hidden');
+        }
+    }
+</script>
 {% endblock %}
+

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Back-end.Class.apps.ClassConfig',
     'Back-end.membership.apps.MembershipConfig',
     'Back-end.Auth.apps.AuthConfig',
+    'Back-end.Media.apps.MediaConfig',
 ]
 
 
@@ -137,6 +138,10 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'Front-end' / 'home' / 'Template' / 'static',
 ]
+
+# Media files (Uploaded assets)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
