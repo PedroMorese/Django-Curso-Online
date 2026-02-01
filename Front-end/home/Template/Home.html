@@ -356,7 +356,8 @@
                 </div>
                 <p class="text-[#9dabb9] text-sm">Join our community of lifelong learners.</p>
             </div>
-            <form class="px-8 py-2">
+            <form id="register-form" method="post" action="/register-submit/" class="px-8 py-2">
+                {% csrf_token %}
                 <div class="flex flex-wrap md:flex-nowrap gap-4 mb-4">
                     <label class="flex flex-col flex-1">
                         <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">First Name</p>
@@ -394,7 +395,7 @@
                         </div>
                     </label>
                 </div>
-                <button class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Register</button>
+                <button id="register-submit" class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Register</button>
             </form>
             <div class="px-8 pb-10 pt-6 text-center">
                 <p class="text-[#9dabb9] text-sm">Already have an account? <a id="open-login-from-register" class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#login">Login</a></p>
@@ -422,6 +423,38 @@
             if (closeBtn) closeBtn.addEventListener('click', function (e) { e.preventDefault(); hideModal(); });
             if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) hideModal(); });
             if (openLoginFromRegister) openLoginFromRegister.addEventListener('click', function (e) { e.preventDefault(); hideModal(); showLoginModal(); });
+
+            // Handle register form submit via AJAX
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(registerForm);
+                    const payload = {};
+                    formData.forEach((v, k) => { payload[k] = v; });
+                    // read csrf token from form
+                    const csrfInput = registerForm.querySelector('input[name=csrfmiddlewaretoken]');
+                    const csrftoken = csrfInput ? csrfInput.value : null;
+
+                    fetch('/register-submit/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
+                        },
+                        body: JSON.stringify(payload),
+                        credentials: 'same-origin',
+                    }).then(async (res) => {
+                        const data = await res.json().catch(() => ({}));
+                        if (res.ok) {
+                            hideModal();
+                            alert('Registration successful');
+                        } else {
+                            alert(data.detail || 'Registration failed');
+                        }
+                    }).catch((err) => { console.error(err); alert('Network error'); });
+                });
+            }
 
             // Login modal handlers
             const openLoginBtn = document.getElementById('open-login');
