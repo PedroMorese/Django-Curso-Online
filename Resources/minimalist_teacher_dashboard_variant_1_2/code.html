@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register New Course - EduPlatform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-background-light dark:bg-background-dark shrink-0">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-tight">EduPlatform</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Teacher Portal</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">book_2</span>
+<span class="text-sm font-medium">My Courses</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined active-icon">add_box</span>
+<span class="text-sm font-medium">New Course</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-300 dark:bg-slate-700 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwghmUJSVFQvMYlJSdhYA_cevVZx9qIcV0nX_Zo9TXt8Z7AFl-feM82v6rRU4db37aIfdRZoTw2XO39WwS_niNz8vwC8rlOGqafaZ54M6L4rKhrNncYAVu5US1EeBQQAsifHBciUaQit4kbWNylCkEQKfyv3YMwO23nloBMJ7AMaE0f6bTxDGmoPr--5pWSkajZEb9A-wWws_CSgppnyPHjsZjnUbHIEC0-ASovfZWeJZl_sY8rZ7MKVHX_AgZSC-d9760ivrS9w');"></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-medium truncate">Prof. Smith</p>
+<p class="text-xs text-slate-500 truncate">smith@edu.com</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-8 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+<h2 class="text-sm font-semibold uppercase tracking-wider">Create New Course</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium px-4 py-2 transition-colors">
+                    Discard Draft
+                </button>
+</div>
+</header>
+<div class="max-w-6xl mx-auto w-full px-8 py-10">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+<div class="lg:col-span-2 space-y-8">
+<div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Course Details</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Fill in the basic information to start your new course.</p>
+</div>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300" for="title">Título del curso</label>
+<input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600" id="title" placeholder="e.g. Advanced Graphic Design Fundamentals" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300" for="instructor">Instructor</label>
+<div class="relative">
+<select class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 appearance-none cursor-not-allowed text-slate-500 dark:text-slate-400 outline-none" disabled="" id="instructor">
+<option selected="">Prof. Smith</option>
+</select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">lock</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300" for="description">Descripción</label>
+<textarea class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 min-h-[160px]" id="description" placeholder="Describe what students will learn in this course..."></textarea>
+</div>
+<div class="space-y-2">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">Course Thumbnail</label>
+<div class="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-10 flex flex-col items-center justify-center text-center group hover:border-primary/50 transition-colors cursor-pointer">
+<div class="bg-primary/10 size-14 rounded-full flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<h3 class="text-base font-bold text-slate-900 dark:text-white">Upload Course Image</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Drag and drop or click to browse</p>
+<p class="text-[10px] uppercase tracking-wider text-slate-400 mt-4 font-bold">PNG, JPG, or WEBP (16:9 recommended)</p>
+</div>
+</div>
+</form>
+</div>
+<div class="lg:col-span-1">
+<div class="sticky top-24">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-sm font-bold uppercase tracking-widest text-slate-400">Course Preview</h2>
+<span class="material-symbols-outlined text-slate-400 text-lg">visibility</span>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xl shadow-black/5">
+<div class="aspect-video w-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-700">
+<span class="material-symbols-outlined text-5xl">image</span>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-2 mb-3">
+<span class="size-2 rounded-full bg-amber-500"></span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Draft Preview</span>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2" id="preview-title">New Course Title</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-3 mb-6" id="preview-desc">Enter a description on the left to see how it appears in the catalog...</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwghmUJSVFQvMYlJSdhYA_cevVZx9qIcV0nX_Zo9TXt8Z7AFl-feM82v6rRU4db37aIfdRZoTw2XO39WwS_niNz8vwC8rlOGqafaZ54M6L4rKhrNncYAVu5US1EeBQQAsifHBciUaQit4kbWNylCkEQKfyv3YMwO23nloBMJ7AMaE0f6bTxDGmoPr--5pWSkajZEb9A-wWws_CSgppnyPHjsZjnUbHIEC0-ASovfZWeJZl_sY8rZ7MKVHX_AgZSC-d9760ivrS9w');"></div>
+<span class="text-xs text-slate-500">Prof. Smith</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-xs">star</span>
+<span class="text-xs font-bold">New</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 bg-primary/5 border border-primary/10 rounded-lg p-4">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                                    Your course will be reviewed by our quality assurance team before being published to the marketplace.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md px-8 py-6 sticky bottom-0">
+<div class="max-w-6xl mx-auto w-full flex items-center justify-end gap-4">
+<button class="px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    Save as Draft
+                </button>
+<button class="px-8 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold text-sm shadow-lg shadow-primary/20 transition-all">
+                    Create Course
+                </button>
+</div>
+</footer>
+</main>
+</div>
+
+</body></html>

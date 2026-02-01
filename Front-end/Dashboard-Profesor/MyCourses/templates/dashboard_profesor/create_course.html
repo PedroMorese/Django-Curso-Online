@@ -1,0 +1,79 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Create Course - Teacher Dashboard{% endblock %}
+
+{% block sidebar %}
+{% include "base/components/sidebar_teacher.html" %}
+{% endblock %}
+
+{% block topbar %}
+<div class="flex items-center gap-2">
+    <a href="{% url 'dashboard_profesor:my_courses' %}"
+        class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </a>
+    <h2 class="text-slate-900 dark:text-white text-lg font-bold">Create New Course</h2>
+</div>
+<div></div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Form Card -->
+    <div class="card">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="space-y-2">
+                <label for="titulo" class="block text-sm font-medium text-slate-900 dark:text-white">
+                    Course Title <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="titulo" name="titulo" class="input" placeholder="Enter course title..." required>
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <label for="descripcion" class="block text-sm font-medium text-slate-900 dark:text-white">
+                    Description
+                </label>
+                <textarea id="descripcion" name="descripcion" rows="4" class="input resize-none"
+                    placeholder="Describe your course..."></textarea>
+            </div>
+
+            <!-- Level -->
+            <div class="space-y-2">
+                <label for="nivel" class="block text-sm font-medium text-slate-900 dark:text-white">
+                    Difficulty Level
+                </label>
+                <select id="nivel" name="nivel" class="input">
+                    {% for value, label in nivel_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Cover Image -->
+            <div class="space-y-2">
+                <label for="imagen_portada" class="block text-sm font-medium text-slate-900 dark:text-white">
+                    Cover Image URL
+                </label>
+                <input type="url" id="imagen_portada" name="imagen_portada" class="input"
+                    placeholder="https://example.com/image.jpg">
+                <p class="text-xs text-slate-500 dark:text-slate-400">Enter a URL for the course thumbnail image</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <a href="{% url 'dashboard_profesor:my_courses' %}" class="btn btn-ghost">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    Create Course
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<!-- Admin Sidebar Component -->
+<div class="flex flex-col gap-8 p-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+        <div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+            <span class="material-symbols-outlined">school</span>
+        </div>
+        <div class="flex flex-col">
+            <h1 class="text-base font-bold leading-tight">EduAdmin</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs">v2.4.0 Global</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-col gap-2">
+        <a href="{% url 'dashboard_admin:overview' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'dashboard' %}bg-primary/10 text-primary{% else %}text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined"
+                {% if active_nav == 'dashboard' %}
+                style="font-variation-settings: 'FILL' 1;"
+                {% endif %}>dashboard</span>
+            <p class="text-sm font-{% if active_nav == 'dashboard' %}semibold{% else %}medium{% endif %}">Dashboard</p>
+        </a>
+
+        <a href="{% url 'dashboard_admin:users' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'users' %}bg-primary/10 text-primary{% else %}text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined"
+                {% if active_nav == 'users' %}
+                style="font-variation-settings: 'FILL' 1;"
+                {% endif %}>group</span>
+            <p class="text-sm font-{% if active_nav == 'users' %}semibold{% else %}medium{% endif %}">User Management
+            </p>
+        </a>
+
+        <a href="{% url 'dashboard_admin:courses' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'courses' %}bg-primary/10 text-primary{% else %}text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined"
+                {% if active_nav == 'courses' %}
+                style="font-variation-settings: 'FILL' 1;"
+                {% endif %}>menu_book</span>
+            <p class="text-sm font-{% if active_nav == 'courses' %}semibold{% else %}medium{% endif %}">Course Catalog
+            </p>
+        </a>
+
+        <a href="{% url 'dashboard_admin:subscriptions' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'subscriptions' %}bg-primary/10 text-primary{% else %}text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined"
+                {% if active_nav == 'subscriptions' %}
+                style="font-variation-settings: 'FILL' 1;"
+                {% endif %}>payments</span>
+            <p class="text-sm font-{% if active_nav == 'subscriptions' %}semibold{% else %}medium{% endif %}">
+                Subscriptions</p>
+        </a>
+
+        <a href="{% url 'dashboard_admin:reports' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'reports' %}bg-primary/10 text-primary{% else %}text-slate-500 dark:text-slate-400 hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined"
+                {% if active_nav == 'reports' %}
+                style="font-variation-settings: 'FILL' 1;"
+                {% endif %}>analytics</span>
+            <p class="text-sm font-{% if active_nav == 'reports' %}semibold{% else %}medium{% endif %}">Revenue Reports
+            </p>
+        </a>
+    </nav>
+</div>
+
+<!-- Bottom Section -->
+<div class="p-6 flex flex-col gap-4">
+    <!-- System Status -->
+    <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider font-bold">Cloud Status</p>
+        <div class="flex items-center gap-2">
+            <div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+            <p class="text-sm">All systems operational</p>
+        </div>
+    </div>
+
+    <!-- Generate Report Button -->
+    <button
+        class="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+        Generate Report
+    </button>
+</div>

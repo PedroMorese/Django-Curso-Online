@@ -1,0 +1,48 @@
+<!-- Teacher Sidebar Component -->
+<div class="p-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 mb-10">
+        <div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+            <span class="material-symbols-outlined">school</span>
+        </div>
+        <div class="flex flex-col">
+            <h1 class="text-base font-bold leading-tight">EduPlatform</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs">Teacher Portal</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-col gap-2">
+        <a href="{% url 'dashboard_profesor:my_courses' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'courses' %}bg-primary/10 text-primary{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined {% if active_nav == 'courses' %}active-icon{% endif %}">book_2</span>
+            <span class="text-sm font-medium">My Courses</span>
+        </a>
+
+        <a href="{% url 'dashboard_profesor:create_course' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'new_course' %}bg-primary/10 text-primary{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined">add_box</span>
+            <span class="text-sm font-medium">New Course</span>
+        </a>
+
+        <a href="{% url 'dashboard_profesor:profile' %}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg {% if active_nav == 'profile' %}bg-primary/10 text-primary{% else %}text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800{% endif %} transition-colors">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-sm font-medium">Profile</span>
+        </a>
+    </nav>
+</div>
+
+<!-- User Profile Section -->
+<div class="mt-auto p-6 border-t border-slate-200 dark:border-slate-800">
+    <div class="flex items-center gap-3">
+        <div class="size-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
+            {{ user.first_name|slice:":1"|upper|default:"P" }}{{ user.last_name|slice:":1"|upper|default:"" }}
+        </div>
+        <div class="flex flex-col overflow-hidden">
+            <p class="text-sm font-medium truncate">{{ user.first_name|default:"Professor" }} {{
+                user.last_name|default:"" }}</p>
+            <p class="text-xs text-slate-500 truncate">{{ user.email }}</p>
+        </div>
+    </div>
+</div>

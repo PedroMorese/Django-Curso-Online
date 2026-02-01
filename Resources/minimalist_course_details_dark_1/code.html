@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #283039;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white font-display min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#283039] px-10 py-3 bg-background-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">CourseStream</h2>
+</div>
+<label class="flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#9dabb9] flex border-none bg-[#1c2127] items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#1c2127] focus:border-none h-full placeholder:text-[#9dabb9] px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search lessons..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#9dabb9] hover:text-white text-sm font-medium transition-colors" href="#">My Learning</a>
+<a class="text-[#9dabb9] hover:text-white text-sm font-medium transition-colors" href="#">Browse</a>
+<a class="text-primary text-sm font-bold" href="#">Pro Member</a>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#1c2127] text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#283039]" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBW7as-OlANLtZx_qXyLAUcUM-DvOCB8fIL7qKmLvyMKxVplgZGerxmb7n1Dp4cBYb2GND2lbzBRu9m_LLHVf_jwLhJUk6MJjgyFSA_t-xgmVf6HbStW7hY6d0td9Uw4lxx2viGa-gBm2lMNY31AebPCEC-vgJblTRi2CoCpuVNDlHziTteaK-DO94_eQMsAizH1KbITfeV_bhYB49nadlNkTbIsTLOTv8tVsrq1-1nVw8tmsr3__oncjKUC3OVKFyBkEIdY1WSAg");'></div>
+</div>
+</header>
+<main class="flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1100px] flex-1 px-4">
+<!-- Cinematic Header Image -->
+<div class="@container mb-8">
+<div class="bg-cover bg-center flex flex-col justify-end overflow-hidden bg-background-dark rounded-xl min-h-[400px] shadow-2xl relative" data-alt="Cinematic background of high-end digital design workspace" style='background-image: linear-gradient(0deg, rgba(16, 25, 34, 0.9) 0%, rgba(16, 25, 34, 0.2) 50%, rgba(16, 25, 34, 0) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlhUaAiumj1TZ2tmLgsor3cB3vCtf1Ki_0Tc9pYem13Qsqu-9A6hdcSHIuVzKPlxkdNhfqpeXT0-kImN1RCaHCyBu4vGzbuXUzwyv7VjOTkkYPe2gKIdHtMtXdXBHKY19g-ukjrK6RcMj6yKcIdyP7TNeuafKnnSWyT8C69NJszUcun8t3clAJWIuTY_Ri9NtXhhhjfQjQsoZYnF_UHq30o5MEwoQ-r8XmcXoTxbv4h7VMzB1EjzlfgO7fMXPlPp0djkThM8HELg");'>
+<div class="flex flex-col p-8 gap-2">
+<span class="text-primary font-bold tracking-widest text-xs uppercase">Advanced Certification</span>
+<h1 class="text-white tracking-tighter text-5xl font-black leading-tight max-w-2xl">Mastering High-End Digital Interface Systems</h1>
+<div class="flex gap-4 mt-4 items-center">
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined fill-1">play_arrow</span> Resume Lesson 4
+                                    </button>
+<div class="text-[#9dabb9] text-sm font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span> 12h 45m total
+                                    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Two Column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Info -->
+<div class="lg:col-span-2 space-y-8">
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<h3 class="text-xl font-bold">About this course</h3>
+</div>
+<p class="text-[#9dabb9] text-lg leading-relaxed">
+                                    This masterclass is designed for experienced designers looking to push the boundaries of modern UI. We explore advanced grid systems, mathematical spacing principles, and the subtle art of micro-interactions that define premium digital products.
+                                </p>
+</section>
+<section>
+<h3 class="text-lg font-bold mb-4">Lead Instructor</h3>
+<div class="flex gap-4 rounded-xl border border-[#283039] bg-[#1c2127] p-6 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-16 shrink-0 border-2 border-primary" data-alt="Portrait of Elena Vance" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBbns97eaJKcTapzuZrryV1EpaLRaiokT8-A-i3LvCWFqXs-r5b92JveK_BBJwr-DTyUGnMl6jbVX40_29Nz6AtmmY8L95oMVoJ1SQ1rpphe6DZS9XiCgXshtm-89Zv_JtQ4s2VaWrNfbA_Z2aVpix46xGWK5V23o8VpXW_9UJ-1NWczFIFjczZug4brkKNNCdCRGqFrX3NlvgLBOBJ_wlDyB8pLn0Rs4knDOsTnZRIXuTiCT961WQicEee13QfTkpz5A2YoZcUoA");'></div>
+<div class="flex flex-col gap-1">
+<h2 class="text-white text-xl font-bold">Elena Vance</h2>
+<p class="text-[#9dabb9] text-sm">Principal Designer &amp; Educator at Streamline</p>
+<div class="flex gap-3 mt-2">
+<span class="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded">15+ Years Exp</span>
+<span class="text-xs text-primary font-medium px-2 py-1 bg-primary/10 rounded">42 Courses</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Accordion Section -->
+<section>
+<h3 class="text-lg font-bold mb-4">Course Resources</h3>
+<div class="space-y-2">
+<div class="border border-[#283039] bg-[#1c2127] rounded-lg overflow-hidden">
+<button class="w-full flex justify-between items-center p-4 hover:bg-[#283039] transition-colors group">
+<span class="font-medium flex items-center gap-3">
+<span class="material-symbols-outlined text-[#9dabb9]">folder</span>
+                                                Figma Design Assets
+                                            </span>
+<span class="material-symbols-outlined text-[#9dabb9] group-hover:text-white">expand_more</span>
+</button>
+</div>
+<div class="border border-[#283039] bg-[#1c2127] rounded-lg overflow-hidden">
+<button class="w-full flex justify-between items-center p-4 hover:bg-[#283039] transition-colors group">
+<span class="font-medium flex items-center gap-3">
+<span class="material-symbols-outlined text-[#9dabb9]">description</span>
+                                                Reading List &amp; PDF Guides
+                                            </span>
+<span class="material-symbols-outlined text-[#9dabb9] group-hover:text-white">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Lesson List -->
+<div class="lg:col-span-1">
+<div class="bg-[#1c2127] border border-[#283039] rounded-xl flex flex-col h-[600px]">
+<div class="p-5 border-b border-[#283039] flex justify-between items-center">
+<h3 class="font-bold">Course Content</h3>
+<span class="text-xs text-[#9dabb9]">4 / 24 Lessons</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+<!-- Active Lesson -->
+<div class="flex items-center gap-4 p-4 rounded-lg bg-primary/10 border border-primary/30 group cursor-pointer">
+<div class="bg-primary/20 text-primary rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] fill-1">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-bold truncate">01. Understanding Visual Rhythm</p>
+<p class="text-primary text-[10px] uppercase font-bold">Now Playing</p>
+</div>
+</div>
+<!-- Completed Lessons -->
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer opacity-70">
+<div class="bg-green-500/20 text-green-500 rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">02. The Golden Ratio in UI</p>
+<p class="text-[#9dabb9] text-[10px]">14:20</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer opacity-70">
+<div class="bg-green-500/20 text-green-500 rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">03. Spacing Systems &amp; Grids</p>
+<p class="text-[#9dabb9] text-[10px]">22:15</p>
+</div>
+</div>
+<!-- Upcoming Lessons -->
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer">
+<div class="bg-[#283039] text-[#9dabb9] group-hover:text-white group-hover:bg-primary transition-colors rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">04. Micro-interactions Theory</p>
+<p class="text-[#9dabb9] text-[10px]">18:45</p>
+</div>
+</div>
+<!-- Repeatable block for list length -->
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer">
+<div class="bg-[#283039] text-[#9dabb9] group-hover:text-white rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">05. Typography Scales</p>
+<p class="text-[#9dabb9] text-[10px]">12:10</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer">
+<div class="bg-[#283039] text-[#9dabb9] group-hover:text-white rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">06. Color Harmony Models</p>
+<p class="text-[#9dabb9] text-[10px]">09:30</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer">
+<div class="bg-[#283039] text-[#9dabb9] group-hover:text-white rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">07. Building Responsive Components</p>
+<p class="text-[#9dabb9] text-[10px]">35:00</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 rounded-lg hover:bg-[#283039] transition-colors group cursor-pointer">
+<div class="bg-[#283039] text-[#9dabb9] group-hover:text-white rounded-full size-8 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<p class="text-white text-sm font-medium truncate">08. Advanced Figma Prototyping</p>
+<p class="text-[#9dabb9] text-[10px]">27:40</p>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-[#283039]">
+<button class="w-full bg-[#283039] hover:bg-[#3b4754] text-white py-2 rounded-lg text-sm font-bold transition-colors">
+                                        View Full Syllabus
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

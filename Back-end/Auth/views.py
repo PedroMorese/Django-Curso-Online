@@ -143,3 +143,15 @@ def login_view(request):
     login(request, user)
 
     return JsonResponse({"detail": "Login successful", "id": user.pk, "email": getattr(user, "email", None), "role": getattr(user, "role", None)})
+
+
+@csrf_exempt
+def logout_view(request):
+    """Logout de usuario. Cierra la sesión actual."""
+    from django.contrib.auth import logout
+    
+    if request.method == "POST":
+        logout(request)
+        return JsonResponse({"detail": "Logout successful"})
+    
+    return JsonResponse({"detail": "Method not allowed"}, status=405)

@@ -1,0 +1,156 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Course Catalog - Admin Dashboard{% endblock %}
+
+{% block sidebar %}
+{% include "base/components/sidebar_admin.html" with active_nav='courses' %}
+{% endblock %}
+
+{% block topbar %}
+<div class="flex items-center gap-4">
+    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Course Catalog</h2>
+</div>
+<div class="flex items-center gap-4">
+    <button class="btn btn-primary">
+        <span class="material-symbols-outlined text-lg">add</span>
+        Add Course
+    </button>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Courses</p>
+            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_courses|default:0 }}</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Published</p>
+            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ published_count|default:0 }}</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Drafts</p>
+            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ draft_count|default:0 }}</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Revenue</p>
+            <p class="text-3xl font-bold text-primary">$45.2K</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card">
+        <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex-1 min-w-[200px]">
+                <input type="text" class="input" placeholder="Search courses...">
+            </div>
+            <select class="input w-auto">
+                <option>All Levels</option>
+                <option>Principiante</option>
+                <option>Intermedio</option>
+                <option>Avanzado</option>
+            </select>
+            <select class="input w-auto">
+                <option>All Status</option>
+                <option>Published</option>
+                <option>Draft</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for course in courses %}
+        <div class="card hover:shadow-xl transition-shadow">
+            <!-- Course Thumbnail -->
+            <div class="relative h-48 bg-slate-200 dark:bg-slate-800 rounded-lg mb-4 overflow-hidden">
+                {% if course.imagen_portada %}
+                <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-6xl text-slate-400">school</span>
+                </div>
+                {% endif %}
+                
+                <!-- Status Badge -->
+                <div class="absolute top-3 right-3">
+                    <span class="badge {% if course.publicado %}badge-success{% else %}badge-warning{% endif %}">
+                        {% if course.publicado %}Published{% else %}Draft{% endif %}
+                    </span>
+                </div>
+                
+                <!-- Level Badge -->
+                <div class="absolute top-3 left-3">
+                    <span class="badge badge-neutral">{{ course.nivel }}</span>
+                </div>
+            </div>
+
+            <!-- Course Info -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-2">
+                    {{ course.titulo }}
+                </h3>
+                
+                <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                    {{ course.descripcion|default:"No description available" }}
+                </p>
+
+                <!-- Professor -->
+                <div class="flex items-center gap-2">
+                    <div class="avatar avatar-xs bg-primary/20 text-primary">
+                        {{ course.profesor.first_name|slice:":1"|upper }}{{ course.profesor.last_name|slice:":1"|upper }}
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">
+                        {{ course.profesor.first_name }} {{ course.profesor.last_name }}
+                    </p>
+                </div>
+
+                <!-- Meta Info -->
+                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span>Created {{ course.fecha_creacion|date:"M d, Y" }}</span>
+                    <span>ID: {{ course.id }}</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                    <button class="btn btn-secondary btn-sm flex-1">
+                        <span class="material-symbols-outlined text-sm">visibility</span>
+                        View
+                    </button>
+                    <button class="btn btn-secondary btn-sm flex-1">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        Edit
+                    </button>
+                    <button class="btn btn-secondary btn-sm">
+                        <span class="material-symbols-outlined text-sm text-red-500">delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full">
+            <div class="card text-center py-12">
+                <span class="material-symbols-outlined text-6xl text-slate-400 mb-4">school</span>
+                <p class="text-slate-500 dark:text-slate-400 text-lg">No courses found</p>
+                <p class="text-slate-400 dark:text-slate-500 text-sm mt-2">Create your first course to get started</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if courses %}
+    <div class="flex items-center justify-between">
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            Showing {{ courses|length }} courses
+        </p>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm">Previous</button>
+            <button class="btn btn-secondary btn-sm">Next</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

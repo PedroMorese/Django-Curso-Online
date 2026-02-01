@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduPlatform{% endblock %}</title>
+
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-dark": "#0a0f14",
+                        "card-dark": "#131c26",
+                        "border-dark": "#232d38",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .line-clamp-1 {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .line-clamp-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+        }
+    </style>
+
+    <!-- Load design system CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
+    {% block body %}
+    <div class="relative flex flex-col flex-1 w-full">
+        {% block header %}
+        {% include "base/components/navbar.html" %}
+        {% endblock %}
+
+        {% block content %}
+        <main class="flex-1">
+            {% block main %}{% endblock %}
+        </main>
+        {% endblock %}
+
+        {% block footer %}
+        {% include "base/components/footer.html" %}
+        {% endblock %}
+    </div>
+    {% endblock %}
+    
+    <!-- Modals -->
+    {% block modals %}
+    {% include "includes/login_modal.html" %}
+    {% endblock %}
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Login modal handlers
+            const openLoginBtn = document.getElementById('open-login');
+            const loginModal = document.getElementById('login-modal');
+            const loginCloseBtn = loginModal && loginModal.querySelector('[data-close]');
+            const openRegisterFromLogin = document.getElementById('open-register-from-login');
+
+            function showLoginModal() {
+                if (!loginModal) return;
+                loginModal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+            
+            function hideLoginModal() {
+                if (!loginModal) return;
+                loginModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            if (openLoginBtn) {
+                openLoginBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showLoginModal();
+                });
+            }
+            
+            if (loginCloseBtn) {
+                loginCloseBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideLoginModal();
+                });
+            }
+            
+            if (loginModal) {
+                loginModal.addEventListener('click', function (e) {
+                    if (e.target === loginModal) hideLoginModal();
+                });
+            }
+
+            // Register modal handlers
+            const openRegisterBtn = document.getElementById('open-register');
+            const registerModal = document.getElementById('register-modal');
+            const registerCloseBtn = registerModal && registerModal.querySelector('[data-close]');
+            const openLoginFromRegister = document.getElementById('open-login-from-register');
+
+            function showRegisterModal() {
+                if (!registerModal) return;
+                registerModal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+            
+            function hideRegisterModal() {
+                if (!registerModal) return;
+                registerModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            if (openRegisterBtn) {
+                openRegisterBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showRegisterModal();
+                });
+            }
+            
+            if (registerCloseBtn) {
+                registerCloseBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideRegisterModal();
+                });
+            }
+            
+            if (registerModal) {
+                registerModal.addEventListener('click', function (e) {
+                    if (e.target === registerModal) hideRegisterModal();
+                });
+            }
+
+            // Switch between modals
+            if (openRegisterFromLogin) {
+                openRegisterFromLogin.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideLoginModal();
+                    showRegisterModal();
+                });
+            }
+
+            if (openLoginFromRegister) {
+                openLoginFromRegister.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideRegisterModal();
+                    showLoginModal();
+                });
+            }
+
+            // User menu dropdown
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenuDropdown = document.getElementById('user-menu-dropdown');
+
+            if (userMenuButton && userMenuDropdown) {
+                userMenuButton.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    userMenuDropdown.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!userMenuDropdown.classList.contains('hidden')) {
+                        userMenuDropdown.classList.add('hidden');
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside it
+                userMenuDropdown.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // Logout handler
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                        fetch('/auth/logout/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            credentials: 'same-origin',
+                        }).then(async (res) => {
+                            if (res.ok) {
+                                window.location.href = '/';
+                            } else {
+                                alert('Error al cerrar sesión. Por favor intenta de nuevo.');
+                            }
+                        }).catch((err) => {
+                            console.error(err);
+                            alert('Error de conexión.');
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Course Status Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            @apply bg-green-500;
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot {
+            @apply translate-x-5;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 flex-shrink-0 border-r border-[#283039] bg-background-light dark:bg-background-dark flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight">EduAdmin</h1>
+<p class="text-[#9dabb9] text-xs font-normal">v2.4.0 Global</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium">User Management</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<p class="text-sm font-semibold">Course Management</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-medium">Subscriptions</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-medium">Revenue Reports</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">support_agent</span>
+<p class="text-sm font-medium">Support Tickets</p>
+</div>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-[#283039] p-4 rounded-xl">
+<p class="text-xs text-[#9dabb9] mb-2 uppercase tracking-wider font-bold">System Load</p>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<p class="text-sm">Server: Stable</p>
+</div>
+</div>
+<button class="w-full bg-[#1b2530] border border-[#283039] hover:bg-[#283039] text-white rounded-lg py-3 text-sm font-bold transition-all">
+                Add New Course
+            </button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-[#283039] px-8 py-4 bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-white text-xl font-bold tracking-tight">Course Management</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9dabb9] text-xl">search</span>
+<input class="w-full bg-[#1b2530] border-none rounded-lg py-2 pl-10 pr-4 text-sm text-white focus:ring-1 focus:ring-primary placeholder:text-[#9dabb9]" placeholder="Find courses by title or professor..."/>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039]">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+<div class="h-10 w-px bg-[#283039]"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-sm font-bold text-white leading-none">Alex Rivera</p>
+<p class="text-xs text-primary font-medium mt-1">Super Admin</p>
+</div>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ");'></div>
+</div>
+</div>
+</header>
+<div class="p-8">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="text-2xl font-bold text-white">Course Status Overview</h3>
+<p class="text-[#9dabb9] text-sm mt-1">Manage content visibility and instructor assignments</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-[#1b2530] border border-[#283039] px-4 py-2 rounded-lg flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<p class="text-sm font-medium"><span class="text-white">124</span> <span class="text-[#9dabb9]">Active</span></p>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-red-500"></span>
+<p class="text-sm font-medium"><span class="text-white">12</span> <span class="text-[#9dabb9]">Inactive</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl overflow-hidden">
+<table class="w-full text-left">
+<thead class="bg-[#283039]/50 border-b border-[#283039]">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider w-1/3">Course</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Professor</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Total Lessons</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#283039]">
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="size-16 rounded-lg bg-cover bg-center flex-shrink-0 border border-[#283039]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNJa-mOkE4NJnoS_P-CBdNYPJ8TcxAManJuclsf1aW6HVlOFi9s78pEIdeNxCmtTAwqPTnmRHqVynQKqaHdVDhO11vZtfPJPUYjJpOlxb9cd0x34mSUndaqKG4Gz3VuT8fo8B551dhGCyhcXK9pnwgJpG1GNy0cvTPD1fkWGtIsNcnIWq9tQycmL8BXH9zLPXteqzGAoiwEfzb_scEi_UGPd3e4eDmIpLqhRdT3cz00G51V2CuzhEXedE9nfRQD-eLbusD2PvADA')"></div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-white truncate">Full Stack Web Development</p>
+<p class="text-xs text-[#9dabb9] mt-1">Web Development • Beginner</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">DR</div>
+<p class="text-sm font-medium text-white">Dr. Sarah Jenkins</p>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">48 Lessons</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-label w-11 h-6 bg-[#283039] rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-1 top-1 bg-white size-4 rounded-full transition-transform"></div>
+</div>
+</label>
+<span class="text-xs font-bold text-green-500 uppercase tracking-wide">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/80 text-sm font-bold transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="size-16 rounded-lg bg-cover bg-center flex-shrink-0 border border-[#283039]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfrZNyT6o_kESD8hhBEAvtOfMRsuNWjYtp_k3qqk3JGz_0zevrNV9qqMPK9VqRyO5Ugk-gzJTE70bSlEFDdaJmoMESuvpxh-8xjNyGzNxF-n9Pr6YecaIT7-qjgfaM5NdbsVrgFPDC0pv1dt1XtTQPrs61O7gORhycgKlRMp0sws6KjjmSMn8acQODcDGJJky_GRTPhB71VGQ5ENlVajp_NyoEnBx5L0pm5CJkQnyMKBbHQGUFyIow7CCZx0zwuD9Wrw-LHCobxQ')"></div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-white truncate">Data Science Masterclass</p>
+<p class="text-xs text-[#9dabb9] mt-1">Data Science • Advanced</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-orange-400/20 flex items-center justify-center text-[10px] font-bold text-orange-400">MK</div>
+<p class="text-sm font-medium text-white">Marcus King</p>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">32 Lessons</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-label w-11 h-6 bg-[#283039] rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-1 top-1 bg-white size-4 rounded-full transition-transform"></div>
+</div>
+</label>
+<span class="text-xs font-bold text-green-500 uppercase tracking-wide">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/80 text-sm font-bold transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4 opacity-60">
+<div class="size-16 rounded-lg bg-cover bg-center flex-shrink-0 border border-[#283039]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGCPh3Fw3QlhQJCIwu8Dk9KBzv9WTAC4XYUwbu-k_eSB23eDjYnhysTksmSiogNYbOgaOt_xavnJqwDYzjLB5i4LwuC1Qz_noIktiO8Yws79PH882YtHVktcqBCKPlpNPv7C3xJ1teM3V32Ox0BwosOupEpXHwWgX-YZSE9BtS1lDhFwydYDMlzoo9jWru-h93Ilgh6e30WJKZvAsqaJRGT_2YYWrzqplqXWgwQrusIqLyzzm-gsQks4j0ugI_jnLVLNxHz6XwuA')"></div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-white truncate">UI/UX Design Systems</p>
+<p class="text-xs text-[#9dabb9] mt-1">Design • Intermediate</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 opacity-60">
+<div class="size-6 rounded-full bg-purple-400/20 flex items-center justify-center text-[10px] font-bold text-purple-400">LW</div>
+<p class="text-sm font-medium text-white">Linda Wu</p>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9] opacity-60">24 Lessons</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-label w-11 h-6 bg-[#283039] rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-1 top-1 bg-white size-4 rounded-full transition-transform"></div>
+</div>
+</label>
+<span class="text-xs font-bold text-red-500 uppercase tracking-wide">Inactive</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/80 text-sm font-bold transition-colors">View Details</button>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="size-16 rounded-lg bg-cover bg-center flex-shrink-0 border border-[#283039]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0Ks3l9d1-zQlXP92RNMfWkdAwCLhSzzqGi9sZlVFY3Pv8sOq0PoxAC5Jeg0kW3RTzyrAy3Cp21N3y_Z7wGcIdrPqLAgZypewbnO2Oc2xffwT1EgFOjNuqmoh0YjOCvgR_wrybMJSVTSUCr_ziSKvQSDd7pp27wptGjhlhpdvDA011pARAjgmAp7pjVJHI5E1nBVQul5qF62JN9bC2nSMmJzL1DQfrmOwmvVYH8w-liZcq1s-E3D9gux_qmqJmeZwblHgXNJFPng')"></div>
+<div class="min-w-0">
+<p class="text-sm font-bold text-white truncate">Ethical Hacking Intro</p>
+<p class="text-xs text-[#9dabb9] mt-1">Cybersecurity • Beginner</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-blue-400/20 flex items-center justify-center text-[10px] font-bold text-blue-400">RS</div>
+<p class="text-sm font-medium text-white">Robert Smith</p>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">15 Lessons</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-label w-11 h-6 bg-[#283039] rounded-full transition-colors relative">
+<div class="toggle-dot absolute left-1 top-1 bg-white size-4 rounded-full transition-transform"></div>
+</div>
+</label>
+<span class="text-xs font-bold text-green-500 uppercase tracking-wide">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:text-primary/80 text-sm font-bold transition-colors">View Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="bg-[#283039]/30 border-t border-[#283039] px-6 py-4 flex items-center justify-between">
+<p class="text-xs text-[#9dabb9]">Showing <span class="text-white font-bold">1-4</span> of <span class="text-white font-bold">136</span> courses</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded border border-[#283039] text-[#9dabb9] text-xs hover:text-white transition-colors">Previous</button>
+<button class="px-3 py-1 rounded border border-[#283039] text-[#9dabb9] text-xs hover:text-white transition-colors">Next</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

@@ -1,26 +1,35 @@
 """
 URL configuration for djangocrud project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+Organizado en:
+- Backend Domain URLs (API/lógica de negocio)
+- Frontend UX URLs (experiencia de usuario)
 """
 
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    # Django Admin
     path('admin/', admin.site.urls),
-    path('auth/', include('Back-end.Auth.urls')),  # Backend Auth endpoints
-    path('api/courses/', include('Back-end.Course.urls')),  # Backend Course CRUD
+    
+    # ===========================================
+    # BACKEND - Domain/API URLs (funcional)
+    # ===========================================
+    path('auth/', include('Back-end.Auth.urls')),
+    path('api/courses/', include('Back-end.Course.urls')),
+    path('api/classes/', include('Back-end.Class.urls')),
+    path('api/membership/', include('Back-end.membership.urls')),
+    
+    # ===========================================
+    # FRONTEND - Dashboard URLs
+    # ===========================================
+    path('dashboard/profesor/', include('Front-end.Dashboard-Profesor.MyCourses.urls')),
+    path('dashboard/admin/', include('Front-end.Dashboard-Admin.Overview.urls')),
+    
+    # ===========================================
+    # FRONTEND - UX URLs (Home)
+    # La home se encarga de todas las rutas UX públicas
+    # ===========================================
     path('', include('Front-end.home.urls')),
 ]

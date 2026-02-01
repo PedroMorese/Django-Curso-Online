@@ -1,9 +1,8 @@
-
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block title %}EduMinimal - Welcome Back{% endblock %}
 
-{% block content %}
+{% block main %}
 <main class="flex-1 flex flex-col items-center py-10 px-4 sm:px-10">
     <div class="w-full max-w-[1200px] flex flex-col gap-12">
         <section class="flex flex-col lg:flex-row gap-8 items-start">
@@ -74,61 +73,60 @@
 {# modals moved to base.html so header buttons can open them globally #}
 
 {% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const openBtn = document.getElementById('open-register');
-            const modal = document.getElementById('register-modal');
-            const closeBtn = modal && modal.querySelector('[data-close]');
-            const openLoginFromRegister = document.getElementById('open-login-from-register');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const openBtn = document.getElementById('open-register');
+        const modal = document.getElementById('register-modal');
+        const closeBtn = modal && modal.querySelector('[data-close]');
+        const openLoginFromRegister = document.getElementById('open-login-from-register');
 
-            function showModal() {
-                if (!modal) return;
-                modal.classList.remove('hidden');
-                document.body.classList.add('overflow-hidden');
-            }
-            function hideModal() {
-                if (!modal) return;
-                modal.classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
-            }
+        function showModal() {
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        function hideModal() {
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
 
-            if (openBtn) openBtn.addEventListener('click', function (e) { e.preventDefault(); showModal(); });
-            if (closeBtn) closeBtn.addEventListener('click', function (e) { e.preventDefault(); hideModal(); });
-            if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) hideModal(); });
-            if (openLoginFromRegister) openLoginFromRegister.addEventListener('click', function (e) { e.preventDefault(); hideModal(); showLoginModal(); });
+        if (openBtn) openBtn.addEventListener('click', function (e) { e.preventDefault(); showModal(); });
+        if (closeBtn) closeBtn.addEventListener('click', function (e) { e.preventDefault(); hideModal(); });
+        if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) hideModal(); });
+        if (openLoginFromRegister) openLoginFromRegister.addEventListener('click', function (e) { e.preventDefault(); hideModal(); showLoginModal(); });
 
-            // Login modal handlers
-            const openLoginBtn = document.getElementById('open-login');
-            const loginModal = document.getElementById('login-modal');
-            const loginCloseBtn = loginModal && loginModal.querySelector('[data-close]');
-            const openRegisterFromLogin = document.getElementById('open-register-from-login');
+        // Login modal handlers
+        const openLoginBtn = document.getElementById('open-login');
+        const loginModal = document.getElementById('login-modal');
+        const loginCloseBtn = loginModal && loginModal.querySelector('[data-close]');
+        const openRegisterFromLogin = document.getElementById('open-register-from-login');
 
-            function showLoginModal() {
-                if (!loginModal) return;
-                loginModal.classList.remove('hidden');
-                document.body.classList.add('overflow-hidden');
-            }
-            function hideLoginModal() {
-                if (!loginModal) return;
-                loginModal.classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
-            }
+        function showLoginModal() {
+            if (!loginModal) return;
+            loginModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        function hideLoginModal() {
+            if (!loginModal) return;
+            loginModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
 
-            if (openLoginBtn) openLoginBtn.addEventListener('click', function (e) { e.preventDefault(); showLoginModal(); });
-            if (loginCloseBtn) loginCloseBtn.addEventListener('click', function (e) { e.preventDefault(); hideLoginModal(); });
-            if (loginModal) loginModal.addEventListener('click', function (e) { if (e.target === loginModal) hideLoginModal(); });
-            if (openRegisterFromLogin) openRegisterFromLogin.addEventListener('click', function (e) { e.preventDefault(); hideLoginModal(); showModal(); });
+        if (openLoginBtn) openLoginBtn.addEventListener('click', function (e) { e.preventDefault(); showLoginModal(); });
+        if (loginCloseBtn) loginCloseBtn.addEventListener('click', function (e) { e.preventDefault(); hideLoginModal(); });
+        if (loginModal) loginModal.addEventListener('click', function (e) { if (e.target === loginModal) hideLoginModal(); });
+        if (openRegisterFromLogin) openRegisterFromLogin.addEventListener('click', function (e) { e.preventDefault(); hideLoginModal(); showModal(); });
 
-            {% if open_register %}
-            // Abrir modal si la vista indicó abrir el registro
-            showModal();
-            {% endif %}
+        {% if open_register %}
+        // Abrir modal si la vista indicó abrir el registro
+        showModal();
+        {% endif %}
 
-            {% if open_login %}
-            // Abrir modal si la vista indicó abrir el login
-            showLoginModal();
-            {% endif %}
-        });
-    </script>
+        {% if open_login %}
+        // Abrir modal si la vista indicó abrir el login
+        showLoginModal();
+        {% endif %}
+    });
+</script>
 {% endblock %}
-

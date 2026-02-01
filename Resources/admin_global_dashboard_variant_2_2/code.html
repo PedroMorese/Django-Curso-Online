@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin User Management - EduAdmin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 flex-shrink-0 border-r border-[#283039] bg-background-light dark:bg-background-dark flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight">EduAdmin</h1>
+<p class="text-[#9dabb9] text-xs font-normal">v2.4.0 Global</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">menu_book</span>
+<p class="text-sm font-medium">Course Catalog</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-medium">Subscriptions</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-medium">Revenue Reports</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">support_agent</span>
+<p class="text-sm font-medium">Support Tickets</p>
+</div>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-[#283039] p-4 rounded-xl">
+<p class="text-xs text-[#9dabb9] mb-2 uppercase tracking-wider font-bold">Cloud Status</p>
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<p class="text-sm">All systems operational</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                Log Out
+            </button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-[#283039] px-8 py-4 bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-white text-xl font-bold tracking-tight">User Management</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-10 w-px bg-[#283039]"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-sm font-bold text-white leading-none">Alex Rivera</p>
+<p class="text-xs text-primary font-medium mt-1">Super Admin</p>
+</div>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ");'></div>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4 flex-1 max-w-2xl">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9dabb9] text-xl">search</span>
+<input class="w-full bg-[#1b2530] border-none rounded-lg py-2.5 pl-10 pr-4 text-sm text-white focus:ring-1 focus:ring-primary placeholder:text-[#9dabb9]" placeholder="Search by name, email or ID..."/>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-[#1b2530] border-none rounded-lg py-2.5 pl-4 pr-10 text-sm text-[#9dabb9] focus:ring-1 focus:ring-primary appearance-none">
+<option>All Roles</option>
+<option>Admin</option>
+<option>Professor</option>
+<option>Client</option>
+</select>
+<select class="bg-[#1b2530] border-none rounded-lg py-2.5 pl-4 pr-10 text-sm text-[#9dabb9] focus:ring-1 focus:ring-primary appearance-none">
+<option>All Status</option>
+<option>Active</option>
+<option>Expired</option>
+<option>N/A</option>
+</select>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 py-2.5 text-sm font-bold transition-all shadow-lg shadow-primary/20 flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-lg">person_add</span>
+                    Add New User
+                </button>
+</div>
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-[#283039]/50 border-b border-[#283039]">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">User</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Email</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Role</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Membership Status</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider">Last Login</th>
+<th class="px-6 py-4 text-xs font-bold text-[#9dabb9] uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#283039]">
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-cover bg-center border border-[#283039]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ')"></div>
+<div>
+<p class="text-sm font-semibold text-white">Jane Doe</p>
+<p class="text-xs text-[#9dabb9]">ID: #USR-8421</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">jane.doe@example.com</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-tight">Professor</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">2 hours ago</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 rounded-lg text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500 font-bold text-sm">MK</div>
+<div>
+<p class="text-sm font-semibold text-white">Mike Kelly</p>
+<p class="text-xs text-[#9dabb9]">ID: #USR-2105</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">mike.k@eduplatform.io</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/5 text-[#9dabb9] border border-[#283039] uppercase tracking-tight">Client</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-red-500"></div>
+<span class="text-sm font-medium">Expired</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">3 days ago</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 rounded-lg text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-500 font-bold text-sm">RS</div>
+<div>
+<p class="text-sm font-semibold text-white">Robert Smith</p>
+<p class="text-xs text-[#9dabb9]">ID: #USR-3310</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">robert.smith@corp.com</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-tight">Admin</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-[#9dabb9]">
+<span class="text-sm font-medium">N/A</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">Today, 10:45 AM</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 rounded-lg text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500 font-bold text-sm">LW</div>
+<div>
+<p class="text-sm font-semibold text-white">Linda Wu</p>
+<p class="text-xs text-[#9dabb9]">ID: #USR-9902</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">linda.wu@design.studio</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white/5 text-[#9dabb9] border border-[#283039] uppercase tracking-tight">Client</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">Yesterday</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 rounded-lg text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 font-bold text-sm">TB</div>
+<div>
+<p class="text-sm font-semibold text-white">Thomas Brown</p>
+<p class="text-xs text-[#9dabb9]">ID: #USR-4501</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">t.brown@academy.edu</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 uppercase tracking-tight">Professor</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Active</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-[#9dabb9]">Just now</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 rounded-lg text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-[#283039]/20 border-t border-[#283039] flex items-center justify-between">
+<p class="text-xs text-[#9dabb9]">Showing 1 to 5 of 12,840 users</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039] disabled:opacity-50">
+<span class="material-symbols-outlined text-sm leading-none">chevron_left</span>
+</button>
+<div class="flex items-center gap-1">
+<button class="size-8 rounded-lg bg-primary text-white text-xs font-bold">1</button>
+<button class="size-8 rounded-lg text-[#9dabb9] hover:bg-[#283039] text-xs font-bold transition-colors">2</button>
+<button class="size-8 rounded-lg text-[#9dabb9] hover:bg-[#283039] text-xs font-bold transition-colors">3</button>
+<span class="text-[#9dabb9] px-1 font-bold">...</span>
+<button class="size-8 rounded-lg text-[#9dabb9] hover:bg-[#283039] text-xs font-bold transition-colors">2,568</button>
+</div>
+<button class="p-2 rounded-lg bg-[#1b2530] text-[#9dabb9] hover:text-white border border-[#283039]">
+<span class="material-symbols-outlined text-sm leading-none">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

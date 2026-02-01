@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Pending Payments Management - Variant 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .proof-preview:hover .preview-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 flex-shrink-0 border-r border-[#283039] bg-background-light dark:bg-background-dark flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight">EduAdmin</h1>
+<p class="text-[#9dabb9] text-xs font-normal">v2.4.0 Global</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium">User Management</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">menu_book</span>
+<p class="text-sm font-medium">Course Catalog</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<p class="text-sm font-semibold">Subscriptions</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-medium">Revenue Reports</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-[#9dabb9] hover:text-white hover:bg-[#283039] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">support_agent</span>
+<p class="text-sm font-medium">Support Tickets</p>
+</div>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-[#283039] p-4 rounded-xl">
+<p class="text-xs text-[#9dabb9] mb-2 uppercase tracking-wider font-bold">Verification Queue</p>
+<div class="flex items-center justify-between">
+<p class="text-sm">Pending</p>
+<span class="bg-primary px-2 py-0.5 rounded text-xs font-bold">24</span>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-3 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                Bulk Approve
+            </button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-[#283039] px-8 py-4 bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<nav class="flex items-center gap-2 text-sm">
+<span class="text-[#9dabb9]">Subscriptions</span>
+<span class="material-symbols-outlined text-sm text-[#9dabb9]">chevron_right</span>
+<span class="text-white font-bold">Pending Payments</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-sm font-bold text-white leading-none">Alex Rivera</p>
+<p class="text-xs text-primary font-medium mt-1">Super Admin</p>
+</div>
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ");'></div>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h3 class="text-3xl font-black tracking-tight text-white mb-2">Pending Transactions</h3>
+<p class="text-[#9dabb9] text-base">Verify and process manual payment requests from users.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-[#1b2530] border border-[#283039] rounded-lg px-3 py-2">
+<span class="material-symbols-outlined text-[#9dabb9] text-sm">filter_list</span>
+<select class="bg-transparent border-none text-sm text-white focus:ring-0 p-0 cursor-pointer">
+<option value="oldest">Oldest First</option>
+<option value="newest">Newest First</option>
+<option value="highest">Highest Amount</option>
+<option value="lowest">Lowest Amount</option>
+</select>
+</div>
+<button class="bg-[#283039] hover:bg-[#343e49] p-2 rounded-lg transition-colors border border-[#343e49]">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl p-6 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-12 rounded-full bg-orange-400/20 flex items-center justify-center text-lg font-bold text-orange-400">MK</div>
+<div>
+<p class="text-lg font-bold text-white leading-tight">Mike Kelly</p>
+<p class="text-[#9dabb9] text-sm">mike.kelly@example.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 flex-[2]">
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Membership</p>
+<p class="text-sm font-semibold text-white">Standard Monthly</p>
+<p class="text-xs text-[#9dabb9] mt-0.5">30 Days Access</p>
+</div>
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Amount</p>
+<p class="text-lg font-black text-primary">$49.00</p>
+</div>
+<div class="col-span-2 md:col-span-1">
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Proof of Payment</p>
+<div class="relative proof-preview size-12 rounded-lg bg-cover bg-center border border-[#283039] cursor-pointer overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfrZNyT6o_kESD8hhBEAvtOfMRsuNWjYtp_k3qqk3JGz_0zevrNV9qqMPK9VqRyO5Ugk-gzJTE70bSlEFDdaJmoMESuvpxh-8xjNyGzNxF-n9Pr6YecaIT7-qjgfaM5NdbsVrgFPDC0pv1dt1XtTQPrs61O7gORhycgKlRMp0sws6KjjmSMn8acQODcDGJJky_GRTPhB71VGQ5ENlVajp_NyoEnBx5L0pm5CJkQnyMKBbHQGUFyIow7CCZx0zwuD9Wrw-LHCobxQ')">
+<div class="preview-overlay absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg border border-[#283039] text-[#9dabb9] text-sm font-bold hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/30 transition-all">
+                            Decline
+                        </button>
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            Confirm Receipt
+                        </button>
+</div>
+</div>
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl p-6 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-12 rounded-full bg-purple-400/20 flex items-center justify-center text-lg font-bold text-purple-400">AJ</div>
+<div>
+<p class="text-lg font-bold text-white leading-tight">Anna Johnson</p>
+<p class="text-[#9dabb9] text-sm">anna.j@cloud-design.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 flex-[2]">
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Membership</p>
+<p class="text-sm font-semibold text-white">Professional Pro</p>
+<p class="text-xs text-[#9dabb9] mt-0.5">Annual Billing</p>
+</div>
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Amount</p>
+<p class="text-lg font-black text-primary">$299.00</p>
+</div>
+<div class="col-span-2 md:col-span-1">
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Proof of Payment</p>
+<div class="relative proof-preview size-12 rounded-lg bg-cover bg-center border border-[#283039] cursor-pointer overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNJa-mOkE4NJnoS_P-CBdNYPJ8TcxAManJuclsf1aW6HVlOFi9s78pEIdeNxCmtTAwqPTnmRHqVynQKqaHdVDhO11vZtfPJPUYjJpOlxb9cd0x34mSUndaqKG4Gz3VuT8fo8B551dhGCyhcXK9pnwgJpG1GNy0cvTPD1fkWGtIsNcnIWq9tQycmL8BXH9zLPXteqzGAoiwEfzb_scEi_UGPd3e4eDmIpLqhRdT3cz00G51V2CuzhEXedE9nfRQD-eLbusD2PvADA')">
+<div class="preview-overlay absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg border border-[#283039] text-[#9dabb9] text-sm font-bold hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/30 transition-all">
+                            Decline
+                        </button>
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            Confirm Receipt
+                        </button>
+</div>
+</div>
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl p-6 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-12 rounded-full bg-blue-400/20 flex items-center justify-center text-lg font-bold text-blue-400">SR</div>
+<div>
+<p class="text-lg font-bold text-white leading-tight">Steve Rogers</p>
+<p class="text-[#9dabb9] text-sm">s.rogers@avengers.io</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 flex-[2]">
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Membership</p>
+<p class="text-sm font-semibold text-white">Enterprise Elite</p>
+<p class="text-xs text-[#9dabb9] mt-0.5">Team License (10 Seats)</p>
+</div>
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Amount</p>
+<p class="text-lg font-black text-primary">$1,450.00</p>
+</div>
+<div class="col-span-2 md:col-span-1">
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Proof of Payment</p>
+<div class="relative proof-preview size-12 rounded-lg bg-cover bg-center border border-[#283039] cursor-pointer overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0Ks3l9d1-zQlXP92RNMfWkdAwCLhSzzqGi9sZlVFY3Pv8sOq0PoxAC5Jeg0kW3RTzyrAy3Cp21N3y_Z7wGcIdrPqLAgZypewbnO2Oc2xffwT1EgFOjNuqmoh0YjOCvgR_wrybMJSVTSUCr_ziSKvQSDd7pp27wptGjhlhpdvDA011pARAjgmAp7pjVJHI5E1nBVQul5qF62JN9bC2nSMmJzL1DQfrmOwmvVYH8w-liZcq1s-E3D9gux_qmqJmeZwblHgXNJFPng')">
+<div class="preview-overlay absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg border border-[#283039] text-[#9dabb9] text-sm font-bold hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/30 transition-all">
+                            Decline
+                        </button>
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            Confirm Receipt
+                        </button>
+</div>
+</div>
+<div class="bg-[#1b2530] border border-[#283039] rounded-xl p-6 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="size-12 rounded-full bg-green-400/20 flex items-center justify-center text-lg font-bold text-green-400">LB</div>
+<div>
+<p class="text-lg font-bold text-white leading-tight">Lucas Brown</p>
+<p class="text-[#9dabb9] text-sm">lucas.b@domain.com</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 flex-[2]">
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Membership</p>
+<p class="text-sm font-semibold text-white">Standard Monthly</p>
+<p class="text-xs text-[#9dabb9] mt-0.5">30 Days Access</p>
+</div>
+<div>
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Amount</p>
+<p class="text-lg font-black text-primary">$49.00</p>
+</div>
+<div class="col-span-2 md:col-span-1">
+<p class="text-xs font-bold text-[#9dabb9] uppercase tracking-wider mb-1">Proof of Payment</p>
+<div class="relative proof-preview size-12 rounded-lg bg-cover bg-center border border-[#283039] cursor-pointer overflow-hidden" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGCPh3Fw3QlhQJCIwu8Dk9KBzv9WTAC4XYUwbu-k_eSB23eDjYnhysTksmSiogNYbOgaOt_xavnJqwDYzjLB5i4LwuC1Qz_noIktiO8Yws79PH882YtHVktcqBCKPlpNPv7C3xJ1teM3V32Ox0BwosOupEpXHwWgX-YZSE9BtS1lDhFwydYDMlzoo9jWru-h93Ilgh6e30WJKZvAsqaJRGT_2YYWrzqplqXWgwQrusIqLyzzm-gsQks4j0ugI_jnLVLNxHz6XwuA')">
+<div class="preview-overlay absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 transition-opacity">
+<span class="material-symbols-outlined text-white text-sm">visibility</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto">
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg border border-[#283039] text-[#9dabb9] text-sm font-bold hover:bg-red-500/10 hover:text-red-400 hover:border-red-400/30 transition-all">
+                            Decline
+                        </button>
+<button class="flex-1 lg:flex-none px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            Confirm Receipt
+                        </button>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-[#283039]">
+<p class="text-sm text-[#9dabb9]">Showing <span class="text-white font-bold">4</span> of <span class="text-white font-bold">24</span> pending requests</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-[#283039] text-[#9dabb9] hover:text-white transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="px-3 py-1 rounded-lg bg-primary text-white text-sm font-bold">1</button>
+<button class="px-3 py-1 rounded-lg border border-[#283039] text-[#9dabb9] hover:text-white text-sm font-bold">2</button>
+<button class="px-3 py-1 rounded-lg border border-[#283039] text-[#9dabb9] hover:text-white text-sm font-bold">3</button>
+<button class="p-2 rounded-lg border border-[#283039] text-[#9dabb9] hover:text-white transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

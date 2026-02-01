@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register New Class - EduPlatform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-background-light dark:bg-background-dark">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-tight">EduPlatform</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Teacher Portal</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">book_2</span>
+<span class="text-sm font-medium">My Courses</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined active-icon">add_box</span>
+<span class="text-sm font-medium">New Course</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-300 dark:bg-slate-700 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwghmUJSVFQvMYlJSdhYA_cevVZx9qIcV0nX_Zo9TXt8Z7AFl-feM82v6rRU4db37aIfdRZoTw2XO39WwS_niNz8vwC8rlOGqafaZ54M6L4rKhrNncYAVu5US1EeBQQAsifHBciUaQit4kbWNylCkEQKfyv3YMwO23nloBMJ7AMaE0f6bTxDGmoPr--5pWSkajZEb9A-wWws_CSgppnyPHjsZjnUbHIEC0-ASovfZWeJZl_sY8rZ7MKVHX_AgZSC-d9760ivrS9w');"></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-medium truncate">Prof. Smith</p>
+<p class="text-xs text-slate-500 truncate">smith@edu.com</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-8 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-sm">auto_stories</span>
+<h2 class="text-sm font-semibold uppercase tracking-wider">Advanced Mathematics / New Class</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-slate-900 dark:hover:text-white transition-colors">Cancel</button>
+<button class="bg-primary hover:bg-primary/90 text-white text-sm font-bold py-2 px-6 rounded-lg transition-all shadow-sm">Save Class</button>
+</div>
+</header>
+<div class="max-w-4xl mx-auto w-full px-8 py-10">
+<div class="mb-10 space-y-6">
+<div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Register New Class</h1>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="class-title">Título de la clase</label>
+<input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="class-title" placeholder="e.g. Introduction to Derivatives" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="class-desc">Class Description</label>
+<textarea class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="class-desc" placeholder="Briefly describe what students will learn in this session..." rows="4"></textarea>
+</div>
+</div>
+<div class="mb-10">
+<h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">video_library</span>
+                        Video Content
+                    </h3>
+<div class="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-10 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors group cursor-pointer">
+<div class="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<p class="text-slate-900 dark:text-white font-semibold mb-1">Drag and drop your class video here</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs mb-4">MP4, WebM or OGG (Max 2GB)</p>
+<button class="text-primary text-sm font-bold border border-primary/20 bg-primary/5 px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Select File</button>
+</div>
+<div class="mt-6 p-4 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 flex items-center gap-4">
+<div class="size-20 rounded-lg bg-slate-200 dark:bg-slate-800 overflow-hidden relative group">
+<img alt="Video preview" class="w-full h-full object-cover opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAckKSXa5Kib8VzIQW7Y7zS65ylKXCxt-38VvM_CfTAFuUnkwJWGZagFOjIBtQA0HtFAyVxpuLYZsMaiBoM0-kMfP95POwerXpfCqc3UgLxJiJROV87RrycUlPFUFtALM1_or40z3NyBYNKgCT1EQ8L3ZPNezdvtj5mM6njCDiJe1srAFhNyVJoDEfhZvfbbhsybCpFxV5sbaOWAi0uUZ4iY9bU0y4oEMDYdvKzGPctD7hOslP4YRZOmLn5wzkNVtnO3jcS6XMvwg"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">play_circle</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">derivatives_intro_v1.mp4</span>
+<span class="text-xs font-bold text-primary">75%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+</div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-2">Uploading... 45 seconds remaining</p>
+</div>
+<button class="text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</div>
+<div class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">folder_open</span>
+                            Resources
+                        </h3>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add Resource
+                        </button>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-500">picture_as_pdf</span>
+<div>
+<p class="text-sm font-medium">Lecture_Notes_Week_1.pdf</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400">PDF • 2.4 MB</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-blue-500">link</span>
+<div>
+<p class="text-sm font-medium">Extra Reading: Khan Academy</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-xs">https://www.khanacademy.org/math/calculus-1/intro-to-derivatives</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<button class="w-full border border-dashed border-slate-200 dark:border-slate-800 rounded-lg py-4 text-slate-400 text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                            + Click to add more files or external links
+                        </button>
+</div>
+</div>
+<div class="flex items-center justify-end gap-4 pt-6 border-t border-slate-200 dark:border-slate-800">
+<button class="px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        Cancel
+                    </button>
+<button class="px-8 py-2.5 rounded-lg bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+                        Save Class
+                    </button>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

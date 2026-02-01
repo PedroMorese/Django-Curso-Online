@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Back-end.Course',  # Course CRUD
+    # Backend Domain Apps
+    'Back-end.Course.apps.CourseConfig',
+    'Back-end.Class.apps.ClassConfig',
+    'Back-end.membership.apps.MembershipConfig',
+    'Back-end.Auth.apps.AuthConfig',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,8 +61,17 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            # Base templates
             BASE_DIR / 'Front-end' / 'home' / 'Template',
-            BASE_DIR / 'Front-end' / 'home' / 'Membership' / 'template',
+            # Dashboard Admin templates
+            BASE_DIR / 'Front-end' / 'Dashboard-Admin' / 'Overview' / 'templates',
+            # Dashboard Profesor templates
+            BASE_DIR / 'Front-end' / 'Dashboard-Profesor' / 'MyCourses' / 'templates',
+            # Home module templates
+            BASE_DIR / 'Front-end' / 'home' / 'Membership' / 'templates',
+            BASE_DIR / 'Front-end' / 'home' / 'Course-Player' / 'templates',
+            BASE_DIR / 'Front-end' / 'home' / 'Course-preview' / 'template',
+            BASE_DIR / 'Front-end' / 'home' / 'Full-Course' / 'template',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -120,5 +134,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'landing/static',
+    BASE_DIR / 'Front-end' / 'home' / 'Template' / 'static',
 ]
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login settings
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

@@ -1,4 +1,5 @@
-<div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+<div id="login-modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
     <div class="w-full max-w-[440px] bg-[#111418] border border-[#283039] rounded-xl shadow-2xl overflow-hidden">
         <div class="px-8 pt-8 pb-4">
             <div class="flex justify-between items-center mb-2">
@@ -9,92 +10,67 @@
             </div>
             <p class="text-[#9dabb9] text-sm">Please enter your details to sign in.</p>
         </div>
-        <form class="px-8 py-4" method="post" action="/login/">
+        <form id="login-form" class="px-8 py-4" method="post">
             {% csrf_token %}
             <div class="mb-5">
                 <label class="flex flex-col">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Email Address</p>
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="email@example.com" required type="email" name="email" />
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="email@example.com" required type="email" name="email" />
                 </label>
             </div>
             <div class="mb-8">
                 <div class="flex justify-between items-center pb-2">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider">Password</p>
-                    <a class="text-primary text-xs font-semibold hover:underline underline-offset-4" href="#">Forgot Password?</a>
+                    <a class="text-primary text-xs font-semibold hover:underline underline-offset-4" href="#">Forgot
+                        Password?</a>
                 </div>
                 <div class="relative">
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Enter your password" required type="password" name="password" />
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#5c6b7a] cursor-pointer text-xl">visibility_off</span>
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="Enter your password" required type="password" name="password" />
+                    <span
+                        class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#5c6b7a] cursor-pointer text-xl">visibility_off</span>
                 </div>
             </div>
-            <button class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Login</button>
+            <button id="login-submit"
+                class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                type="submit">Login</button>
         </form>
+        
+        <!-- Test Credentials -->
+        <div class="px-8 py-4 border-t border-[#283039]">
+            <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-3">🔐 Test Credentials</p>
+            <div class="grid grid-cols-1 gap-2 text-xs">
+                <button type="button" onclick="fillLogin('admin@eduplatform.com', 'admin123')" 
+                    class="text-left px-3 py-2 rounded bg-[#1c2127] hover:bg-[#283039] transition-colors border border-[#3b4754]">
+                    <span class="text-white font-semibold">👨‍💼 Admin:</span>
+                    <span class="text-[#9dabb9] ml-2">admin@eduplatform.com / admin123</span>
+                </button>
+                <button type="button" onclick="fillLogin('profesor@eduplatform.com', 'profesor123')" 
+                    class="text-left px-3 py-2 rounded bg-[#1c2127] hover:bg-[#283039] transition-colors border border-[#3b4754]">
+                    <span class="text-white font-semibold">👨‍🏫 Profesor:</span>
+                    <span class="text-[#9dabb9] ml-2">profesor@eduplatform.com / profesor123</span>
+                </button>
+                <button type="button" onclick="fillLogin('alumno@eduplatform.com', 'alumno123')" 
+                    class="text-left px-3 py-2 rounded bg-[#1c2127] hover:bg-[#283039] transition-colors border border-[#3b4754]">
+                    <span class="text-white font-semibold">👨‍🎓 Alumno:</span>
+                    <span class="text-[#9dabb9] ml-2">alumno@eduplatform.com / alumno123</span>
+                </button>
+            </div>
+        </div>
+        
         <div class="px-8 pb-10 pt-4 text-center">
-            <p class="text-[#9dabb9] text-sm">Don't have an account? <a id="open-register-from-login" class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Register</a></p>
+            <p class="text-[#9dabb9] text-sm">Don't have an account? <a id="open-register-from-login"
+                    class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Register</a></p>
         </div>
     </div>
 </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const registerForm = document.getElementById('register-form');
-                if (!registerForm) return;
 
-                registerForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const formData = new FormData(registerForm);
-                    
-                    // Validar que las contraseñas coincidan
-                    const password1 = formData.get('password1');
-                    const password2 = formData.get('password2');
-                    
-                    if (password1 !== password2) {
-                        alert('Las contraseñas no coinciden');
-                        return;
-                    }
-                    
-                    // Construir payload según lo que espera el backend
-                    const payload = {
-                        email: formData.get('email'),
-                        password: password1,  // El backend espera 'password', no 'password1'
-                        first_name: formData.get('first_name') || '',
-                        last_name: formData.get('last_name') || '',
-                        role: 'CLIENTE'  // Rol por defecto para registros desde el frontend
-                    };
-                    
-                    const csrfInput = registerForm.querySelector('input[name=csrfmiddlewaretoken]');
-                    const csrftoken = csrfInput ? csrfInput.value : null;
-
-                    // Usar la URL correcta del endpoint de Auth
-                    fetch('/auth/register/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
-                        },
-                        body: JSON.stringify(payload),
-                        credentials: 'same-origin',
-                    }).then(async (res) => {
-                        const data = await res.json().catch(() => ({}));
-                        if (res.ok) {
-                            alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-                            // Cerrar modal de registro y abrir modal de login
-                            document.getElementById('register-modal').classList.add('hidden');
-                            document.getElementById('login-modal').classList.remove('hidden');
-                            registerForm.reset();
-                        } else {
-                            console.error(data);
-                            // El backend devuelve 'detail', no 'error'
-                            alert(data.detail || 'Error en el registro. Por favor intenta de nuevo.');
-                        }
-                    }).catch((err) => { 
-                        console.error(err); 
-                        alert('Error de conexión. Por favor verifica tu conexión a internet.'); 
-                    });
-                });
-            });
-        </script>
-<div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+<div id="register-modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
     <div class="w-full max-w-[520px] bg-[#111418] border border-[#283039] rounded-xl shadow-2xl overflow-hidden">
         <div class="px-8 pt-8 pb-4">
             <div class="flex justify-between items-center mb-2">
@@ -110,43 +86,184 @@
             <div class="flex flex-wrap md:flex-nowrap gap-4 mb-4">
                 <label class="flex flex-col flex-1">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">First Name</p>
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Nombre" type="text" name="first_name" />
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="Nombre" type="text" name="first_name" />
                 </label>
                 <label class="flex flex-col flex-1">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Last Name</p>
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Apellido" type="text" name="last_name" />
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="Apellido" type="text" name="last_name" />
                 </label>
             </div>
             <div class="mb-4">
                 <label class="flex flex-col">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Email Address</p>
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="email@example.com" type="email" name="email" />
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="email@example.com" type="email" name="email" />
                 </label>
             </div>
             <div class="mb-4">
                 <label class="flex flex-col">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Phone Number</p>
-                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Número telefónico" type="tel" name="phone" />
+                    <input
+                        class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                        placeholder="Número telefónico" type="tel" name="phone" />
                 </label>
             </div>
             <div class="flex flex-wrap md:flex-nowrap gap-4 mb-8">
                 <label class="flex flex-col flex-1">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Password</p>
                     <div class="relative">
-                        <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Enter password" type="password" name="password1" />
+                        <input
+                            class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                            placeholder="Enter password" type="password" name="password1" />
                     </div>
                 </label>
                 <label class="flex flex-col flex-1">
                     <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Repeat Password</p>
                     <div class="relative">
-                        <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Repeat password" type="password" name="password2" />
+                        <input
+                            class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all"
+                            placeholder="Repeat password" type="password" name="password2" />
                     </div>
                 </label>
             </div>
-            <button id="register-submit" class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Register</button>
+            <button id="register-submit"
+                class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                type="submit">Register</button>
         </form>
         <div class="px-8 pb-10 pt-6 text-center">
-            <p class="text-[#9dabb9] text-sm">Already have an account? <a id="open-login-from-register" class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#login">Login</a></p>
+            <p class="text-[#9dabb9] text-sm">Already have an account? <a id="open-login-from-register"
+                    class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#login">Login</a></p>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Login form handler
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                
+                const formData = new FormData(loginForm);
+                const payload = {
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                };
+                
+                const csrfInput = loginForm.querySelector('input[name=csrfmiddlewaretoken]');
+                const csrftoken = csrfInput ? csrfInput.value : null;
+                
+                const loginBtn = document.getElementById('login-submit');
+                const originalText = loginBtn.textContent;
+                loginBtn.textContent = 'Logging in...';
+                loginBtn.disabled = true;
+                
+                fetch('/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
+                    },
+                    body: JSON.stringify(payload),
+                    credentials: 'same-origin',
+                }).then(async (res) => {
+                    const data = await res.json().catch(() => ({}));
+                    
+                    if (res.ok) {
+                        // Login successful - redirect based on role
+                        const role = data.role || 'CLIENTE';
+                        
+                        if (role === 'ADMIN' || data.is_staff || data.is_superuser) {
+                            window.location.href = '/dashboard/admin/';
+                        } else if (role === 'PROFESOR') {
+                            window.location.href = '/dashboard/profesor/';
+                        } else {
+                            window.location.href = '/courses/';
+                        }
+                    } else {
+                        loginBtn.textContent = originalText;
+                        loginBtn.disabled = false;
+                        alert(data.detail || 'Invalid credentials. Please try again.');
+                    }
+                }).catch((err) => {
+                    console.error(err);
+                    loginBtn.textContent = originalText;
+                    loginBtn.disabled = false;
+                    alert('Connection error. Please check your internet connection.');
+                });
+            });
+        }
+        
+        // Register form handler
+        const registerForm = document.getElementById('register-form');
+        if (!registerForm) return;
+
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(registerForm);
+
+            // Validar que las contraseñas coincidan
+            const password1 = formData.get('password1');
+            const password2 = formData.get('password2');
+
+            if (password1 !== password2) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            // Construir payload según lo que espera el backend
+            const payload = {
+                email: formData.get('email'),
+                password: password1,  // El backend espera 'password', no 'password1'
+                first_name: formData.get('first_name') || '',
+                last_name: formData.get('last_name') || '',
+                role: 'CLIENTE'  // Rol por defecto para registros desde el frontend
+            };
+
+            const csrfInput = registerForm.querySelector('input[name=csrfmiddlewaretoken]');
+            const csrftoken = csrfInput ? csrfInput.value : null;
+
+            // Usar la URL correcta del endpoint de Auth
+            fetch('/auth/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
+                },
+                body: JSON.stringify(payload),
+                credentials: 'same-origin',
+            }).then(async (res) => {
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) {
+                    alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                    // Cerrar modal de registro y abrir modal de login
+                    document.getElementById('register-modal').classList.add('hidden');
+                    document.getElementById('login-modal').classList.remove('hidden');
+                    registerForm.reset();
+                } else {
+                    console.error(data);
+                    // El backend devuelve 'detail', no 'error'
+                    alert(data.detail || 'Error en el registro. Por favor intenta de nuevo.');
+                }
+            }).catch((err) => {
+                console.error(err);
+                alert('Error de conexión. Por favor verifica tu conexión a internet.');
+            });
+        });
+    });
+
+    // Function to fill login form with test credentials
+    function fillLogin(email, password) {
+        const emailInput = document.querySelector('#login-modal input[name="email"]');
+        const passwordInput = document.querySelector('#login-modal input[name="password"]');
+        
+        if (emailInput) emailInput.value = email;
+        if (passwordInput) passwordInput.value = password;
+    }
+</script>

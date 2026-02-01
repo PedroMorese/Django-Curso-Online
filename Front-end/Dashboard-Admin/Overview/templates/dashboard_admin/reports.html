@@ -1,0 +1,124 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Revenue Reports - Admin Dashboard{% endblock %}
+
+{% block sidebar %}
+{% include "base/components/sidebar_admin.html" with active_nav='reports' %}
+{% endblock %}
+
+{% block topbar %}
+<div class="flex items-center gap-4">
+    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Revenue & Analytics</h2>
+</div>
+<div class="flex items-center gap-4">
+    <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+        <button class="px-4 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-slate-700 shadow-sm">Monthly</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 dark:text-slate-400">Quarterly</button>
+        <button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 dark:text-slate-400">Yearly</button>
+    </div>
+    <button class="btn btn-primary">
+        <span class="material-symbols-outlined text-lg">print</span>
+        Print Report
+    </button>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-8">
+    <!-- Revenue Overview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Chart Area (Placeholder) -->
+        <div class="lg:col-span-2 card flex flex-col min-h-[400px]">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Revenue Growth</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Monthly breakdown of gross revenue</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-black text-slate-900 dark:text-white">$45,230.00</p>
+                    <p class="text-xs text-green-500 font-bold">+12.5% from last month</p>
+                </div>
+            </div>
+            
+            <!-- Chart Visual Placeholder -->
+            <div class="flex-1 flex items-end gap-2 pb-4">
+                {% for i in "123456789012" %}
+                <div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-md" style="height: {{ 30|add:i }}%;"></div>
+                {% endfor %}
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 font-bold pt-2 uppercase tracking-widest">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+            </div>
+        </div>
+
+        <!-- Revenue Breakdown -->
+        <div class="space-y-6">
+            <div class="card">
+                <h4 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Revenue by Plan</h4>
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-700 dark:text-slate-300">Professional Pro</span>
+                            <span class="font-bold text-slate-900 dark:text-white">65%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-bar-fill" style="width: 65%;"></div></div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-700 dark:text-slate-300">Standard Monthly</span>
+                            <span class="font-bold text-slate-900 dark:text-white">25%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-bar-fill bg-amber-500" style="width: 25%;"></div></div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-700 dark:text-slate-300">Enterprise</span>
+                            <span class="font-bold text-slate-900 dark:text-white">10%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-bar-fill bg-indigo-500" style="width: 10%;"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card bg-primary text-white">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="size-10 rounded-lg bg-white/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined">trending_up</span>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/70 font-bold uppercase tracking-widest">Projection</p>
+                        <p class="text-xl font-black">+$5.2k</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/80 leading-relaxed">
+                    Based on current growth, you are expected to hit the yearly goal by **November 12th**.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
+            <p class="text-2xl font-black text-slate-900 dark:text-white">{{ user_stats.total_users|default:0 }}</p>
+            <p class="text-[10px] text-green-500 font-bold mt-1">+{{ user_stats.new_users_this_month|default:0 }} this month</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Courses</p>
+            <p class="text-2xl font-black text-slate-900 dark:text-white">{{ course_stats.total_courses|default:0 }}</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-1">{{ course_stats.published_courses|default:0 }} published</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Avg. Ticket</p>
+            <p class="text-2xl font-black text-slate-900 dark:text-white">$84.50</p>
+            <p class="text-[10px] text-red-500 font-bold mt-1">-2.4% vs last period</p>
+        </div>
+        <div class="card">
+            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Retention Rate</p>
+            <p class="text-2xl font-black text-slate-900 dark:text-white">92.4%</p>
+            <div class="progress-bar mt-2"><div class="progress-bar-fill bg-green-500" style="width: 92.4%;"></div></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

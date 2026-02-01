@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Financial Performance Reports Variant 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366f1", // Indigo
+                        "charcoal": "#0f172a",
+                        "background-dark": "#020617",
+                        "panel-dark": "#1e293b",
+                        "border-dark": "#334155"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 flex-shrink-0 border-r border-border-dark bg-charcoal flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white">insights</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-base font-bold leading-tight uppercase tracking-wider">EduFinance</h1>
+<p class="text-slate-500 text-[10px] font-bold">ANALYTICS ENGINE</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1.5">
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-md shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<p class="text-sm font-semibold">Financial Reports</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<p class="text-sm font-medium">Payouts</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">receipt_long</span>
+<p class="text-sm font-medium">Invoices</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Tax Settings</p>
+</div>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-slate-800/50 border border-border-dark p-4 rounded-xl">
+<div class="flex items-center justify-between mb-2">
+<p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Yearly Target</p>
+<p class="text-[10px] text-primary font-bold">78%</p>
+</div>
+<div class="h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+<button class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-border-dark rounded-lg py-2.5 text-xs font-bold transition-all">
+                Export Data (CSV)
+            </button>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-y-auto">
+<header class="flex items-center justify-between border-b border-border-dark px-8 py-5 bg-charcoal/50 backdrop-blur-md sticky top-0 z-20">
+<div class="flex items-center gap-4">
+<h2 class="text-white text-xl font-bold tracking-tight">Financial Performance Reports</h2>
+<div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-border-dark ml-4">
+<span class="material-symbols-outlined text-sm text-slate-400">calendar_today</span>
+<select class="bg-transparent border-none text-xs font-bold text-white focus:ring-0 cursor-pointer py-0">
+<option>Fiscal Year 2024</option>
+<option>Last 12 Months</option>
+<option>Q3 2024 Overview</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 rounded-lg text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                    Advanced Filters
+                </button>
+<div class="h-8 w-px bg-border-dark"></div>
+<div class="flex items-center gap-3">
+<div class="size-9 rounded-full bg-cover bg-center ring-2 ring-primary/30" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ");'></div>
+</div>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-charcoal border border-border-dark p-6 rounded-2xl relative overflow-hidden">
+<div class="absolute -right-2 -top-2 text-primary opacity-10">
+<span class="material-symbols-outlined text-7xl">payments</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Monthly Gross</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black text-white">$42,850</h3>
+<span class="text-green-400 text-xs font-bold mb-1.5">+14.2%</span>
+</div>
+</div>
+<div class="bg-charcoal border border-border-dark p-6 rounded-2xl">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">New Subscriptions</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black text-white">842</h3>
+<span class="text-green-400 text-xs font-bold mb-1.5">+6.8%</span>
+</div>
+</div>
+<div class="bg-charcoal border border-border-dark p-6 rounded-2xl">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Refund Rate</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black text-white">1.2%</h3>
+<span class="text-blue-400 text-xs font-bold mb-1.5">Optimal</span>
+</div>
+</div>
+<div class="bg-primary/10 border border-primary/30 p-6 rounded-2xl shadow-lg shadow-primary/5">
+<p class="text-primary text-xs font-bold uppercase tracking-widest mb-1">Total Net Revenue</p>
+<div class="flex items-end gap-2">
+<h3 class="text-3xl font-black text-white">$38,210</h3>
+<span class="text-primary text-xs font-bold mb-1.5">MTD</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-8 space-y-4">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-3">
+<h4 class="text-lg font-bold">Monthly Revenue Performance</h4>
+<span class="px-2 py-0.5 rounded bg-slate-800 border border-border-dark text-[10px] text-slate-400 font-bold uppercase">Live Audit</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1.5 hover:bg-slate-800 rounded transition-colors"><span class="material-symbols-outlined text-lg text-slate-400">download</span></button>
+<button class="p-1.5 hover:bg-slate-800 rounded transition-colors"><span class="material-symbols-outlined text-lg text-slate-400">more_vert</span></button>
+</div>
+</div>
+<div class="bg-charcoal border border-border-dark rounded-2xl overflow-hidden">
+<table class="w-full text-left">
+<thead class="bg-slate-800/50 border-b border-border-dark">
+<tr>
+<th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Month</th>
+<th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">New Subs</th>
+<th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">Renewals</th>
+<th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">Refunds</th>
+<th class="px-6 py-4 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">Net Revenue</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-dark">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">September 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">1,420</td>
+<td class="px-6 py-4 text-sm text-slate-300">3,892</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$842</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$142,500</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">August 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">1,280</td>
+<td class="px-6 py-4 text-sm text-slate-300">3,650</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$910</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$128,430</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">July 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">1,350</td>
+<td class="px-6 py-4 text-sm text-slate-300">3,420</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$740</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$134,120</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">June 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">1,120</td>
+<td class="px-6 py-4 text-sm text-slate-300">3,200</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$1,100</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$115,800</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">May 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">1,080</td>
+<td class="px-6 py-4 text-sm text-slate-300">3,050</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$620</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$108,900</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-bold text-sm">April 2024</td>
+<td class="px-6 py-4 text-sm text-slate-300">980</td>
+<td class="px-6 py-4 text-sm text-slate-300">2,840</td>
+<td class="px-6 py-4 text-right text-sm text-red-400/80">-$450</td>
+<td class="px-6 py-4 text-right font-black text-sm text-white">$98,400</td>
+</tr>
+</tbody>
+<tfoot class="bg-slate-800/30">
+<tr>
+<td class="px-6 py-4 text-sm font-black uppercase text-slate-400">Total H1-H2</td>
+<td class="px-6 py-4 text-sm font-bold">7,230</td>
+<td class="px-6 py-4 text-sm font-bold">20,052</td>
+<td class="px-6 py-4 text-right text-sm font-bold text-red-400">-$4,662</td>
+<td class="px-6 py-4 text-right text-base font-black text-primary">$728,150</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h4 class="text-sm font-bold uppercase tracking-widest text-slate-400">Top Earning Professors</h4>
+<span class="text-xs text-primary font-bold cursor-pointer hover:underline">Full List</span>
+</div>
+<div class="bg-charcoal border border-border-dark rounded-2xl p-4 divide-y divide-border-dark/50">
+<div class="py-4 first:pt-0">
+<div class="flex items-center gap-4">
+<div class="size-11 rounded-full bg-cover bg-center border border-border-dark" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0r2iAC6ApQrynzji3chUyabDnyUkRQ_dc4M-tNbGTWAOg14kdA3EkbyzVB4ibdO2yDjvHu9C5s27LibuXbiT0a8Iaa9_1oI2XoaefIB7KwExHzly6GrbXqT56lB1PSyStVs9X6v7TuJ7RRe5Lq1jB2MOg0FVTenRAJZoN2b0H1z5RDjjCcSmSruM7Exw--_sMfeEUtACHIwZt92Z4J_8rdZwuqzfdlPi7fyFR5xL5SIzwAH71jlFwBB2a2jO7DrtG-TjlohYYqQ");'></div>
+<div class="flex-1">
+<p class="text-sm font-bold">Dr. Sarah Jenkins</p>
+<p class="text-xs text-slate-500">Computer Science</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$12,450</p>
+<p class="text-[10px] text-green-400 font-bold">+15%</p>
+</div>
+</div>
+</div>
+<div class="py-4">
+<div class="flex items-center gap-4">
+<div class="size-11 rounded-full bg-slate-800 flex items-center justify-center border border-border-dark">
+<span class="text-xs font-bold text-slate-400">ML</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Marcus Lavoie</p>
+<p class="text-xs text-slate-500">Digital Marketing</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$10,120</p>
+<p class="text-[10px] text-green-400 font-bold">+8%</p>
+</div>
+</div>
+</div>
+<div class="py-4 last:pb-0">
+<div class="flex items-center gap-4">
+<div class="size-11 rounded-full bg-slate-800 flex items-center justify-center border border-border-dark">
+<span class="text-xs font-bold text-slate-400">AA</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold">Amara Okafor</p>
+<p class="text-xs text-slate-500">Financial Analysis</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$9,840</p>
+<p class="text-[10px] text-red-400 font-bold">-2%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h4 class="text-sm font-bold uppercase tracking-widest text-slate-400">Highest Revenue Courses</h4>
+</div>
+<div class="space-y-3">
+<div class="bg-charcoal border border-border-dark p-4 rounded-xl hover:border-primary/50 transition-all group cursor-pointer">
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-cover bg-center border border-border-dark grayscale group-hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNJa-mOkE4NJnoS_P-CBdNYPJ8TcxAManJuclsf1aW6HVlOFi9s78pEIdeNxCmtTAwqPTnmRHqVynQKqaHdVDhO11vZtfPJPUYjJpOlxb9cd0x34mSUndaqKG4Gz3VuT8fo8B551dhGCyhcXK9pnwgJpG1GNy0cvTPD1fkWGtIsNcnIWq9tQycmL8BXH9zLPXteqzGAoiwEfzb_scEi_UGPd3e4eDmIpLqhRdT3cz00G51V2CuzhEXedE9nfRQD-eLbusD2PvADA");'></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Full Stack Bootcamp 2024</p>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-[10px] text-slate-500 font-medium">1,240 Sales</span>
+<span class="text-[10px] text-primary font-bold">$129.00/unit</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$42.8k</p>
+</div>
+</div>
+</div>
+<div class="bg-charcoal border border-border-dark p-4 rounded-xl hover:border-primary/50 transition-all group cursor-pointer">
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-cover bg-center border border-border-dark grayscale group-hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCfrZNyT6o_kESD8hhBEAvtOfMRsuNWjYtp_k3qqk3JGz_0zevrNV9qqMPK9VqRyO5Ugk-gzJTE70bSlEFDdaJmoMESuvpxh-8xjNyGzNxF-n9Pr6YecaIT7-qjgfaM5NdbsVrgFPDC0pv1dt1XtTQPrs61O7gORhycgKlRMp0sws6KjjmSMn8acQODcDGJJky_GRTPhB71VGQ5ENlVajp_NyoEnBx5L0pm5CJkQnyMKBbHQGUFyIow7CCZx0zwuD9Wrw-LHCobxQ");'></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">Advanced Python for Data</p>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-[10px] text-slate-500 font-medium">980 Sales</span>
+<span class="text-[10px] text-primary font-bold">$89.00/unit</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$31.5k</p>
+</div>
+</div>
+</div>
+<div class="bg-charcoal border border-border-dark p-4 rounded-xl hover:border-primary/50 transition-all group cursor-pointer">
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-cover bg-center border border-border-dark grayscale group-hover:grayscale-0 transition-all" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDGCPh3Fw3QlhQJCIwu8Dk9KBzv9WTAC4XYUwbu-k_eSB23eDjYnhysTksmSiogNYbOgaOt_xavnJqwDYzjLB5i4LwuC1Qz_noIktiO8Yws79PH882YtHVktcqBCKPlpNPv7C3xJ1teM3V32Ox0BwosOupEpXHwWgX-YZSE9BtS1lDhFwydYDMlzoo9jWru-h93Ilgh6e30WJKZvAsqaJRGT_2YYWrzqplqXWgwQrusIqLyzzm-gsQks4j0ugI_jnLVLNxHz6XwuA");'></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">UI/UX Design Systems Pro</p>
+<div class="flex items-center gap-3 mt-1">
+<span class="text-[10px] text-slate-500 font-medium">850 Sales</span>
+<span class="text-[10px] text-primary font-bold">$75.00/unit</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-black">$28.2k</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
