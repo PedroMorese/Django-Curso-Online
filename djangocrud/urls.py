@@ -21,5 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('Back-end.Auth.urls')),  # Backend Auth endpoints
+    path('api/courses/', include('Back-end.Course.urls')),  # Backend Course CRUD
     path('', include('Front-end.home.urls')),
 ]
