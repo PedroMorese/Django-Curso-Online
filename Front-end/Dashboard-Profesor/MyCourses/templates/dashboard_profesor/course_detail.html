@@ -60,7 +60,8 @@
                     {% if class.imagen_portada %}
                     <span class="material-symbols-outlined text-emerald-500 text-sm opacity-60">image</span>
                     {% endif %}
-                    <button class="p-2 text-[#232d38] hover:text-white transition-colors">
+                    <button class="p-2 text-[#232d38] hover:text-white transition-colors"
+                            onclick="openEditClassModal('{{ class.id }}')">
                         <span class="material-symbols-outlined">edit</span>
                     </button>
                     <button class="p-2 text-[#232d38] hover:text-red-500 transition-colors" 
@@ -262,6 +263,209 @@
         deleteBtn.href = `/dashboard/profesor/course/{{ course.id }}/class/${id}/delete/`;
         
         openModal('delete-class-modal');
+    }
+
+    async function openEditClassModal(classId) {
+        // Reset and show loading state if needed
+        const modal = document.getElementById('edit-class-modal');
+        
+        try {
+            const response = await fetch(`/api/classes/${classId}/`);
+            const data = await response.json();
+            
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Populate form
+            document.getElementById('edit-class-id').value = data.id;
+            document.getElementById('edit-class-titulo').value = data.titulo;
+            document.getElementById('edit-class-orden').value = data.orden;
+            document.getElementById('edit-class-video-url').value = data.video_url || '';
+            document.getElementById('edit-class-cover-url').value = data.imagen_portada || '';
+            
+            // Update UI for image
+            const icon = document.getElementById('edit-class-upload-icon');
+            const text = document.getElementById('edit-class-upload-text');
+            if (data.imagen_portada) {
+                icon.innerText = 'verified';
+                icon.classList.add('text-emerald-500');
+                text.innerText = 'Asset Linked Successfully';
+                text.classList.add('text-emerald-500');
+            } else {
+                icon.innerText = 'add_photo_alternate';
+                icon.classList.remove('text-emerald-500');
+                text.innerText = 'Upload Local Image';
+                text.classList.remove('text-emerald-500');
+            }
+            
+            openModal('edit-class-modal');
+        } catch (error) {
+            console.error('Error fetching class data:', error);
+            alert('Could not load class data');
+        }
+    }
+
+    async function handleEditClassSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const classId = document.getElementById('edit-class-id').value;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Remove action from data if any
+        delete data.action;
+        delete data.csrfmiddlewaretoken;
+        
+        try {
+            const response = await fetch(`/api/classes/${classId}/update/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                // Success! Reload or update UI
+                location.reload(); 
+            } else {
+                alert(result.error || 'Update failed');
+            }
+        } catch (error) {
+            console.error('Update error:', error);
+            alert('Update failed');
+        }
+    }
+</script>
+
+
+<!-- Modal: Edit Class -->
+<div id="edit-class-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+        <div class="p-6 border-b border-border-dark flex justify-between items-center bg-primary/5">
+            <div>
+                <h3 class="text-lg font-bold text-white">Modify Lesson</h3>
+                <p class="text-[9px] text-[#637588] uppercase tracking-widest font-bold mt-0.5">Edit Curriculum Component</p>
+            </div>
+            <button onclick="closeModal('edit-class-modal')" class="text-[#637588] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <form id="edit-class-form" onsubmit="handleEditClassSubmit(event)" class="p-6 space-y-5">
+            <input type="hidden" id="edit-class-id">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Title -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Lesson Title</label>
+                    <input type="text" name="titulo" id="edit-class-titulo" required
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]">
+                </div>
+                <!-- Order -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Sorting Order</label>
+                    <input type="number" name="orden" id="edit-class-orden" required
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Video URL (YouTube) -->
+            <div class="space-y-1.5">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Video Resource URL (YouTube)</label>
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#232d38] group-focus-within:text-primary transition-colors">play_circle</span>
+                    <input type="url" name="video_url" id="edit-class-video-url"
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                        placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="space-y-3">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Lesson Preview Asset</label>
+                
+                <div onclick="document.getElementById('file-input-edit-class').click()" 
+                    class="border-2 border-dashed border-border-dark rounded-xl p-5 flex items-center gap-4 group hover:border-primary/50 transition-all cursor-pointer bg-background-dark/30">
+                    <input type="file" id="file-input-edit-class" class="hidden" accept="image/*" onchange="handleEditClassUpload(this)">
+                    
+                    <div class="bg-primary/10 size-10 rounded-lg flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-xl" id="edit-class-upload-icon">add_photo_alternate</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider" id="edit-class-upload-text">Upload Local Image</h4>
+                        <p class="text-[8px] text-[#637588] mt-0.5 uppercase tracking-widest font-bold">Recommended: 16:9 Aspect Ratio</p>
+                    </div>
+                    <div id="edit-class-upload-indicator" class="hidden">
+                        <div class="size-2 bg-primary rounded-full animate-ping"></div>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="imagen_portada" id="edit-class-cover-url">
+            </div>
+
+            <div class="pt-5 border-t border-border-dark flex justify-end gap-3">
+                <button type="button" onclick="closeModal('edit-class-modal')" class="px-5 py-2 rounded-lg text-[10px] font-bold text-[#637588] hover:text-white uppercase tracking-widest transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-primary text-white px-7 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    async function handleEditClassUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const indicator = document.getElementById('edit-class-upload-indicator');
+        const icon = document.getElementById('edit-class-upload-icon');
+        const text = document.getElementById('edit-class-upload-text');
+        const urlInput = document.getElementById('edit-class-cover-url');
+
+        indicator.classList.remove('hidden');
+        icon.innerText = 'sync';
+        icon.classList.add('animate-spin');
+        text.innerText = 'Uploading...';
+
+        try {
+            const response = await fetch('/api/media/upload/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                urlInput.value = data.url;
+                icon.innerText = 'verified';
+                icon.classList.remove('animate-spin');
+                icon.classList.add('text-emerald-500');
+                text.innerText = 'Asset Linked Successfully';
+                text.classList.add('text-emerald-500');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed');
+            icon.innerText = 'error';
+        } finally {
+            indicator.classList.add('hidden');
+            icon.classList.remove('animate-spin');
+        }
     }
 </script>
 
