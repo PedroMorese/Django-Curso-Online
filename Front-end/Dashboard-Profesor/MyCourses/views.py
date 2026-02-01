@@ -127,13 +127,15 @@ def course_detail(request, course_id):
         titulo = request.POST.get('titulo', '').strip()
         orden = request.POST.get('orden', '1')
         imagen_portada = request.POST.get('imagen_portada', '').strip()
+        video_url = request.POST.get('video_url', '').strip()
         
         if titulo:
             Class.objects.create(
                 curso=course,
                 titulo=titulo,
                 orden=int(orden),
-                imagen_portada=imagen_portada or None
+                imagen_portada=imagen_portada or None,
+                video_url=video_url or None
             )
             messages.success(request, f'Clase "{titulo}" añadida exitosamente.')
             return redirect('dashboard_profesor:course_detail', course_id=course.id)
@@ -151,6 +153,25 @@ def course_detail(request, course_id):
     }
     
     return render(request, 'dashboard_profesor/course_detail.html', context)
+
+
+@profesor_required
+def delete_class(request, course_id, class_id):
+    """
+    Vista para eliminar una clase específica.
+    """
+    Course = apps.get_model('course_app', 'Course')
+    Class = apps.get_model('class_app', 'Class')
+    
+    # Asegurar que el curso pertenezca al profesor
+    course = get_object_or_404(Course, id=course_id, profesor=request.user)
+    lesson = get_object_or_404(Class, id=class_id, curso=course)
+    
+    titulo = lesson.titulo
+    lesson.delete()
+    
+    messages.success(request, f'Clase "{titulo}" eliminada correctamente.')
+    return redirect('dashboard_profesor:course_detail', course_id=course_id)
 
 
 @profesor_required

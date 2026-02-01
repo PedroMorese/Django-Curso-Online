@@ -32,12 +32,26 @@
         <div class="space-y-4">
             {% for class in classes %}
             <div class="bg-card-dark/40 border border-border-dark rounded-2xl p-6 flex items-center gap-6 group hover:border-primary/40 transition-all">
-                <div class="size-12 rounded-xl bg-background-dark flex items-center justify-center text-[#232d38] font-bold text-lg">
-                    {{ class.orden }}
+                <!-- Class Thumbnail or Order Placeholder -->
+                <div class="size-16 rounded-xl bg-background-dark overflow-hidden flex-shrink-0 relative group-hover:ring-2 ring-primary/20 transition-all">
+                    {% if class.imagen_portada %}
+                    <img src="{{ class.imagen_portada }}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-[10px] font-bold text-white uppercase tracking-tighter">View</span>
+                    </div>
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-[#232d38] font-bold text-lg">
+                        {{ class.orden }}
+                    </div>
+                    {% endif %}
+                    <div class="absolute top-1 right-1 bg-background-dark/80 backdrop-blur-sm size-5 rounded-md flex items-center justify-center text-[9px] font-bold text-white/50 border border-white/5">
+                        {{ class.orden }}
+                    </div>
                 </div>
+
                 <div class="flex-1 min-w-0">
-                    <h3 class="text-white font-bold truncate">{{ class.titulo }}</h3>
-                    <p class="text-xs text-[#637588] mt-1">{{ class.duracion_estimada }} min • {{ class.descripcion|truncatechars:60 }}</p>
+                    <h3 class="text-white font-semibold group-hover:text-primary transition-colors truncate">{{ class.titulo }}</h3>
+                    <p class="text-xs text-[#637588] mt-1 uppercase tracking-widest font-bold text-[9px]">{{ class.duracion_estimada }} min • Curriculum Asset</p>
                 </div>
                 <div class="flex items-center gap-3">
                     {% if class.video_url %}
@@ -49,7 +63,8 @@
                     <button class="p-2 text-[#232d38] hover:text-white transition-colors">
                         <span class="material-symbols-outlined">edit</span>
                     </button>
-                    <button class="p-2 text-[#232d38] hover:text-red-500 transition-colors">
+                    <button class="p-2 text-[#232d38] hover:text-red-500 transition-colors" 
+                            onclick="confirmDeleteClass('{{ class.id }}', '{{ class.titulo }}')">
                         <span class="material-symbols-outlined">delete</span>
                     </button>
                 </div>
@@ -125,6 +140,17 @@
                     <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Sorting Order</label>
                     <input type="number" name="orden" value="{{ classes|length|add:1 }}"
                         class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all">
+                </div>
+            </div>
+
+            <!-- Video URL (YouTube) -->
+            <div class="space-y-1.5">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Video Resource URL (YouTube)</label>
+                <div class="relative group">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#232d38] group-focus-within:text-primary transition-colors">play_circle</span>
+                    <input type="url" name="video_url"
+                        class="w-full bg-background-dark/60 border border-border-dark rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                        placeholder="https://www.youtube.com/watch?v=...">
                 </div>
             </div>
 
@@ -226,5 +252,40 @@
             icon.classList.remove('animate-spin');
         }
     }
+
+    function confirmDeleteClass(id, title) {
+        const modal = document.getElementById('delete-class-modal');
+        const titleSpan = document.getElementById('delete-class-title');
+        const deleteBtn = document.getElementById('confirm-delete-btn');
+        
+        titleSpan.innerText = title;
+        deleteBtn.href = `/dashboard/profesor/course/{{ course.id }}/class/${id}/delete/`;
+        
+        openModal('delete-class-modal');
+    }
 </script>
+
+<!-- Modal: Confirm Delete Class -->
+<div id="delete-class-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-background-dark/95 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl p-10 w-full max-w-sm text-center shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+        <div class="flex flex-col items-center">
+            <div class="bg-red-500/10 size-20 rounded-full flex items-center justify-center text-red-500 mb-6">
+                <span class="material-symbols-outlined text-4xl">delete_forever</span>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Delete Lesson?</h3>
+            <p class="text-xs text-[#637588] font-bold uppercase tracking-widest leading-relaxed mb-8">
+                You are about to remove <span class="text-white" id="delete-class-title"></span>. This action cannot be undone.
+            </p>
+            
+            <div class="flex flex-col w-full gap-3">
+                <a id="confirm-delete-btn" href="#" class="w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+                    Confirm Deletion
+                </a>
+                <button onclick="closeModal('delete-class-modal')" class="w-full py-3 rounded-xl bg-white/5 border border-border-dark text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
+                    Keep Lesson
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
