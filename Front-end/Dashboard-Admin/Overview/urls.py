@@ -11,8 +11,8 @@ app_name = 'dashboard_admin'
 
 urlpatterns = [
     path('', views.overview, name='overview'),
-    path('users/', views.users_list, name='users'),
-    path('courses/', views.courses_list, name='courses'),
-    path('subscriptions/', views.subscriptions_list, name='subscriptions'),
+    path('users/', views.users_list, name='users_list'),
+    path('courses/', views.courses_list, name='courses_list'),
+    path('subscriptions/', views.subscriptions_list, name='subscriptions_list'),
     path('reports/', views.reports, name='reports'),
 ]

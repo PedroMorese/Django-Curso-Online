@@ -1,156 +1,149 @@
-{% extends "base/base_dashboard.html" %}
+{% extends "dashboard_admin/base_admin.html" %}
 
-{% block title %}Course Catalog - Admin Dashboard{% endblock %}
+{% block title %}Course Catalog - EduMinimal Admin{% endblock %}
+{% block page_name %}Catalog Assets{% endblock %}
+{% block page_title %}Academic Asset Management{% endblock %}
 
-{% block sidebar %}
-{% include "base/components/sidebar_admin.html" with active_nav='courses' %}
+{% block page_actions %}
+<button class="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+    <span class="material-symbols-outlined text-sm">post_add</span>
+    Initialize New Course
+</button>
 {% endblock %}
 
-{% block topbar %}
-<div class="flex items-center gap-4">
-    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Course Catalog</h2>
-</div>
-<div class="flex items-center gap-4">
-    <button class="btn btn-primary">
-        <span class="material-symbols-outlined text-lg">add</span>
-        Add Course
-    </button>
-</div>
-{% endblock %}
-
-{% block dashboard_content %}
-<div class="space-y-6">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Courses</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_courses|default:0 }}</p>
+{% block admin_content %}
+<div class="space-y-10">
+    <!-- Catalog Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="card p-4 border-b border-b-primary/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Total Assets</p>
+            <p class="text-2xl font-bold text-white">{{ total_courses|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Published</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ published_count|default:0 }}</p>
+        <div class="card p-4 border-b border-b-emerald-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Live Status</p>
+            <p class="text-2xl font-bold text-emerald-400">{{ published_count|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Drafts</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ draft_count|default:0 }}</p>
+        <div class="card p-4 border-b border-b-amber-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Draft Staging</p>
+            <p class="text-2xl font-bold text-amber-500">{{ draft_count|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Revenue</p>
-            <p class="text-3xl font-bold text-primary">$45.2K</p>
+        <div class="card p-4 border-b border-b-indigo-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Asset Value</p>
+            <p class="text-2xl font-bold text-white">$45.2K</p>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card">
-        <div class="flex flex-wrap gap-4 items-center">
-            <div class="flex-1 min-w-[200px]">
-                <input type="text" class="input" placeholder="Search courses...">
+    <!-- Filter Console -->
+    <div class="card p-6 border border-border-dark">
+        <div class="flex flex-wrap gap-6 items-center">
+            <div class="flex-1 min-w-[300px] relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#637588] text-sm">filter_list</span>
+                <input type="text" class="w-full bg-background-dark border border-border-dark rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-[#232d38]" placeholder="Locate asset by title, professor or ID...">
             </div>
-            <select class="input w-auto">
-                <option>All Levels</option>
-                <option>Principiante</option>
-                <option>Intermedio</option>
-                <option>Avanzado</option>
-            </select>
-            <select class="input w-auto">
-                <option>All Status</option>
-                <option>Published</option>
-                <option>Draft</option>
-            </select>
+            <div class="flex gap-4">
+                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
+                    <option>Difficulty Level</option>
+                    <option>Principiante</option>
+                    <option>Intermedio</option>
+                    <option>Avanzado</option>
+                </select>
+                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
+                    <option>Lifecycle State</option>
+                    <option>PUBLISHED</option>
+                    <option>DRAFT</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Courses Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Assets Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for course in courses %}
-        <div class="card hover:shadow-xl transition-shadow">
-            <!-- Course Thumbnail -->
-            <div class="relative h-48 bg-slate-200 dark:bg-slate-800 rounded-lg mb-4 overflow-hidden">
+        <div class="card group hover:border-primary/50 transition-all flex flex-col h-full bg-charcoal">
+            <!-- Asset Media -->
+            <div class="relative aspect-video bg-background-dark overflow-hidden marker:rounded-t-2xl">
                 {% if course.imagen_portada %}
-                <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}" class="w-full h-full object-cover">
+                <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                 {% else %}
                 <div class="w-full h-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-6xl text-slate-400">school</span>
+                    <span class="material-symbols-outlined text-4xl text-[#232d38]">landscape</span>
                 </div>
                 {% endif %}
                 
-                <!-- Status Badge -->
-                <div class="absolute top-3 right-3">
-                    <span class="badge {% if course.publicado %}badge-success{% else %}badge-warning{% endif %}">
-                        {% if course.publicado %}Published{% else %}Draft{% endif %}
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <span class="px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest 
+                        {% if course.publicado %}bg-emerald-500 text-white shadow-lg shadow-emerald-500/20{% else %}bg-amber-500 text-white shadow-lg shadow-amber-500/20{% endif %}">
+                        {% if course.publicado %}Live{% else %}Draft{% endif %}
                     </span>
                 </div>
-                
-                <!-- Level Badge -->
-                <div class="absolute top-3 left-3">
-                    <span class="badge badge-neutral">{{ course.nivel }}</span>
+
+                <div class="absolute top-4 left-4">
+                    <span class="px-2 py-1 rounded bg-black/60 backdrop-blur-md text-[8px] font-black uppercase tracking-widest text-white border border-white/10">
+                        {{ course.nivel }}
+                    </span>
                 </div>
             </div>
 
-            <!-- Course Info -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-2">
-                    {{ course.titulo }}
-                </h3>
-                
-                <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                    {{ course.descripcion|default:"No description available" }}
-                </p>
-
-                <!-- Professor -->
-                <div class="flex items-center gap-2">
-                    <div class="avatar avatar-xs bg-primary/20 text-primary">
-                        {{ course.profesor.first_name|slice:":1"|upper }}{{ course.profesor.last_name|slice:":1"|upper }}
-                    </div>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">
-                        {{ course.profesor.first_name }} {{ course.profesor.last_name }}
+            <!-- Asset Identity -->
+            <div class="p-6 flex-1 flex flex-col">
+                <div class="flex-1">
+                    <h3 class="text-base font-bold text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        {{ course.titulo }}
+                    </h3>
+                    
+                    <p class="text-xs text-[#9dabb9] line-clamp-2 mb-4 leading-relaxed font-medium">
+                        {{ course.descripcion|default:"Metadata description withheld for this academic asset." }}
                     </p>
+
+                    <!-- Ownership Info -->
+                    <div class="flex items-center gap-2 mb-6 p-2 rounded-lg bg-background-dark/50 border border-border-dark/50">
+                        <div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-bold text-primary">
+                            {{ course.profesor.first_name|slice:":1"|upper }}{{ course.profesor.last_name|slice:":1"|upper }}
+                        </div>
+                        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest">
+                            Prof. {{ course.profesor.first_name }} {{ course.profesor.last_name }}
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Meta Info -->
-                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                    <span>Created {{ course.fecha_creacion|date:"M d, Y" }}</span>
-                    <span>ID: {{ course.id }}</span>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                    <button class="btn btn-secondary btn-sm flex-1">
-                        <span class="material-symbols-outlined text-sm">visibility</span>
-                        View
-                    </button>
-                    <button class="btn btn-secondary btn-sm flex-1">
-                        <span class="material-symbols-outlined text-sm">edit</span>
-                        Edit
-                    </button>
-                    <button class="btn btn-secondary btn-sm">
-                        <span class="material-symbols-outlined text-sm text-red-500">delete</span>
-                    </button>
+                <!-- Admin Controls -->
+                <div class="pt-4 border-t border-border-dark flex items-center justify-between">
+                    <div class="flex gap-1.5">
+                        <button class="size-8 flex items-center justify-center rounded-lg bg-background-dark border border-border-dark text-[#637588] hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-sm">visibility</span>
+                        </button>
+                        <button class="size-8 flex items-center justify-center rounded-lg bg-background-dark border border-border-dark text-[#637588] hover:text-indigo-400 transition-all">
+                            <span class="material-symbols-outlined text-sm">settings</span>
+                        </button>
+                        <button class="size-8 flex items-center justify-center rounded-lg bg-background-dark border border-border-dark text-[#637588] hover:text-red-400 transition-all">
+                            <span class="material-symbols-outlined text-sm">delete_sweep</span>
+                        </button>
+                    </div>
+                    <span class="text-[9px] font-bold text-[#232d38] uppercase tracking-widest">UID-{{ course.id }}</span>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-span-full">
-            <div class="card text-center py-12">
-                <span class="material-symbols-outlined text-6xl text-slate-400 mb-4">school</span>
-                <p class="text-slate-500 dark:text-slate-400 text-lg">No courses found</p>
-                <p class="text-slate-400 dark:text-slate-500 text-sm mt-2">Create your first course to get started</p>
-            </div>
+        <div class="col-span-full py-20 text-center">
+            <span class="material-symbols-outlined text-6xl text-[#232d38] mb-4">inventory_2</span>
+            <p class="text-white text-lg font-bold">Registry Entry Missing</p>
+            <p class="text-[#637588] text-sm mt-2 max-w-sm mx-auto">No academic assets identified in current catalog query parameters.</p>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
+    <!-- Console Pagination -->
     {% if courses %}
-    <div class="flex items-center justify-between">
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-            Showing {{ courses|length }} courses
+    <div class="flex items-baseline justify-between pt-8 border-t border-border-dark">
+        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest">
+            Audit Stream: <span class="text-white">{{ courses|length }}</span> identified assets
         </p>
-        <div class="flex gap-2">
-            <button class="btn btn-secondary btn-sm">Previous</button>
-            <button class="btn btn-secondary btn-sm">Next</button>
+        <div class="flex gap-4">
+            <button class="text-[10px] font-black uppercase tracking-widest text-[#637588] hover:text-white transition-colors">Previous</button>
+            <button class="text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Next Phase</button>
         </div>
     </div>
     {% endif %}
 </div>
 {% endblock %}
+

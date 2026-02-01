@@ -32,7 +32,7 @@ def admin_required(view_func):
         is_admin = (
             request.user.is_staff or 
             request.user.is_superuser or
-            (hasattr(request.user, 'rol') and request.user.rol == 'ADMIN')
+            (hasattr(request.user, 'role') and request.user.role == 'ADMIN')
         )
         
         if not is_admin:
@@ -112,7 +112,7 @@ def overview(request):
         ]
     
     context = {
-        'active_nav': 'dashboard',
+        'active_nav': 'overview',
         'page_title': 'System Control Panel',
         'metrics': global_metrics,
         'revenue': revenue_metrics,

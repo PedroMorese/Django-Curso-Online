@@ -1,117 +1,32 @@
-{% extends "dashboard_profesor/base_profesor.html" %}
+{% extends base_template|default:"dashboard_profesor/base_profesor.html" %}
 
-{% block title %}Account Settings - EduMinimal Teacher{% endblock %}
-{% block page_name %}Account{% endblock %}
-{% block page_title %}Account Settings{% endblock %}
+{% block title %}Account Identity - EduMinimal{% endblock %}
+{% block page_name %}Identity Security{% endblock %}
+{% block page_title %}Account Entity Settings{% endblock %}
 {% block container_class %}max-w-[1000px]{% endblock %}
 
-{% block teacher_content %}
-<div class="flex flex-col gap-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-24">
-        <!-- Left Column: Membership -->
-        <section class="flex flex-col gap-10">
-            <div>
-                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">My Membership</h2>
-                <div class="flex flex-col gap-6">
-                    <!-- Status -->
-                    <div class="flex justify-between items-baseline border-b border-border-dark pb-6">
-                        <span class="text-sm text-[#9dabb9]">Current Status</span>
-                        <div class="flex items-center gap-2">
-                            {% if membership and membership.is_active %}
-                            <span class="size-2 rounded-full bg-emerald-500"></span>
-                            <span class="text-xl font-medium">Active</span>
-                            {% else %}
-                            <span class="size-2 rounded-full bg-red-500"></span>
-                            <span class="text-xl font-medium">Inactive</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Renewal -->
-                    <div class="flex justify-between items-baseline border-b border-border-dark pb-6">
-                        <span class="text-sm text-[#9dabb9]">Next Renewal</span>
-                        <span class="text-xl font-medium text-white">
-                            {% if membership %}
-                                {{ membership.end_date|date:"M d, Y" }}
-                            {% else %}
-                                No active plan
-                            {% endif %}
-                        </span>
-                    </div>
-
-                    <!-- Billing Cycle -->
-                    <div class="mt-4 p-6 bg-[#1a1a1a] rounded-xl border border-border-dark">
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-sm font-medium">Billing Cycle</span>
-                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-bold">SAVE 20%</span>
-                        </div>
-                        <div class="flex p-1 bg-[#0a0f14] rounded-lg border border-border-dark">
-                            <button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded {% if membership.plan.plan_type == 'MONTHLY' %}bg-charcoal shadow-sm{% else %}text-[#9dabb9] hover:text-white{% endif %} transition-colors">Monthly</button>
-                            <button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded {% if membership.plan.plan_type == 'ANNUAL' %}bg-charcoal shadow-sm{% else %}text-[#9dabb9] hover:text-white{% endif %} transition-colors">Annual</button>
-                        </div>
-                    </div>
-                </div>
+{% block main %}
+    {% if user.role == 'ADMIN' or user.role == 'PROFESOR' %}
+        {# Para admins y profesores, el contenido va en sus bloques específicos dentro de su main #}
+        {{ block.super }}
+    {% else %}
+        {# Para clientes, usamos el bloque main de base/base.html con padding extra #}
+        <div class="py-20 px-10 mx-auto max-w-[1000px]">
+            <div class="mb-12">
+                <h1 class="text-3xl font-bold tracking-tight text-white">Account Settings</h1>
+                <p class="text-[#9dabb9] text-sm mt-2">Manage your identity and subscription preferences.</p>
             </div>
-
-            <div class="pt-4">
-                <button class="text-[#637588] text-xs font-medium hover:text-red-400 transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">cancel</span>
-                    Cancel Membership
-                </button>
-            </div>
-        </section>
-
-        <!-- Right Column: Profile Settings -->
-        <section class="flex flex-col gap-10">
-            <div>
-                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">Profile Settings</h2>
-                <form class="flex flex-col gap-8" method="post" action="{% url 'profile:update' %}">
-                    {% csrf_token %}
-                    <!-- Full Name -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs font-medium text-[#9dabb9]" for="name">Full Name</label>
-                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
-                            id="name" name="first_name" type="text" value="{{ user.first_name }} {{ user.last_name }}"/>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs font-medium text-[#9dabb9]" for="email">Email Address</label>
-                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
-                            id="email" name="email" type="email" value="{{ user.email }}"/>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-xs font-medium text-[#9dabb9]" for="password">Password</label>
-                        <div class="flex items-center justify-between border-b border-border-dark">
-                            <input class="bg-transparent border-none px-0 py-2 text-xl font-medium focus:ring-0 flex-1 text-white" 
-                                id="password" type="password" value="••••••••••••" readonly/>
-                            <button class="text-xs font-bold text-primary uppercase tracking-wider" type="button">Change</button>
-                        </div>
-                    </div>
-
-                    <div class="pt-6">
-                        <button class="w-full bg-white text-[#0a0f14] py-4 rounded font-bold text-sm uppercase tracking-widest hover:bg-[#e5e5e5] transition-colors" type="submit">
-                            Update Profile
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Profile Picture -->
-            <div class="mt-auto pt-8 border-t border-border-dark">
-                <div class="flex items-center gap-4">
-                    <div class="size-12 rounded-full bg-center bg-cover border border-border-dark" 
-                        style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
-                    <div>
-                        <p class="text-sm font-bold">Profile Picture</p>
-                        <button class="text-xs text-primary font-medium hover:underline">Upload new image</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-</div>
+            {% include "profile/profile_form.html" %}
+        </div>
+    {% endif %}
 {% endblock %}
+
+{% block teacher_content %}
+    {% include "profile/profile_form.html" %}
+{% endblock %}
+
+{% block admin_content %}
+    {% include "profile/profile_form.html" %}
+{% endblock %}
+
 

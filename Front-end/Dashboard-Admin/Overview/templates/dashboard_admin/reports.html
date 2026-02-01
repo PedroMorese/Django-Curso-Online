@@ -1,124 +1,149 @@
-{% extends "base/base_dashboard.html" %}
+{% extends "dashboard_admin/base_admin.html" %}
 
-{% block title %}Revenue Reports - Admin Dashboard{% endblock %}
+{% block title %}Analytics & Intelligence - EduMinimal Admin{% endblock %}
+{% block page_name %}Reporting Engine{% endblock %}
+{% block page_title %}Platform Growth Intel{% endblock %}
 
-{% block sidebar %}
-{% include "base/components/sidebar_admin.html" with active_nav='reports' %}
-{% endblock %}
-
-{% block topbar %}
+{% block page_actions %}
 <div class="flex items-center gap-4">
-    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Revenue & Analytics</h2>
-</div>
-<div class="flex items-center gap-4">
-    <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-slate-700 shadow-sm">Monthly</button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 dark:text-slate-400">Quarterly</button>
-        <button class="px-4 py-1.5 text-sm font-medium rounded-md text-slate-500 dark:text-slate-400">Yearly</button>
+    <div class="flex bg-charcoal border border-border-dark rounded-lg p-1">
+        <button class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md bg-white text-background-dark shadow-sm">Monthly</button>
+        <button class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md text-[#637588] hover:text-white transition-colors">Quarterly</button>
+        <button class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-md text-[#637588] hover:text-white transition-colors">Yearly</button>
     </div>
-    <button class="btn btn-primary">
-        <span class="material-symbols-outlined text-lg">print</span>
-        Print Report
+    <button class="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">ios_share</span>
+        Synthesize PDF
     </button>
 </div>
 {% endblock %}
 
-{% block dashboard_content %}
-<div class="space-y-8">
-    <!-- Revenue Overview -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Main Chart Area (Placeholder) -->
-        <div class="lg:col-span-2 card flex flex-col min-h-[400px]">
-            <div class="flex items-center justify-between mb-8">
+{% block admin_content %}
+<div class="space-y-12">
+    <!-- Analysis Core -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Visualization Hub -->
+        <div class="lg:col-span-2 card p-8 flex flex-col min-h-[450px]">
+            <div class="flex items-center justify-between mb-12">
                 <div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Revenue Growth</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Monthly breakdown of gross revenue</p>
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <span class="size-2 rounded-full bg-primary animate-pulse"></span>
+                        Revenue Velocity
+                    </h3>
+                    <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mt-1">Cross-sectional monthly performance analytics</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-2xl font-black text-slate-900 dark:text-white">$45,230.00</p>
-                    <p class="text-xs text-green-500 font-bold">+12.5% from last month</p>
+                    <p class="text-3xl font-black text-white">$45,230.00</p>
+                    <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mt-1 flex items-center justify-end gap-1">
+                        <span class="material-symbols-outlined text-xs">trending_up</span>
+                        +12.5% vs Previous Month
+                    </p>
                 </div>
             </div>
             
-            <!-- Chart Visual Placeholder -->
-            <div class="flex-1 flex items-end gap-2 pb-4">
+            <!-- Strategic Visualization -->
+            <div class="flex-1 flex items-end gap-3 pb-6 border-b border-border-dark/50">
                 {% for i in "123456789012" %}
-                <div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors rounded-t-md" style="height: {{ 30|add:i }}%;"></div>
+                <div class="flex-1 group relative">
+                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-background-dark text-[8px] font-black px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        ${{ i }}k
+                    </div>
+                    <div class="w-full bg-primary/20 group-hover:bg-primary/50 transition-all rounded-t-sm" style="height: {{ 30|add:i }}%;"></div>
+                </div>
                 {% endfor %}
             </div>
-            <div class="flex justify-between text-[10px] text-slate-400 font-bold pt-2 uppercase tracking-widest">
+            <div class="flex justify-between text-[9px] text-[#637588] font-black pt-4 uppercase tracking-widest">
                 <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
             </div>
         </div>
 
-        <!-- Revenue Breakdown -->
-        <div class="space-y-6">
-            <div class="card">
-                <h4 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Revenue by Plan</h4>
-                <div class="space-y-4">
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-700 dark:text-slate-300">Professional Pro</span>
-                            <span class="font-bold text-slate-900 dark:text-white">65%</span>
+        <!-- Segment Breakdown -->
+        <div class="space-y-8">
+            <div class="card p-8 bg-charcoal border-l-4 border-l-indigo-500">
+                <h4 class="text-[10px] font-black text-[#637588] uppercase tracking-widest mb-6">Market Share by Plan</h4>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-xs font-bold text-white">Professional Pro</span>
+                            <span class="text-xs font-black text-indigo-400">65%</span>
                         </div>
-                        <div class="progress-bar"><div class="progress-bar-fill" style="width: 65%;"></div></div>
+                        <div class="h-1 w-full bg-background-dark rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: 65%;"></div>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-700 dark:text-slate-300">Standard Monthly</span>
-                            <span class="font-bold text-slate-900 dark:text-white">25%</span>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-xs font-bold text-white">Standard Tier</span>
+                            <span class="text-xs font-black text-emerald-400">25%</span>
                         </div>
-                        <div class="progress-bar"><div class="progress-bar-fill bg-amber-500" style="width: 25%;"></div></div>
+                        <div class="h-1 w-full bg-background-dark rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 25%;"></div>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-700 dark:text-slate-300">Enterprise</span>
-                            <span class="font-bold text-slate-900 dark:text-white">10%</span>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-xs font-bold text-white">Enterprise Elite</span>
+                            <span class="text-xs font-black text-primary">10%</span>
                         </div>
-                        <div class="progress-bar"><div class="progress-bar-fill bg-indigo-500" style="width: 10%;"></div></div>
+                        <div class="h-1 w-full bg-background-dark rounded-full overflow-hidden">
+                            <div class="h-full bg-primary shadow-[0_0_10px_rgba(19,127,236,0.5)]" style="width: 10%;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card bg-primary text-white">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="size-10 rounded-lg bg-white/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined">trending_up</span>
+            <div class="card p-8 bg-primary text-white relative overflow-hidden group">
+                <div class="absolute -right-4 -bottom-4 size-32 bg-white/5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="flex items-center gap-4 mb-6 relative z-10">
+                    <div class="size-12 rounded-xl bg-white text-primary flex items-center justify-center shadow-xl">
+                        <span class="material-symbols-outlined text-xl">auto_graph</span>
                     </div>
                     <div>
-                        <p class="text-xs text-white/70 font-bold uppercase tracking-widest">Projection</p>
-                        <p class="text-xl font-black">+$5.2k</p>
+                        <p class="text-[10px] text-white/60 font-black uppercase tracking-widest">Growth Forecast</p>
+                        <p class="text-2xl font-black">+$5.2k <span class="text-xs font-bold text-white/80">/mo</span></p>
                     </div>
                 </div>
-                <p class="text-sm text-white/80 leading-relaxed">
-                    Based on current growth, you are expected to hit the yearly goal by **November 12th**.
+                <p class="text-[11px] text-white/90 leading-relaxed font-medium relative z-10">
+                    Predictive analysis indicates platform will reach the Q4 revenue milestone by <span class="font-black border-b border-white/30">November 12th</span> based on current user acquisition velocity.
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
-            <p class="text-2xl font-black text-slate-900 dark:text-white">{{ user_stats.total_users|default:0 }}</p>
-            <p class="text-[10px] text-green-500 font-bold mt-1">+{{ user_stats.new_users_this_month|default:0 }} this month</p>
+    <!-- Metric Fleet -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="card p-6 border-t-2 border-t-primary/40">
+            <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest mb-2">Total User Entities</p>
+            <p class="text-3xl font-black text-white">{{ user_stats.total_users|default:0 }}</p>
+            <div class="flex items-center gap-1.5 mt-2">
+                <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">+{{ user_stats.new_users_this_month|default:0 }}</span>
+                <span class="text-[8px] font-bold text-[#232d38] uppercase tracking-widest">New instances</span>
+            </div>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Total Courses</p>
-            <p class="text-2xl font-black text-slate-900 dark:text-white">{{ course_stats.total_courses|default:0 }}</p>
-            <p class="text-[10px] text-slate-400 font-bold mt-1">{{ course_stats.published_courses|default:0 }} published</p>
+        <div class="card p-6 border-t-2 border-t-indigo-500/40">
+            <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest mb-2">Academic Assets</p>
+            <p class="text-3xl font-black text-white">{{ course_stats.total_courses|default:0 }}</p>
+            <div class="flex items-center gap-1.5 mt-2">
+                <span class="text-[9px] font-black text-[#9dabb9] uppercase tracking-widest">{{ course_stats.published_courses|default:0 }}</span>
+                <span class="text-[8px] font-bold text-[#232d38] uppercase tracking-widest">Live in catalog</span>
+            </div>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Avg. Ticket</p>
-            <p class="text-2xl font-black text-slate-900 dark:text-white">$84.50</p>
-            <p class="text-[10px] text-red-500 font-bold mt-1">-2.4% vs last period</p>
+        <div class="card p-6 border-t-2 border-t-emerald-500/40">
+            <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest mb-2">Average Settlement</p>
+            <p class="text-3xl font-black text-white">$84.50</p>
+            <div class="flex items-center gap-1.5 mt-2">
+                <span class="text-[9px] font-black text-red-400 uppercase tracking-widest">-2.4%</span>
+                <span class="text-[8px] font-bold text-[#232d38] uppercase tracking-widest">Yield variance</span>
+            </div>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Retention Rate</p>
-            <p class="text-2xl font-black text-slate-900 dark:text-white">92.4%</p>
-            <div class="progress-bar mt-2"><div class="progress-bar-fill bg-green-500" style="width: 92.4%;"></div></div>
+        <div class="card p-6 border-t-2 border-t-amber-500/40">
+            <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest mb-2">Loyalty Ratio</p>
+            <p class="text-3xl font-black text-white">92.4%</p>
+            <div class="h-1 w-full bg-background-dark rounded-full mt-3 overflow-hidden">
+                <div class="h-full bg-amber-500" style="width: 92.4%;"></div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+

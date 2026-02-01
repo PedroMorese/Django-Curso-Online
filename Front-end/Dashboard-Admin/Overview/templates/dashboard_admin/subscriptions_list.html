@@ -1,134 +1,134 @@
-{% extends "base/base_dashboard.html" %}
+{% extends "dashboard_admin/base_admin.html" %}
 
-{% block title %}Subscriptions - Admin Dashboard{% endblock %}
+{% block title %}License & Ledger - EduMinimal Admin{% endblock %}
+{% block page_name %}Subscription Ledger{% endblock %}
+{% block page_title %}Subscription & License Control{% endblock %}
 
-{% block sidebar %}
-{% include "base/components/sidebar_admin.html" with active_nav='subscriptions' %}
+{% block page_actions %}
+<button class="bg-charcoal border border-border-dark text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+    <span class="material-symbols-outlined text-sm">file_download</span>
+    Export Financial Data
+</button>
 {% endblock %}
 
-{% block topbar %}
-<div class="flex items-center gap-4">
-    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Subscription Management</h2>
-</div>
-<div class="flex items-center gap-4">
-    <button class="btn btn-secondary">
-        <span class="material-symbols-outlined text-lg">download</span>
-        Export CSV
-    </button>
-</div>
-{% endblock %}
-
-{% block dashboard_content %}
-<div class="space-y-6">
-    <!-- Subscription Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Subscriptions</p>
-            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ total_subscriptions|default:0 }}</p>
+{% block admin_content %}
+<div class="space-y-10">
+    <!-- Ledger Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="card p-4 border-b border-b-primary/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Total Licenses</p>
+            <p class="text-2xl font-bold text-white">{{ total_subscriptions|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Active</p>
-            <p class="text-3xl font-bold text-green-500">{{ active_count|default:0 }}</p>
+        <div class="card p-4 border-b border-b-emerald-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Active Recurring</p>
+            <p class="text-2xl font-bold text-emerald-400">{{ active_count|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending</p>
-            <p class="text-3xl font-bold text-amber-500">{{ pending_count|default:0 }}</p>
+        <div class="card p-4 border-b border-b-amber-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Pending Verification</p>
+            <p class="text-2xl font-bold text-amber-500">{{ pending_count|default:0 }}</p>
         </div>
-        <div class="card">
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Monthly MRR</p>
-            <p class="text-3xl font-bold text-primary">$12.4K</p>
+        <div class="card p-4 border-b border-b-indigo-500/30">
+            <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest mb-1">Estimated MRR</p>
+            <p class="text-2xl font-bold text-white">$12.4K</p>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card">
-        <div class="flex flex-wrap gap-4 items-center">
-            <div class="flex-1 min-w-[200px]">
-                <input type="text" class="input" placeholder="Search by user or reference...">
+    <!-- Query Console -->
+    <div class="card p-6 border border-border-dark">
+        <div class="flex flex-wrap gap-6 items-center">
+            <div class="flex-1 min-w-[300px] relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#637588] text-sm">search</span>
+                <input type="text" class="w-full bg-background-dark border border-border-dark rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-[#232d38]" placeholder="Locate by subscriber name or transaction reference...">
             </div>
-            <select class="input w-auto">
-                <option>All Plans</option>
-                <option>Monthly</option>
-                <option>Annual</option>
-                <option>Lifetime</option>
-            </select>
-            <select class="input w-auto">
-                <option>All Status</option>
-                <option>Active</option>
-                <option>Pending</option>
-                <option>Expired</option>
-                <option>Cancelled</option>
-            </select>
+            <div class="flex gap-4">
+                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
+                    <option>License Plan</option>
+                    <option>Monthly</option>
+                    <option>Annual</option>
+                    <option>Lifetime</option>
+                </select>
+                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
+                    <option>Ledger Status</option>
+                    <option>ACTIVE</option>
+                    <option>PENDING</option>
+                    <option>EXPIRED</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- Subscriptions Table -->
-    <div class="card p-0 overflow-hidden">
-        <table class="table">
+    <!-- Ledger Table -->
+    <div class="card overflow-hidden">
+        <table class="w-full text-left">
             <thead>
-                <tr>
-                    <th>Subscriber</th>
-                    <th>Plan</th>
-                    <th>Reference</th>
-                    <th>Period</th>
-                    <th>Status</th>
-                    <th class="text-right">Actions</th>
+                <tr class="bg-background-dark">
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">Subscriber Profile</th>
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">License Detail</th>
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">Transaction Ref.</th>
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">Validity Window</th>
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">Registry Status</th>
+                    <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588] text-right">Operations</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-border-dark">
                 {% for membership in memberships %}
-                <tr>
-                    <td>
+                <tr class="hover:bg-primary/5 transition-colors group">
+                    <td class="px-6 py-5">
                         <div class="flex items-center gap-3">
-                            <div class="avatar avatar-sm bg-primary/20 text-primary">
-                                {{ membership.user.first_name|slice:":1"|upper|default:"U" }}
+                            <div class="size-9 rounded bg-charcoal border border-border-dark flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                                {{ membership.user.first_name|slice:":1" }}{{ membership.user.last_name|slice:":1" }}
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-slate-900 dark:text-white">
+                                <p class="text-sm font-bold text-white group-hover:text-primary transition-colors">
                                     {{ membership.user.first_name }} {{ membership.user.last_name }}
                                 </p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">
+                                <p class="text-[9px] font-bold text-[#637588] uppercase tracking-widest">
                                     {{ membership.user.email }}
                                 </p>
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td class="px-6 py-5">
                         <div class="flex flex-col">
-                            <span class="text-sm font-medium text-slate-900 dark:text-white">{{ membership.plan.name }}</span>
-                            <span class="text-xs text-slate-500 dark:text-slate-400">${{ membership.plan.price }} / {{ membership.plan.plan_type }}</span>
+                            <span class="text-xs font-bold text-white">{{ membership.plan.name }}</span>
+                            <span class="text-[9px] font-black text-primary uppercase tracking-widest mt-1">${{ membership.plan.price }} / {{ membership.plan.plan_type }}</span>
                         </div>
                     </td>
-                    <td class="text-sm font-mono text-slate-500 dark:text-slate-400">
-                        {{ membership.payment_reference|default:"---" }}
+                    <td class="px-6 py-5">
+                        <span class="text-[10px] font-mono font-bold text-[#637588] bg-background-dark px-2 py-1 rounded">
+                            {{ membership.payment_reference|default:"TRX-SYSTEM" }}
+                        </span>
                     </td>
-                    <td class="text-sm text-slate-600 dark:text-slate-300">
-                        <div class="flex flex-col">
-                            <span>{{ membership.start_date|date:"M d, Y" }}</span>
-                            <span class="text-xs text-slate-500">to {{ membership.end_date|date:"M d, Y" }}</span>
+                    <td class="px-6 py-5">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-white uppercase">{{ membership.start_date|date:"M d, Y" }}</span>
+                            <span class="text-[9px] font-bold text-[#637588] uppercase tracking-widest">Expires: {{ membership.end_date|date:"M d, Y" }}</span>
                         </div>
                     </td>
-                    <td>
-                        <span class="badge {% if membership.status == 'ACTIVE' %}badge-success{% elif membership.status == 'PENDING' %}badge-warning{% else %}badge-neutral{% endif %}">
+                    <td class="px-6 py-5">
+                        <span class="px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest 
+                            {% if membership.status == 'ACTIVE' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                            {% elif membership.status == 'PENDING' %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                            {% else %}bg-charcoal text-[#637588] border border-border-dark{% endif %}">
                             {{ membership.status }}
                         </span>
                     </td>
-                    <td class="text-right">
+                    <td class="px-6 py-5 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="View Details">
-                                <span class="material-symbols-outlined text-lg text-slate-500">visibility</span>
+                            <button class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-white transition-all">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
                             </button>
-                            <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="Cancel Subscription">
-                                <span class="material-symbols-outlined text-lg text-red-500">cancel</span>
+                            <button class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-red-400 transition-all">
+                                <span class="material-symbols-outlined text-sm">block</span>
                             </button>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center text-slate-500 py-12">
-                        <span class="material-symbols-outlined text-4xl mb-2 block">receipt_long</span>
-                        No subscriptions found matching your criteria.
+                    <td colspan="6" class="px-6 py-16 text-center">
+                        <span class="material-symbols-outlined text-5xl text-[#232d38] mb-4">document_scanner</span>
+                        <p class="text-[#637588] text-sm font-bold uppercase tracking-widest">No active license records identified in ledger</p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -136,17 +136,16 @@
         </table>
     </div>
 
-    <!-- Pagination -->
-    {% if memberships %}
-    <div class="flex items-center justify-between">
-        <p class="text-sm text-slate-500 dark:text-slate-400">
-            Showing {{ memberships|length }} of {{ total_subscriptions }} records
+    <!-- Ledger Footer -->
+    <div class="flex items-baseline justify-between pt-8 border-t border-border-dark">
+        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest">
+            Audit Ready: <span class="text-white">{{ memberships|length }}</span> identified transactions
         </p>
-        <div class="flex gap-2">
-            <button class="btn btn-secondary btn-sm">Previous</button>
-            <button class="btn btn-secondary btn-sm">Next</button>
+        <div class="flex gap-4">
+            <button class="text-[10px] font-black uppercase tracking-widest text-[#637588] hover:text-white transition-colors">Previous</button>
+            <button class="text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-colors">Next Phase</button>
         </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}
+

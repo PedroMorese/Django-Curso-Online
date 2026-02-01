@@ -9,8 +9,18 @@ def profile_view(request):
     UserMembership = apps.get_model('membership', 'UserMembership')
     membership = UserMembership.objects.filter(user=request.user, status='ACTIVE').first()
     
+    # Determinar template base según rol
+    if request.user.role == 'ADMIN':
+        base_template = 'dashboard_admin/base_admin.html'
+    elif request.user.role == 'PROFESOR':
+        base_template = 'dashboard_profesor/base_profesor.html'
+    else:
+        # Clientes y otros roles usan la base del Home
+        base_template = 'base/base.html'
+    
     context = {
         'membership': membership,
+        'base_template': base_template,
     }
     return render(request, 'profile_view.html', context)
 

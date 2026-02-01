@@ -1,51 +1,53 @@
 {% extends "base/base.html" %}
 
 {% block header %}
-<!-- Professor Dashboard Minimalist Navbar -->
+<!-- Admin Dashboard Premium Navbar -->
 <header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark bg-background-dark/80 backdrop-blur-md px-10 py-4">
     <div class="flex items-center gap-8">
         <!-- Logo -->
         <div class="flex items-center gap-4 text-white">
             <div class="size-8 rounded bg-primary/20 flex items-center justify-center text-primary">
-                <span class="material-symbols-outlined" style="font-size: 20px;">school</span>
+                <span class="material-symbols-outlined" style="font-size: 20px;">admin_panel_settings</span>
             </div>
             <h2 class="text-white text-lg font-bold leading-tight tracking-tight">
-                EduMinimal<span class="text-primary ml-1 text-[10px] uppercase tracking-widest px-1.5 py-0.5 bg-primary/10 rounded">Teacher</span>
+                EduMinimal<span class="text-emerald-500 ml-1 text-[10px] uppercase tracking-widest px-1.5 py-0.5 bg-emerald-500/10 rounded">Admin</span>
             </h2>
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="flex items-center gap-8 hidden md:flex">
+        <nav class="flex items-center gap-6 hidden md:flex">
+            <a class="{% if active_nav == 'overview' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_admin:overview' %}">Overview</a>
+            <a class="{% if active_nav == 'users' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_admin:users_list' %}">Users</a>
             <a class="{% if active_nav == 'courses' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
-               href="{% url 'dashboard_profesor:my_courses' %}">My Courses</a>
-            <a class="{% if active_nav == 'profile' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
-               href="{% url 'dashboard_profesor:profile' %}">Profile</a>
+               href="{% url 'dashboard_admin:courses_list' %}">Courses</a>
+            <a class="{% if active_nav == 'subscriptions' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_admin:subscriptions_list' %}">Subscriptions</a>
+            <a class="{% if active_nav == 'reports' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_admin:reports' %}">Reports</a>
         </nav>
     </div>
 
     <!-- Actions & User Profile -->
     <div class="flex items-center gap-6">
-        <!-- Search bar (subtle) -->
-        <div class="hidden lg:flex items-center bg-charcoal border border-border-dark rounded-lg px-3 py-1.5 gap-2 w-64 group focus-within:border-primary transition-all">
-            <span class="material-symbols-outlined text-sm text-[#637588]">search</span>
-            <input type="text" placeholder="Search courses..." class="bg-transparent border-none p-0 text-xs text-white focus:ring-0 placeholder:text-[#637588] w-full">
+        <!-- System Status -->
+        <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">System Online</span>
         </div>
-
-        <!-- New Course CTA -->
-        <a href="{% url 'dashboard_profesor:create_course' %}" 
-           class="flex items-center justify-center rounded bg-primary px-4 py-2.5 text-white text-xs font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
-            <span class="material-symbols-outlined mr-2 text-sm">add</span>
-            <span>New Course</span>
-        </a>
 
         <!-- User Profile -->
         <div class="flex items-center gap-3 pl-6 border-l border-border-dark">
             <div class="text-right hidden sm:block">
                 <p class="text-xs font-bold text-white">{{ user.first_name }} {{ user.last_name }}</p>
-                <p class="text-[9px] text-primary font-bold uppercase tracking-widest">Professor</p>
+                <p class="text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Super Admin</p>
             </div>
             <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-border-dark" 
-                 style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
+                 style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=10b981&color=fff");'></div>
             
             <!-- Quick Logout -->
             <button onclick="handleLogout()" class="ml-2 p-2 rounded-lg text-[#637588] hover:text-red-400 hover:bg-red-500/5 transition-all" title="Logout">
@@ -62,16 +64,16 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-[#637588] text-[10px] uppercase tracking-widest font-bold">
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">school</span>
-                    <span>EduMinimal Teacher Hub © 2024</span>
+                    <span class="material-symbols-outlined text-sm">shield</span>
+                    <span>EduMinimal Admin Control © 2024</span>
                 </div>
                 <span class="text-border-dark">|</span>
                 <a class="hover:text-white transition-colors" href="{% url 'home:index' %}">Public Site</a>
             </div>
             <div class="flex gap-8">
-                <a class="hover:text-white transition-colors" href="#">Documentation</a>
-                <a class="hover:text-white transition-colors" href="#">API Access</a>
-                <a class="hover:text-white transition-colors" href="#">Support Hub</a>
+                <a class="hover:text-white transition-colors" href="#">System Logs</a>
+                <a class="hover:text-white transition-colors" href="#">Security Policy</a>
+                <a class="hover:text-white transition-colors" href="#">Admin Support</a>
                 <button class="hover:text-red-400 transition-colors text-red-500/80" onclick="handleLogout()">Logout</button>
             </div>
         </div>
@@ -80,7 +82,7 @@
 
 <script>
     function handleLogout() {
-        if(confirm('¿Cerrar sesión del panel de profesor?')) {
+        if(confirm('¿Cerrar sesión del panel de administrador?')) {
             const formData = new FormData();
             const csrftoken = '{{ csrf_token }}';
             
@@ -104,24 +106,24 @@
 {% block main %}
 <main class="flex-1 bg-background-dark min-h-screen">
     <div class="py-12 px-10 mx-auto {% block container_class %}max-w-[1400px]{% endblock %}">
-        <!-- Sub-header for breadcrumbs or local actions -->
+        <!-- Sub-header -->
         <div class="mb-10 flex justify-between items-end">
             <div>
                 {% block breadcrumbs %}
                 <div class="flex items-center gap-2 text-[#637588] text-[10px] uppercase tracking-widest font-bold mb-2">
-                    <a href="{% url 'dashboard_profesor:my_courses' %}" class="hover:text-white transition-colors">Dashboard</a>
+                    <a href="{% url 'dashboard_admin:overview' %}" class="hover:text-white transition-colors">Admin Console</a>
                     <span class="material-symbols-outlined text-[10px]">chevron_right</span>
-                    <span class="text-primary">{% block page_name %}Overview{% endblock %}</span>
+                    <span class="text-emerald-500">{% block page_name %}Overview{% endblock %}</span>
                 </div>
                 {% endblock %}
-                <h1 class="text-3xl font-bold tracking-tight text-white">{% block page_title %}Dashboard{% endblock %}</h1>
+                <h1 class="text-3xl font-bold tracking-tight text-white">{% block page_title %}Security Overview{% endblock %}</h1>
             </div>
             <div>
                 {% block page_actions %}{% endblock %}
             </div>
         </div>
 
-        <!-- Success/Error Messages -->
+        <!-- Global Notifications -->
         {% if messages %}
         <div class="mb-8 flex flex-col gap-3">
             {% for message in messages %}
@@ -133,7 +135,7 @@
         </div>
         {% endif %}
 
-        {% block teacher_content %}{% endblock %}
+        {% block admin_content %}{% endblock %}
     </div>
 </main>
 {% endblock %}

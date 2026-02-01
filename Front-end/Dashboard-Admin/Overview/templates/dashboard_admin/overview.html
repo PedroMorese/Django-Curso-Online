@@ -1,216 +1,165 @@
-{% extends "base/base_dashboard.html" %}
+{% extends "dashboard_admin/base_admin.html" %}
 
-{% block title %}Admin Dashboard - EduPlatform{% endblock %}
+{% block title %}Admin Dashboard - EduMinimal Premium{% endblock %}
+{% block page_name %}Overview{% endblock %}
+{% block page_title %}Security & Growth Hub{% endblock %}
 
-{% block sidebar %}
-{% include "base/components/sidebar_admin.html" %}
-{% endblock %}
-
-{% block topbar %}
-<div class="flex items-center gap-4">
-    <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">{{ page_title }}</h2>
-</div>
-<div class="flex items-center gap-6">
-    <!-- Search -->
-    <div class="relative w-72 hidden lg:block">
-        <span
-            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
-        <input class="input pl-10" placeholder="Search platform data..." />
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex gap-2">
-        <button
-            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary border border-slate-200 dark:border-slate-700">
-            <span class="material-symbols-outlined">notifications</span>
-        </button>
-        <button
-            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-primary border border-slate-200 dark:border-slate-700">
-            <span class="material-symbols-outlined">settings</span>
-        </button>
-    </div>
-
-    <div class="h-10 w-px bg-slate-200 dark:bg-slate-700"></div>
-
-    <!-- User Profile -->
-    <div class="flex items-center gap-3">
-        <div class="text-right">
-            <p class="text-sm font-bold text-slate-900 dark:text-white leading-none">{{ user.first_name|default:"Admin"
-                }}</p>
-            <p class="text-xs text-primary font-medium mt-1">Super Admin</p>
-        </div>
-        <div
-            class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm border-2 border-primary/20">
-            {{ user.first_name|slice:":1"|upper|default:"A" }}{{ user.last_name|slice:":1"|upper|default:"" }}
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block dashboard_content %}
-<div class="space-y-8">
-    <!-- Page Heading & Stats -->
-    <div class="grid grid-cols-12 gap-6 items-start">
-        <!-- Left Column: Title and Goal Progress -->
-        <div class="col-span-12 lg:col-span-4 space-y-6">
-            <div>
-                <h3 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Global Overview</h3>
-                <p class="text-slate-500 dark:text-slate-400 text-base">Performance metrics for Q3 2024</p>
+{% block admin_content %}
+<div class="space-y-12">
+    <!-- Top Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Revenue Card -->
+        <div class="card p-6 border-l-4 border-l-primary">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#637588]">Total Revenue</span>
+                <span class="material-symbols-outlined text-primary">payments</span>
             </div>
-
-            <!-- Revenue Goal Card -->
-            <div class="card space-y-4">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-1">Revenue vs. Quarterly
-                            Goal</p>
-                        <p class="text-2xl font-bold text-slate-900 dark:text-white">
-                            ${{ revenue.current_revenue|floatformat:0 }}
-                            <span class="text-sm text-slate-500 dark:text-slate-400 font-normal">/ ${{
-                                revenue.goal|floatformat:0 }}</span>
-                        </p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-primary text-xl font-black">{{ revenue.progress_percentage }}%</p>
-                    </div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-bar-fill" style="width: {{ revenue.progress_percentage }}%;"></div>
-                </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold">${{ revenue.current_revenue|floatformat:0 }}</span>
+                <span class="text-xs text-emerald-400 font-bold">+14%</span>
+            </div>
+            <div class="mt-4 w-full h-1 bg-background-dark rounded-full overflow-hidden">
+                <div class="h-full bg-primary" style="width: {{ revenue.progress_percentage }}%"></div>
             </div>
         </div>
 
-        <!-- Right Column: Stats Cards -->
-        <div class="col-span-12 lg:col-span-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Active Memberships -->
-                <div class="card">
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Active Memberships</p>
-                    <div class="flex items-center gap-3">
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{
-                            metrics.active_memberships|default:0 }}</p>
-                        <span
-                            class="badge {% if metrics.active_memberships_change >= 0 %}badge-success{% else %}badge-error{% endif %}">
-                            {% if metrics.active_memberships_change >= 0 %}+{% endif %}{{
-                            metrics.active_memberships_change }}%
-                        </span>
-                    </div>
-                </div>
+        <!-- Active Users -->
+        <div class="card p-6 border-l-4 border-l-emerald-500">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#637588]">Active Members</span>
+                <span class="material-symbols-outlined text-emerald-500">group</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold">{{ metrics.active_memberships|default:0 }}</span>
+                <span class="text-xs text-emerald-400 font-bold">Stable</span>
+            </div>
+        </div>
 
-                <!-- Expired Subscriptions -->
-                <div class="card">
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Expired Subscriptions</p>
-                    <div class="flex items-center gap-3">
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{
-                            metrics.expired_memberships|default:0 }}</p>
-                        <span
-                            class="badge {% if metrics.expired_memberships_change <= 0 %}badge-success{% else %}badge-error{% endif %}">
-                            {{ metrics.expired_memberships_change }}%
-                        </span>
-                    </div>
-                </div>
+        <!-- Expired Subs -->
+        <div class="card p-6 border-l-4 border-l-amber-500">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#637588]">Expired Subs</span>
+                <span class="material-symbols-outlined text-amber-500">history</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold">{{ metrics.expired_memberships|default:0 }}</span>
+                <span class="text-xs text-amber-400 font-bold">-2%</span>
+            </div>
+        </div>
 
-                <!-- Platform Uptime -->
-                <div class="card">
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Platform Uptime</p>
-                    <div class="flex items-center gap-3">
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ metrics.platform_uptime }}%</p>
-                        <span class="badge badge-neutral">{{ metrics.uptime_status }}</span>
-                    </div>
-                </div>
+        <!-- Platform Health -->
+        <div class="card p-6 border-l-4 border-l-indigo-500">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-[#637588]">Platform Health</span>
+                <span class="material-symbols-outlined text-indigo-500">dns</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-3xl font-bold">{{ metrics.platform_uptime }}%</span>
+                <span class="text-xs text-indigo-400 font-bold">Optimal</span>
             </div>
         </div>
     </div>
 
-    <!-- Main Body Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Recent Transactions Table -->
-        <div class="lg:col-span-2 space-y-4">
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Recent Transactions -->
+        <div class="lg:col-span-2 space-y-6">
             <div class="flex items-center justify-between">
-                <h4 class="text-lg font-bold text-slate-900 dark:text-white">Recent Transactions</h4>
-                <a href="{% url 'dashboard_admin:subscriptions' %}"
-                    class="text-primary text-sm font-semibold hover:underline">View All</a>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="size-2 rounded-full bg-primary"></span>
+                    Recent Transactions
+                </h3>
+                <a href="{% url 'dashboard_admin:subscriptions_list' %}" class="text-xs font-bold text-primary uppercase tracking-widest hover:underline">View Ledger</a>
             </div>
-
-            <div class="card p-0 overflow-hidden">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Plan</th>
-                            <th>Status</th>
-                            <th class="text-right">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for transaction in transactions %}
-                        <tr>
-                            <td>
-                                <div class="flex items-center gap-3">
-                                    <div class="avatar avatar-sm bg-primary/20 text-primary">
-                                        {{ transaction.user.initials }}
+            
+            <div class="card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-background-dark">
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">User Entity</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">License Plan</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588]">Verification</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#637588] text-right">Settlement</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border-dark">
+                            {% for transaction in transactions %}
+                            <tr class="hover:bg-primary/5 transition-colors group">
+                                <td class="px-6 py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-8 rounded bg-charcoal border border-border-dark flex items-center justify-center text-[10px] font-bold text-white">
+                                            {{ transaction.user.initials|default:"U" }}
+                                        </div>
+                                        <p class="text-sm font-bold text-white group-hover:text-primary transition-colors">
+                                            {{ transaction.user.name|default:"Platform User" }}
+                                        </p>
                                     </div>
-                                    <p class="text-sm font-medium text-slate-900 dark:text-white">{{
-                                        transaction.user.name }}</p>
-                                </div>
-                            </td>
-                            <td class="text-sm text-slate-600 dark:text-slate-300">{{ transaction.plan_name }}</td>
-                            <td>
-                                <span
-                                    class="badge {% if transaction.status == 'ACTIVE' %}badge-success{% elif transaction.status == 'PENDING' %}badge-warning{% else %}badge-neutral{% endif %}">
-                                    {{ transaction.status }}
-                                </span>
-                            </td>
-                            <td class="text-right font-bold text-sm text-slate-900 dark:text-white">${{
-                                transaction.amount }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center text-slate-500 py-8">No transactions found</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="text-xs font-medium text-[#9dabb9]">{{ transaction.plan_name }}</span>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest 
+                                        {% if transaction.status == 'ACTIVE' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                                        {% elif transaction.status == 'PENDING' %}bg-amber-500/10 text-amber-400 border border-amber-500/20
+                                        {% else %}bg-charcoal text-[#637588] border border-border-dark{% endif %}">
+                                        {{ transaction.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-5 text-right">
+                                    <span class="text-sm font-bold text-white">${{ transaction.amount }}</span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center">
+                                    <span class="material-symbols-outlined text-4xl text-[#232d38] mb-2">database_off</span>
+                                    <p class="text-[#637588] text-sm font-bold uppercase tracking-widest">No active ledger records</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- Top Performing Courses -->
-        <div class="space-y-4">
+        <!-- Performance Hotspots -->
+        <div class="space-y-6">
             <div class="flex items-center justify-between">
-                <h4 class="text-lg font-bold text-slate-900 dark:text-white">Top Performing Courses</h4>
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="size-2 rounded-full bg-indigo-500"></span>
+                    Hotspots
+                </h3>
             </div>
 
-            <div class="card p-4 divide-y divide-slate-200 dark:divide-slate-700">
+            <div class="card p-2 divide-y divide-border-dark">
                 {% for course in top_courses %}
-                <div class="py-4 {% if forloop.first %}pt-0{% endif %} {% if forloop.last %}pb-0{% endif %}">
+                <div class="p-4 group hover:bg-indigo-500/5 transition-all rounded-lg">
                     <div class="flex gap-4 items-center">
-                        <div class="size-14 rounded-lg bg-cover bg-center flex-shrink-0 border border-slate-200 dark:border-slate-700 bg-slate-200 dark:bg-slate-800"
+                        <div class="size-12 rounded-lg bg-background-dark border border-border-dark overflow-hidden flex-shrink-0">
                             {% if course.thumbnail %}
-                            style="background-image: url('{{ course.thumbnail }}')"
-                            {% endif %}>
-                            {% if not course.thumbnail %}
+                            <img src="{{ course.thumbnail }}" class="w-full h-full object-cover">
+                            {% else %}
                             <div class="w-full h-full flex items-center justify-center">
-                                <span class="material-symbols-outlined text-slate-400">school</span>
+                                <span class="material-symbols-outlined text-[#232d38]">school</span>
                             </div>
                             {% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ course.title }}</p>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ course.enrolled_count }}
-                                Enrolled</p>
+                            <p class="text-sm font-bold text-white truncate group-hover:text-indigo-400 transition-colors">{{ course.title }}</p>
+                            <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mt-1">Growth: <span class="text-emerald-500">+{{ course.change_percentage }}%</span></p>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-bold text-primary">${{ course.revenue|floatformat:0 }}</p>
-                            <p
-                                class="text-[10px] font-bold {% if course.change_percentage >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
-                                {% if course.change_percentage >= 0 %}+{% endif %}{{ course.change_percentage }}%
-                            </p>
+                            <p class="text-xs font-black text-white">${{ course.revenue|floatformat:0 }}</p>
+                            <p class="text-[9px] text-[#637588] font-bold">{{ course.enrolled_count }} subs</p>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="py-8 text-center text-slate-500">
-                    No courses available
+                <div class="p-10 text-center">
+                    <p class="text-[#637588] text-[10px] font-bold uppercase tracking-widest">No growth hotspots identified</p>
                 </div>
                 {% endfor %}
             </div>
