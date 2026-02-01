@@ -43,12 +43,30 @@
                 registerForm.addEventListener('submit', function (e) {
                     e.preventDefault();
                     const formData = new FormData(registerForm);
-                    const payload = {};
-                    formData.forEach((v, k) => { payload[k] = v; });
+                    
+                    // Validar que las contraseñas coincidan
+                    const password1 = formData.get('password1');
+                    const password2 = formData.get('password2');
+                    
+                    if (password1 !== password2) {
+                        alert('Las contraseñas no coinciden');
+                        return;
+                    }
+                    
+                    // Construir payload según lo que espera el backend
+                    const payload = {
+                        email: formData.get('email'),
+                        password: password1,  // El backend espera 'password', no 'password1'
+                        first_name: formData.get('first_name') || '',
+                        last_name: formData.get('last_name') || '',
+                        role: 'CLIENTE'  // Rol por defecto para registros desde el frontend
+                    };
+                    
                     const csrfInput = registerForm.querySelector('input[name=csrfmiddlewaretoken]');
                     const csrftoken = csrfInput ? csrfInput.value : null;
 
-                    fetch('/register', {
+                    // Usar la URL correcta del endpoint de Auth
+                    fetch('/auth/register/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -59,12 +77,20 @@
                     }).then(async (res) => {
                         const data = await res.json().catch(() => ({}));
                         if (res.ok) {
-                            alert('Registration successful');
+                            alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                            // Cerrar modal de registro y abrir modal de login
+                            document.getElementById('register-modal').classList.add('hidden');
+                            document.getElementById('login-modal').classList.remove('hidden');
+                            registerForm.reset();
                         } else {
                             console.error(data);
-                            alert(data.error || 'Registration failed');
+                            // El backend devuelve 'detail', no 'error'
+                            alert(data.detail || 'Error en el registro. Por favor intenta de nuevo.');
                         }
-                    }).catch((err) => { console.error(err); alert('Network error'); });
+                    }).catch((err) => { 
+                        console.error(err); 
+                        alert('Error de conexión. Por favor verifica tu conexión a internet.'); 
+                    });
                 });
             });
         </script>
