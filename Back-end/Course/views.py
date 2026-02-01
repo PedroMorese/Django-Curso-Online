@@ -110,10 +110,11 @@ def course_list(request):
         return JsonResponse({'cursos': cursos_data}, status=200)
     
     elif request.method == 'POST':
-        user = _get_user_from_request(request)
+        # Obtener el profesor directamente de la solicitud autenticada
+        if not request.user.is_authenticated:
+            return JsonResponse({'detail': 'Authentication required. Please log in again.'}, status=401)
         
-        if not user or not user.is_authenticated:
-            return JsonResponse({'detail': 'Authentication required'}, status=401)
+        user = request.user
         
         if not _is_profesor_or_admin(user):
             return JsonResponse({'detail': 'Only professors and admins can create courses'}, status=403)
@@ -137,6 +138,7 @@ def course_list(request):
             return JsonResponse({'detail': 'Invalid level. Must be PRINCIPIANTE, INTERMEDIO, or AVANZADO'}, status=400)
         
         try:
+            # Crear el curso asociando explícitamente al profesor loggeado
             curso = Course.objects.create(
                 titulo=titulo,
                 descripcion=descripcion,
