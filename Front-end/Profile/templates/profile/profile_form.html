@@ -1,6 +1,7 @@
 <div class="flex flex-col gap-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-24">
-        <!-- Left Column: Membership -->
+    <div class="{% if user.role != 'ADMIN' and user.role != 'PROFESOR' %}grid grid-cols-1 md:grid-cols-2 gap-24{% else %}max-w-xl mx-auto w-full{% endif %}">
+        {% if user.role != 'ADMIN' and user.role != 'PROFESOR' %}
+        <!-- Left Column: Membership (Visible only for Students/Clients) -->
         <section class="flex flex-col gap-10">
             <div>
                 <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">My Membership</h2>
@@ -52,6 +53,7 @@
                 </button>
             </div>
         </section>
+        {% endif %}
 
         <!-- Right Column: Profile Settings -->
         <section class="flex flex-col gap-10">

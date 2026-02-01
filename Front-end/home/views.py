@@ -16,7 +16,20 @@ import json
 
 def home(request):
     """Renderiza el template principal de la home/dashboard."""
-    return render(request, 'Home.html')
+    Course = apps.get_model('course_app', 'Course')
+    
+    # Obtener cursos publicados recientes
+    recent_courses = Course.objects.filter(publicado=True).select_related('profesor').order_by('-fecha_creacion')[:5]
+    
+    # Obtener cursos destacados o recomendados (por ahora random o los mismos)
+    recommended_courses = Course.objects.filter(publicado=True).select_related('profesor').order_by('?')[:5]
+    
+    context = {
+        'recent_courses': recent_courses,
+        'recommended_courses': recommended_courses,
+    }
+    
+    return render(request, 'Home.html', context)
 
 
 def register(request):
