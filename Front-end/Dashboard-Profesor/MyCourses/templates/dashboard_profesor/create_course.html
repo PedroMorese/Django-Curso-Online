@@ -3,18 +3,16 @@
 {% block title %}Register New Course - EduMinimal Teacher{% endblock %}
 {% block page_name %}Creation Console{% endblock %}
 {% block page_title %}Platform Asset Registry{% endblock %}
-{% block container_class %}max-w-[1200px]{% endblock %}
+{% block container_class %}max-w-[1400px]{% endblock %}
 
 {% block page_actions %}
-<button type="button" class="text-[#637588] hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
-    Discard Draft
-</button>
+<!-- Bloque de acciones vacío o con otras acciones futuras -->
 {% endblock %}
 
 {% block teacher_content %}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 pb-32">
+<div class="flex flex-col lg:flex-row gap-16 pb-32 relative">
     <!-- Form Side -->
-    <div class="lg:col-span-2 space-y-10">
+    <div class="flex-1 space-y-10">
         <div>
             <h1 class="text-2xl font-bold text-white mb-2">Course Core Details</h1>
             <p class="text-sm text-[#9dabb9]">Define the fundamental attributes of your educational content.</p>
@@ -90,31 +88,23 @@
     </div>
 
     <!-- Preview Side -->
-    <div class="lg:col-span-1">
-        <div class="sticky top-32 space-y-8">
-            <div class="flex items-center justify-between">
-                <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#637588]">Real-time Sandbox</h2>
-                <div class="flex gap-1.5">
-                    <div class="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <div class="size-1 rounded-full bg-emerald-500/40"></div>
-                </div>
-            </div>
-
+    <div class="w-full lg:w-[350px] relative flex justify-center lg:justify-start lg:-mt-24">
+        <div class="sticky top-24 w-full max-w-[300px] h-fit space-y-6">
             <!-- Course Card Preview -->
             <div class="bg-card-dark rounded-2xl overflow-hidden border border-border-dark shadow-2xl shadow-black/60 group hover:border-primary/30 transition-all duration-500">
                 <div class="aspect-video w-full bg-background-dark flex items-center justify-center text-[#232d38] overflow-hidden relative" id="preview-image-container">
-                    <span class="material-symbols-outlined text-7xl group-hover:scale-110 transition-transform duration-700 opacity-20">movie_edit</span>
+                    <span class="material-symbols-outlined text-5xl group-hover:scale-110 transition-transform duration-700 opacity-20">movie_edit</span>
                     <img id="preview-img" src="" class="hidden absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                     <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-card-dark to-transparent opacity-60"></div>
                 </div>
-                <div class="p-8">
-                    <div class="flex items-center gap-2 mb-5">
-                        <span class="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">Syncing Draft</span>
+                <div class="p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-[8px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded">Syncing Draft</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-4 line-clamp-2 leading-tight min-h-[56px]" id="preview-title">Synthetic Course Placeholder</h3>
-                    <p class="text-xs text-[#9dabb9] line-clamp-3 mb-10 min-h-[48px] leading-relaxed" id="preview-desc">The description summary will manifest here as you populate the core data fields.</p>
+                    <h3 class="text-base font-bold text-white mb-2 line-clamp-2 leading-tight min-h-[40px]" id="preview-title">Synthetic Course Placeholder</h3>
+                    <p class="text-[10px] text-[#9dabb9] line-clamp-2 mb-6 min-h-[30px] leading-relaxed" id="preview-desc">The description summary will manifest here as you populate the core data fields.</p>
                     
-                    <div class="flex items-center justify-between pt-6 border-t border-border-dark/60">
+                    <div class="flex items-center justify-between pt-4 border-t border-border-dark/60">
                         <div class="flex items-center gap-3">
                             <div class="size-8 rounded-full bg-primary/10 border border-border-dark flex items-center justify-center text-[10px] font-bold text-primary">
                                 {{ user.last_name|slice:":1"|upper|default:"P" }}
@@ -150,9 +140,9 @@
             <p class="text-[10px] font-black text-[#637588] uppercase tracking-widest">Current Status: <span class="text-amber-500">Internal Draft</span></p>
         </div>
         <div class="flex items-center gap-6">
-            <button type="button" class="text-xs font-bold text-[#9dabb9] hover:text-white uppercase tracking-widest transition-colors">
-                Auto-save enabled
-            </button>
+            <a href="{% url 'dashboard_profesor:my_courses' %}" class="text-xs font-bold text-[#9dabb9] hover:text-white uppercase tracking-widest transition-colors">
+                Cancelar
+            </a>
             <div class="size-1 w-1 rounded-full bg-border-dark"></div>
             <button type="submit" form="course-form" 
                 class="px-10 py-3 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold text-xs uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
