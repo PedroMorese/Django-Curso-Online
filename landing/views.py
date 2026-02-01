@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 def index(request):
-    return render(request, 'landing/index.html')
+    return render(request, 'Home.html')
 
 def login_view(request):
     return render(request, 'landing/login.html')

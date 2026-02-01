@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduMinimal - Welcome Back</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-dark": "#0a0f14",
+                        "card-dark": "#131c26",
+                        "border-dark": "#232d38",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
+<div class="relative flex flex-col flex-1 w-full">
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark/95 backdrop-blur-md px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-white">
+<div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-size: 24px;">school</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">EduMinimal</h2>
+</div>
+<div class="flex items-center gap-9 hidden md:flex">
+<a class="text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#9dabb9] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Catalog</a>
+<a class="text-[#9dabb9] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">My Learning</a>
+<a class="text-[#9dabb9] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Certificates</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="hidden lg:flex flex-col items-end mr-2">
+<span class="text-[10px] uppercase tracking-widest text-[#9dabb9] font-bold">Membership</span>
+<span class="text-xs font-semibold text-primary">Active Pro Member</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#9dabb9] hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-border-dark ring-2 ring-primary/20 ring-offset-2 ring-offset-background-dark" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKF4AZSLO8DbyITvBCejtaTHfIv7XhKxeT9EQzqh7kvPVj7oxshNCKpou1FiiqbTuFm9dayGXI9pm_oppzU7db3BwKDddsgzlk87HZ7yvf6d6w0x71kyNaUf4gpc4b8ccf4fvSxLfvWAumqbTafEHGGSh3LDhv-2KwQ3-hoQJC-XYmKrRMOfnAbgbK30j-8ClhXl-nEj_-x_Gslb4AIuyv3YzU-k0PC5RD3HCurhqD33OtIuiqpB5A7vtFblLKpOdL3n5aOibNiA");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center py-10 px-4 sm:px-10">
+<div class="w-full max-w-[1200px] flex flex-col gap-12">
+<section class="flex flex-col lg:flex-row gap-8 items-start">
+<div class="flex-1 flex flex-col justify-center min-h-[300px]">
+<h1 class="text-[#9dabb9] text-xl font-medium mb-2">Welcome back, Alex</h1>
+<p class="text-white text-5xl font-bold leading-tight tracking-tight mb-6">Ready to pick up where you left off?</p>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="size-8 rounded-full border-2 border-background-dark bg-gray-600"></div>
+<div class="size-8 rounded-full border-2 border-background-dark bg-gray-500"></div>
+<div class="size-8 rounded-full border-2 border-background-dark bg-gray-400"></div>
+</div>
+<p class="text-sm text-[#9dabb9]"><span class="text-white font-medium">128 others</span> are learning right now</p>
+</div>
+</div>
+<div class="w-full lg:w-[480px] group relative overflow-hidden rounded-2xl bg-card-dark border border-border-dark hover:border-primary/50 transition-all duration-500 shadow-2xl">
+<div class="relative h-64 w-full bg-center bg-cover" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8EGBoOqcL4OUYri-o4eyBFyHfoLw_aliDSfqZCZrx2fhseR0-6NNtdyO3MHhCAzx6AphqxYYqal6igfKjGRr9CCIZeStNS5jkDfcw5S7LSu6F0yvNwUw9uXc4WjaPXWWPyeYcZaFs57kLSbr09UDH3S9nf0ptLNMzlAXip3IZVWF9icjiv49fIwghczyu3tRCYEfPxca-808p_keaQaElz6x0J-gi7jl1_YLj5E-Ys_H-bi813LUP1UY_3O55B1qKtxNctx_HDw");'>
+<div class="absolute inset-0 bg-gradient-to-t from-card-dark via-card-dark/20 to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="size-20 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined" style="font-size: 48px; font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute bottom-4 left-6 right-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">In Progress</span>
+<span class="text-[#9dabb9] text-xs">65% Completed</span>
+</div>
+<h3 class="text-xl font-bold text-white">Advanced UX Principles</h3>
+</div>
+</div>
+<div class="px-6 py-4 bg-card-dark flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-[#9dabb9] text-xs uppercase tracking-widest font-bold">Next Lesson</span>
+<span class="text-sm font-medium text-white">04. Design Systems at Scale</span>
+</div>
+<span class="text-[#9dabb9] text-xs">12 mins remaining</span>
+</div>
+<div class="absolute bottom-0 left-0 h-1 bg-primary/20 w-full">
+<div class="h-full bg-primary" style="width: 65%;"></div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-2xl font-bold tracking-tight">Recommended for You</h2>
+<a class="text-primary text-sm font-semibold hover:underline flex items-center gap-1" href="#">
+                            View All <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+</a>
+</div>
+<div class="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7tqwDhjKwvKauOdeM678ffNv7RQVcuAwiER2Pl8O_RKza61vIJ7JNcqCuL65jFnSKe4uEYKOkMNHaArPHgi5Z2_qwP37TjRa3ieHkA4DUET3mabzgM0pmG3CbUOR8GPVqoyiJk6FI4gEvoDFkqazXPnZrVN6ctf2ILjEtqjgnBUI63ssagPtAtnIsIi-0_pmdVZNqwrznM_IUO_LT7A56vGNNizMFMlOrR1pMsBD4JaCTCyjqt_m4ZFZIW4pvPVWlvLuHchJ-7g");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase">8.2h</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">React for Beginners</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Mike Chen</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnMZRchTMKuzeBrKTSNMNRRRr63MFW6UTgrKW8JbF7GfKo6tGR97V40_m9ObLk7RXrl_LCMvqxpGqdzL8liwHWLZVztS_7iQkT7aaXyg7waYUiOKOQVKptxI4Ai8AYN14Mzbt9crp0sO72zhKx1a_baxe4A5E4QMFpfu9kPdWpdtxknrwlIt9eopmy_wkmgb05dnfqjWqazhKDa1I0m6xMDac4oYLNzW-__CXkQXR51RY2FcGtFIusKja0Al3HcE5I8pAUbdUY8A");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase">6.0h</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Strategic Management</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Elena Rodriguez</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCeYyabR8fQ_OqOhaTq4-cVjSGzAfXf90-9fNNYxr7t8058KyctJ2aCoCaxdw71Cr_jN9JrhSV8qumUkZsNZHS3gV5aF0phrvIXARC8CMI5bcKX33fcT2_CXbkrP82NcNvk9dvrvPO2BuALvipuTL_lDZG3KH42m6y4QoLrRRc87ZQBbo3rHYx5ya7jTGSy-CuSffZo2fzC9fHm-EIBPQ6aB8bPa_wrzNAYJlIr8GDj47-vpdk2J7v040BEFPWijba0uD19UTuZXA");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase">10h</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Python Data Science</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">James Wilson</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDTWWcEZq3F2OAO0g62EAqikXJe0q0IcyDx3bPEjHBqcrS2K4QfDRzwbUXWbSnzhNQ3lLlx6qOtv0O-hD73ueKY1yhn0gpumyBplibY4RqtVttWe95QoPXIqTvmY8x2f2Ni3noY4QeTIrXImqJSxkIuQ62ipxfopcvzuBTz7mBHtRrBIytRXO3ItS-QKw2J4-mR-4-2DHZYnGBV4GXF8I32dAzoaLrbDcnt23XP7BZySthbsLq8m9Y1_S8HbMH20xQHkO2Qmom40w");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase">12h</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Digital Art Mastery</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">David Kim</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-2xl font-bold tracking-tight">New Courses</h2>
+<a class="text-primary text-sm font-semibold hover:underline flex items-center gap-1" href="#">
+                            Browse All <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+</a>
+</div>
+<div class="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAnytRdNK8mzystcz-NBaVAVUdD1IPusi10SQx3T80b7wd1tmAKyj8HLk3BObzdzig5oXiRCKogz4ZZG3Jpxc3gWsUNRekoCOFywQtg5TS9uOSTv-WbVhqVon2GdFSr9qH_-hjzGosDIxPXrHRe0Upc3mO9j1EecgqbGxSkvD4_n9CX9GAO7P4xlJTGcdhjy0fKvWEKIeMqjrbGB7p_tEimCp-VrcG27uWMhtIa62GfKDWS93dnSF-HKsAZM3pZCgGNPqRgy4fcA");'>
+<div class="absolute top-2 left-2 bg-primary px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">New</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Leadership Essentials</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Sarah Parker</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDbtcsudAz8S1zFS3CDLZmdmvDJx0Frc8-0FrqSutBsNO7JYe3lURMop4g3PtXoT_yvuzoh0CKxdryx9A7KsVKuroWiB1yvjx-b9FvDLli7hwoKkpjWOfnU34CF8N8NumIuhN5p4DOsRSe9TLHL2Cbu5WrdZoi1_4uJlVOf6q5yDkW6xge-CHQnvlVMzSy18PQ26HdYo6bx0VmEy9e06XwxKC651neAQY_igaUgv8ZiAxBqZJ562ADmejDlDi96bfhy6xkUKs1EQA");'>
+<div class="absolute top-2 left-2 bg-primary px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">New</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Modern Architecture</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Robert Lang</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBU4fBIpXIjSmg4SSyoVcs4JVKnY7k2qPWFfzsiV_fj99ZvJqYjeD2gsD-OtmSFX1Y-Gno9ZhwqFgE6KLoAgc4NBprzbCIn1AWZm4aMXONfXvbFcO2oLDr6doWUaMSRPRft5ILF5ytUk6VeIyWpNvM9gyG6zEcvKbJIwi18aH-KczsAs7Xp78IiLACLWC1fdUMAWRsHW8jFU0w3Ni1LbACkip8uYfRjY22BPNkoYytpBd0UT5BlzC8VWQMY1XR32o-bJUp-c7h7RA");'>
+<div class="absolute top-2 left-2 bg-primary px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">New</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Creative Writing</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Emily Brontë</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+<div class="min-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+<div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8EGBoOqcL4OUYri-o4eyBFyHfoLw_aliDSfqZCZrx2fhseR0-6NNtdyO3MHhCAzx6AphqxYYqal6igfKjGRr9CCIZeStNS5jkDfcw5S7LSu6F0yvNwUw9uXc4WjaPXWWPyeYcZaFs57kLSbr09UDH3S9nf0ptLNMzlAXip3IZVWF9icjiv49fIwghczyu3tRCYEfPxca-808p_keaQaElz6x0J-gi7jl1_YLj5E-Ys_H-bi813LUP1UY_3O55B1qKtxNctx_HDw");'>
+<div class="absolute top-2 left-2 bg-primary px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wider">New</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-white text-base font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-1">Mobile App Design</p>
+<div class="flex justify-between items-center">
+<span class="text-[#9dabb9] text-xs font-medium">Alex Rivers</span>
+<span class="text-primary text-[10px] font-bold uppercase">Premium</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="border-t border-border-dark py-8 px-10 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[#637588] text-xs">© 2024 EduMinimal. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-[#637588] text-xs hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-[#637588] text-xs hover:text-white transition-colors" href="#">Terms of Service</a>
+<a class="text-[#637588] text-xs hover:text-white transition-colors" href="#">Support</a>
+</div>
+</footer>
+</div>
+
+</body></html>
