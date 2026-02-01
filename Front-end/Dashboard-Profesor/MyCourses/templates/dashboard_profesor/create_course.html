@@ -1,77 +1,80 @@
-{% extends "base/base_dashboard.html" %}
+{% extends "dashboard_profesor/base_profesor.html" %}
 
-{% block title %}Create Course - Teacher Dashboard{% endblock %}
+{% block title %}Create New Course - EduMinimal Teacher{% endblock %}
+{% block page_name %}New Course{% endblock %}
+{% block page_title %}Create New Course{% endblock %}
 
-{% block sidebar %}
-{% include "base/components/sidebar_teacher.html" %}
-{% endblock %}
-
-{% block topbar %}
-<div class="flex items-center gap-2">
-    <a href="{% url 'dashboard_profesor:my_courses' %}"
-        class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">arrow_back</span>
-    </a>
-    <h2 class="text-slate-900 dark:text-white text-lg font-bold">Create New Course</h2>
-</div>
-<div></div>
-{% endblock %}
-
-{% block dashboard_content %}
-<div class="max-w-2xl mx-auto">
-    <!-- Form Card -->
-    <div class="card">
-        <form method="POST" class="space-y-6">
+{% block teacher_content %}
+<div class="max-w-3xl">
+    <div class="bg-charcoal border border-border-dark rounded-2xl overflow-hidden">
+        <div class="p-8 border-b border-border-dark bg-primary/5">
+            <h3 class="text-xl font-bold text-white mb-2">Course Information</h3>
+            <p class="text-sm text-[#9dabb9]">Fill in the details below to start building your new educational track.</p>
+        </div>
+        
+        <form method="POST" class="p-8 space-y-10">
             {% csrf_token %}
 
-            <!-- Title -->
-            <div class="space-y-2">
-                <label for="titulo" class="block text-sm font-medium text-slate-900 dark:text-white">
-                    Course Title <span class="text-red-500">*</span>
+            <!-- Title Section -->
+            <div class="flex flex-col gap-3">
+                <label for="titulo" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
+                    Course Title <span class="text-primary">*</span>
                 </label>
-                <input type="text" id="titulo" name="titulo" class="input" placeholder="Enter course title..." required>
+                <input type="text" id="titulo" name="titulo" 
+                    class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-3 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white placeholder:text-[#232d38]" 
+                    placeholder="e.g. Advanced Python for Data Science" required>
             </div>
 
-            <!-- Description -->
-            <div class="space-y-2">
-                <label for="descripcion" class="block text-sm font-medium text-slate-900 dark:text-white">
-                    Description
+            <!-- Description Section -->
+            <div class="flex flex-col gap-3">
+                <label for="descripcion" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
+                    Full Description
                 </label>
-                <textarea id="descripcion" name="descripcion" rows="4" class="input resize-none"
-                    placeholder="Describe your course..."></textarea>
+                <textarea id="descripcion" name="descripcion" rows="4" 
+                    class="bg-background-dark border border-border-dark rounded-xl p-4 text-base font-medium focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white placeholder:text-[#637588] resize-none"
+                    placeholder="What will students learn in this course?"></textarea>
             </div>
 
-            <!-- Level -->
-            <div class="space-y-2">
-                <label for="nivel" class="block text-sm font-medium text-slate-900 dark:text-white">
-                    Difficulty Level
-                </label>
-                <select id="nivel" name="nivel" class="input">
-                    {% for value, label in nivel_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Level Section -->
+                <div class="flex flex-col gap-3">
+                    <label for="nivel" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
+                        Difficulty Level
+                    </label>
+                    <select id="nivel" name="nivel" 
+                        class="bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm font-bold focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white appearance-none cursor-pointer">
+                        {% for value, label in nivel_choices %}
+                        <option value="{{ value }}" class="bg-charcoal">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Cover Image Section -->
+                <div class="flex flex-col gap-3">
+                    <label for="imagen_portada" class="text-xs font-bold uppercase tracking-widest text-[#637588]">
+                        Cover Image URL
+                    </label>
+                    <input type="url" id="imagen_portada" name="imagen_portada" 
+                        class="bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm font-medium focus:ring-1 focus:ring-primary focus:border-primary transition-all text-white placeholder:text-[#637588]"
+                        placeholder="https://images.unsplash.com/...">
+                </div>
             </div>
 
-            <!-- Cover Image -->
-            <div class="space-y-2">
-                <label for="imagen_portada" class="block text-sm font-medium text-slate-900 dark:text-white">
-                    Cover Image URL
-                </label>
-                <input type="url" id="imagen_portada" name="imagen_portada" class="input"
-                    placeholder="https://example.com/image.jpg">
-                <p class="text-xs text-slate-500 dark:text-slate-400">Enter a URL for the course thumbnail image</p>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <a href="{% url 'dashboard_profesor:my_courses' %}" class="btn btn-ghost">
-                    Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <span class="material-symbols-outlined text-sm">save</span>
-                    Create Course
-                </button>
+            <!-- Action Buttons -->
+            <div class="pt-10 flex items-center justify-between border-t border-border-dark/50">
+                <p class="text-[10px] text-[#637588] font-bold uppercase tracking-widest">
+                    <span class="text-primary">*</span> Marked fields are required
+                </p>
+                <div class="flex gap-4">
+                    <a href="{% url 'dashboard_profesor:my_courses' %}" 
+                       class="px-6 py-3 rounded-lg text-sm font-bold text-[#637588] hover:text-white transition-colors">
+                        Discard Draft
+                    </a>
+                    <button type="submit" 
+                        class="bg-white text-background-dark px-8 py-3 rounded-lg font-bold text-sm uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-black/20">
+                        Create & Continue
+                    </button>
+                </div>
             </div>
         </form>
     </div>

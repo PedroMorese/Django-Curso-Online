@@ -1,0 +1,134 @@
+{% extends "base/base.html" %}
+
+{% block header %}
+<!-- Professor Dashboard Minimalist Navbar -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark bg-background-dark/80 backdrop-blur-md px-10 py-4">
+    <div class="flex items-center gap-8">
+        <!-- Logo -->
+        <div class="flex items-center gap-4 text-white">
+            <div class="size-8 rounded bg-primary/20 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined" style="font-size: 20px;">school</span>
+            </div>
+            <h2 class="text-white text-lg font-bold leading-tight tracking-tight">
+                EduMinimal<span class="text-primary ml-1 text-[10px] uppercase tracking-widest px-1.5 py-0.5 bg-primary/10 rounded">Teacher</span>
+            </h2>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="flex items-center gap-8 hidden md:flex">
+            <a class="{% if active_nav == 'courses' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_profesor:my_courses' %}">My Courses</a>
+            <a class="{% if active_nav == 'profile' %}text-white border-b-2 border-primary pb-1 mt-1{% else %}text-[#9dabb9] hover:text-white transition-colors{% endif %} text-sm font-medium" 
+               href="{% url 'dashboard_profesor:profile' %}">Profile</a>
+        </nav>
+    </div>
+
+    <!-- Actions & User Profile -->
+    <div class="flex items-center gap-6">
+        <!-- Search bar (subtle) -->
+        <div class="hidden lg:flex items-center bg-charcoal border border-border-dark rounded-lg px-3 py-1.5 gap-2 w-64 group focus-within:border-primary transition-all">
+            <span class="material-symbols-outlined text-sm text-[#637588]">search</span>
+            <input type="text" placeholder="Search courses..." class="bg-transparent border-none p-0 text-xs text-white focus:ring-0 placeholder:text-[#637588] w-full">
+        </div>
+
+        <!-- New Course CTA -->
+        <a href="{% url 'dashboard_profesor:create_course' %}" 
+           class="flex items-center justify-center rounded bg-primary px-4 py-2.5 text-white text-xs font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined mr-2 text-sm">add</span>
+            <span>New Course</span>
+        </a>
+
+        <!-- User Profile -->
+        <div class="flex items-center gap-3 pl-6 border-l border-border-dark">
+            <div class="text-right hidden sm:block">
+                <p class="text-xs font-bold text-white">{{ user.first_name }} {{ user.last_name }}</p>
+                <p class="text-[9px] text-primary font-bold uppercase tracking-widest">Professor</p>
+            </div>
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-border-dark" 
+                 style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block footer %}
+<footer class="mt-auto border-t border-border-dark bg-background-dark py-12">
+    <div class="max-w-7xl mx-auto px-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-[#637588] text-[10px] uppercase tracking-widest font-bold">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">school</span>
+                    <span>EduMinimal Teacher Hub © 2024</span>
+                </div>
+                <span class="text-border-dark">|</span>
+                <a class="hover:text-white transition-colors" href="{% url 'home:index' %}">Public Site</a>
+            </div>
+            <div class="flex gap-8">
+                <a class="hover:text-white transition-colors" href="#">Documentation</a>
+                <a class="hover:text-white transition-colors" href="#">API Access</a>
+                <a class="hover:text-white transition-colors" href="#">Support Hub</a>
+                <button class="hover:text-red-400 transition-colors text-red-500/80" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function handleLogout() {
+        if(confirm('¿Cerrar sesión del panel de profesor?')) {
+            const formData = new FormData();
+            const csrftoken = '{{ csrf_token }}';
+            
+            fetch('/auth/logout/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                credentials: 'same-origin',
+            }).then(res => {
+                if(res.ok) {
+                    localStorage.removeItem('user_data');
+                    window.location.href = '/';
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}
+
+{% block main %}
+<main class="flex-1 bg-background-dark min-h-screen">
+    <div class="py-12 px-10 mx-auto {% block container_class %}max-w-[1400px]{% endblock %}">
+        <!-- Sub-header for breadcrumbs or local actions -->
+        <div class="mb-10 flex justify-between items-end">
+            <div>
+                {% block breadcrumbs %}
+                <div class="flex items-center gap-2 text-[#637588] text-[10px] uppercase tracking-widest font-bold mb-2">
+                    <a href="{% url 'dashboard_profesor:my_courses' %}" class="hover:text-white transition-colors">Dashboard</a>
+                    <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+                    <span class="text-primary">{% block page_name %}Overview{% endblock %}</span>
+                </div>
+                {% endblock %}
+                <h1 class="text-3xl font-bold tracking-tight text-white">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <div>
+                {% block page_actions %}{% endblock %}
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        {% if messages %}
+        <div class="mb-8 flex flex-col gap-3">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg flex items-center gap-3 {% if message.tags == 'success' %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-400{% else %}bg-red-500/10 border border-red-500/20 text-red-400{% endif %} text-sm font-medium">
+                <span class="material-symbols-outlined text-sm">{% if message.tags == 'success' %}check_circle{% else %}error{% endif %}</span>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block teacher_content %}{% endblock %}
+    </div>
+</main>
+{% endblock %}
