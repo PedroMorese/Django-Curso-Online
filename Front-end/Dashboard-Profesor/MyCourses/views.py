@@ -160,11 +160,16 @@ def toggle_publish(request, course_id):
 @profesor_required
 def profile(request):
     """
-    Vista de perfil del profesor.
+    Vista de perfil del profesor usando el nuevo template minimalista.
     """
+    # Intentar obtener la membresía activa del usuario (aunque sea profesor)
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    membership = UserMembership.objects.filter(user=request.user, status='ACTIVE').first()
+
     context = {
         'active_nav': 'profile',
         'page_title': 'My Profile',
+        'membership': membership,
     }
     
-    return render(request, 'dashboard_profesor/profile.html', context)
+    return render(request, 'profile_view.html', context)

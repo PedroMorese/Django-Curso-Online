@@ -72,6 +72,7 @@ TEMPLATES = [
             BASE_DIR / 'Front-end' / 'home' / 'Course-Player' / 'templates',
             BASE_DIR / 'Front-end' / 'home' / 'Course-preview' / 'template',
             BASE_DIR / 'Front-end' / 'home' / 'Full-Course' / 'template',
+            BASE_DIR / 'Front-end' / 'Profile' / 'templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

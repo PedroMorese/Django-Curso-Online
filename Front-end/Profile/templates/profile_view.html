@@ -1,0 +1,158 @@
+{% extends "base/base.html" %}
+
+{% block title %}Account Settings - EduPlatform{% endblock %}
+
+{% block header %}
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-border-dark bg-background-dark/80 backdrop-blur-md px-10 py-4">
+    <div class="flex items-center gap-8">
+        <div class="flex items-center gap-4 text-white">
+            <div class="size-8 rounded bg-primary/20 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined" style="font-size: 20px;">school</span>
+            </div>
+            <h2 class="text-white text-lg font-bold leading-tight tracking-tight">EduMinimal</h2>
+        </div>
+        <nav class="flex items-center gap-8 hidden md:flex">
+            <a class="text-[#9dabb9] text-sm font-medium hover:text-white transition-colors" href="{% url 'home:index' %}">Browse</a>
+            <a class="text-[#9dabb9] text-sm font-medium hover:text-white transition-colors" href="{% url 'home:course_catalog' %}">My Learning</a>
+            <a class="text-white text-sm font-medium border-b-2 border-primary pb-1 mt-1" href="#">Account</a>
+        </nav>
+    </div>
+    <div class="flex items-center gap-6">
+        <a href="{% url 'dashboard_profesor:my_courses' %}" class="flex items-center justify-center rounded bg-primary px-4 py-2 text-white text-sm font-bold hover:bg-primary/90 transition-colors">
+            <span>Back to Dashboard</span>
+        </a>
+        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border border-border-dark" 
+             style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
+    </div>
+</header>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block main %}
+<div class="flex-1 flex justify-center py-16 px-4 sm:px-10">
+    <div class="w-full max-w-[1000px] flex flex-col gap-16">
+        <!-- Header -->
+        <div class="flex flex-col gap-2">
+            <h1 class="text-4xl font-bold tracking-tight">Account Settings</h1>
+            <p class="text-[#9dabb9] text-sm">Manage your subscription, billing preferences, and personal information.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-24">
+            <!-- Left Column: Membership -->
+            <section class="flex flex-col gap-10">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">My Membership</h2>
+                    <div class="flex flex-col gap-6">
+                        <!-- Status -->
+                        <div class="flex justify-between items-baseline border-b border-border-dark pb-6">
+                            <span class="text-sm text-[#9dabb9]">Current Status</span>
+                            <div class="flex items-center gap-2">
+                                {% if membership and membership.is_active %}
+                                <span class="size-2 rounded-full bg-emerald-500"></span>
+                                <span class="text-xl font-medium">Active</span>
+                                {% else %}
+                                <span class="size-2 rounded-full bg-red-500"></span>
+                                <span class="text-xl font-medium">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Renewal -->
+                        <div class="flex justify-between items-baseline border-b border-border-dark pb-6">
+                            <span class="text-sm text-[#9dabb9]">Next Renewal</span>
+                            <span class="text-xl font-medium text-white">
+                                {% if membership %}
+                                    {{ membership.end_date|date:"M d, Y" }}
+                                {% else %}
+                                    No active plan
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Billing Cycle -->
+                        <div class="mt-4 p-6 bg-[#1a1a1a] rounded-xl border border-border-dark">
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="text-sm font-medium">Billing Cycle</span>
+                                <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-bold">SAVE 20%</span>
+                            </div>
+                            <div class="flex p-1 bg-[#0a0f14] rounded-lg border border-border-dark">
+                                <button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded {% if membership.plan.plan_type == 'MONTHLY' %}bg-charcoal shadow-sm{% else %}text-[#9dabb9] hover:text-white{% endif %} transition-colors">Monthly</button>
+                                <button class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded {% if membership.plan.plan_type == 'ANNUAL' %}bg-charcoal shadow-sm{% else %}text-[#9dabb9] hover:text-white{% endif %} transition-colors">Annual</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button class="text-[#637588] text-xs font-medium hover:text-red-400 transition-colors flex items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">cancel</span>
+                        Cancel Membership
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Profile Settings -->
+            <section class="flex flex-col gap-10">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">Profile Settings</h2>
+                    <form class="flex flex-col gap-8" method="post" action="{% url 'profile:update' %}">
+                        {% csrf_token %}
+                        <!-- Full Name -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[#9dabb9]" for="name">Full Name</label>
+                            <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
+                                id="name" name="first_name" type="text" value="{{ user.first_name }} {{ user.last_name }}"/>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[#9dabb9]" for="email">Email Address</label>
+                            <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
+                                id="email" name="email" type="email" value="{{ user.email }}"/>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-xs font-medium text-[#9dabb9]" for="password">Password</label>
+                            <div class="flex items-center justify-between border-b border-border-dark">
+                                <input class="bg-transparent border-none px-0 py-2 text-xl font-medium focus:ring-0 flex-1 text-white" 
+                                    id="password" type="password" value="••••••••••••" readonly/>
+                                <button class="text-xs font-bold text-primary uppercase tracking-wider" type="button">Change</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <button class="w-full bg-white text-[#0a0f14] py-4 rounded font-bold text-sm uppercase tracking-widest hover:bg-[#e5e5e5] transition-colors" type="submit">
+                                Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Profile Picture -->
+                <div class="mt-auto pt-8 border-t border-border-dark">
+                    <div class="flex items-center gap-4">
+                        <div class="size-12 rounded-full bg-center bg-cover border border-border-dark" 
+                            style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
+                        <div>
+                            <p class="text-sm font-bold">Profile Picture</p>
+                            <button class="text-xs text-primary font-medium hover:underline">Upload new image</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-border-dark pt-8 flex justify-between items-center text-[#637588] text-[10px] uppercase tracking-widest font-bold">
+            <span>EduMinimal © 2024</span>
+            <div class="flex gap-6">
+                <a class="hover:text-white transition-colors" href="#">Privacy</a>
+                <a class="hover:text-white transition-colors" href="#">Terms</a>
+                <a class="hover:text-white transition-colors" href="#">Support</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
