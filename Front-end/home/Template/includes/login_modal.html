@@ -1,0 +1,126 @@
+<div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+    <div class="w-full max-w-[440px] bg-[#111418] border border-[#283039] rounded-xl shadow-2xl overflow-hidden">
+        <div class="px-8 pt-8 pb-4">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-white text-3xl font-bold tracking-tight">Welcome Back</h2>
+                <button data-close class="text-[#9dabb9] hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p class="text-[#9dabb9] text-sm">Please enter your details to sign in.</p>
+        </div>
+        <form class="px-8 py-4" method="post" action="/login/">
+            {% csrf_token %}
+            <div class="mb-5">
+                <label class="flex flex-col">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Email Address</p>
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="email@example.com" required type="email" name="email" />
+                </label>
+            </div>
+            <div class="mb-8">
+                <div class="flex justify-between items-center pb-2">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider">Password</p>
+                    <a class="text-primary text-xs font-semibold hover:underline underline-offset-4" href="#">Forgot Password?</a>
+                </div>
+                <div class="relative">
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Enter your password" required type="password" name="password" />
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#5c6b7a] cursor-pointer text-xl">visibility_off</span>
+                </div>
+            </div>
+            <button class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Login</button>
+        </form>
+        <div class="px-8 pb-10 pt-4 text-center">
+            <p class="text-[#9dabb9] text-sm">Don't have an account? <a id="open-register-from-login" class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Register</a></p>
+        </div>
+    </div>
+</div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const registerForm = document.getElementById('register-form');
+                if (!registerForm) return;
+
+                registerForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const formData = new FormData(registerForm);
+                    const payload = {};
+                    formData.forEach((v, k) => { payload[k] = v; });
+                    const csrfInput = registerForm.querySelector('input[name=csrfmiddlewaretoken]');
+                    const csrftoken = csrfInput ? csrfInput.value : null;
+
+                    fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {}),
+                        },
+                        body: JSON.stringify(payload),
+                        credentials: 'same-origin',
+                    }).then(async (res) => {
+                        const data = await res.json().catch(() => ({}));
+                        if (res.ok) {
+                            alert('Registration successful');
+                        } else {
+                            console.error(data);
+                            alert(data.error || 'Registration failed');
+                        }
+                    }).catch((err) => { console.error(err); alert('Network error'); });
+                });
+            });
+        </script>
+<div id="register-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+    <div class="w-full max-w-[520px] bg-[#111418] border border-[#283039] rounded-xl shadow-2xl overflow-hidden">
+        <div class="px-8 pt-8 pb-4">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-white text-3xl font-bold tracking-tight">Create Account</h2>
+                <button data-close class="text-[#9dabb9] hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p class="text-[#9dabb9] text-sm">Join our community of lifelong learners.</p>
+        </div>
+        <form id="register-form" method="post" action="/register/" class="px-8 py-2">
+            {% csrf_token %}
+            <div class="flex flex-wrap md:flex-nowrap gap-4 mb-4">
+                <label class="flex flex-col flex-1">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">First Name</p>
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Nombre" type="text" name="first_name" />
+                </label>
+                <label class="flex flex-col flex-1">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Last Name</p>
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Apellido" type="text" name="last_name" />
+                </label>
+            </div>
+            <div class="mb-4">
+                <label class="flex flex-col">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Email Address</p>
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="email@example.com" type="email" name="email" />
+                </label>
+            </div>
+            <div class="mb-4">
+                <label class="flex flex-col">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Phone Number</p>
+                    <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Número telefónico" type="tel" name="phone" />
+                </label>
+            </div>
+            <div class="flex flex-wrap md:flex-nowrap gap-4 mb-8">
+                <label class="flex flex-col flex-1">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Password</p>
+                    <div class="relative">
+                        <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Enter password" type="password" name="password1" />
+                    </div>
+                </label>
+                <label class="flex flex-col flex-1">
+                    <p class="text-[#9dabb9] text-xs font-semibold uppercase tracking-wider pb-2">Repeat Password</p>
+                    <div class="relative">
+                        <input class="form-input flex w-full rounded-lg text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#3b4754] bg-[#1c2127] focus:border-primary h-12 placeholder:text-[#5c6b7a] px-4 text-base font-normal transition-all" placeholder="Repeat password" type="password" name="password2" />
+                    </div>
+                </label>
+            </div>
+            <button id="register-submit" class="w-full flex items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/20" type="submit">Register</button>
+        </form>
+        <div class="px-8 pb-10 pt-6 text-center">
+            <p class="text-[#9dabb9] text-sm">Already have an account? <a id="open-login-from-register" class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#login">Login</a></p>
+        </div>
+    </div>
+</div>
