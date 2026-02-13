@@ -20,6 +20,10 @@ urlpatterns = [
     path('courses/edit/<int:course_id>/', views.edit_course, name='edit_course'),
     path('courses/delete/<int:course_id>/', views.delete_course, name='delete_course'),
     path('subscriptions/', views.subscriptions_list, name='subscriptions_list'),
+    path('subscriptions/edit/<int:subscription_id>/', views.edit_subscription, name='edit_subscription'),
+    path('subscriptions/cancel/<int:subscription_id>/', views.cancel_subscription, name='cancel_subscription'),
+    path('subscriptions/delete/<int:subscription_id>/', views.delete_subscription, name='delete_subscription'),
     path('reports/', views.reports, name='reports'),
+    path('reports/export-pdf/', views.export_report_pdf, name='export_report_pdf'),
     path('settings/membership/', views.membership_settings, name='membership_settings'),
 ]

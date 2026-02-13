@@ -557,76 +557,446 @@ def delete_course(request, course_id):
 @admin_required
 def subscriptions_list(request):
     """
-    Vista de suscripciones.
+    Vista de suscripciones con búsqueda y filtros.
     """
+    from django.db.models import Q
+    from django.core.paginator import Paginator
+    
     try:
         UserMembership = apps.get_model('membership', 'UserMembership')
         
-        memberships = UserMembership.objects.select_related(
-            'user', 'plan'
-        ).order_by('-start_date')[:50]
+        # Obtener parámetros de búsqueda y filtros
+        search_query = request.GET.get('search', '').strip()
+        plan_filter = request.GET.get('plan', '').strip().upper()
+        status_filter = request.GET.get('status', '').strip().upper()
         
+        # Comenzar con todas las membresías
+        memberships = UserMembership.objects.select_related('user', 'plan').all()
+        
+        # Aplicar búsqueda (nombre de usuario, email, o referencia de pago)
+        if search_query:
+            memberships = memberships.filter(
+                Q(user__first_name__icontains=search_query) |
+                Q(user__last_name__icontains=search_query) |
+                Q(user__email__icontains=search_query) |
+                Q(payment_reference__icontains=search_query)
+            )
+        
+        # Aplicar filtro de plan
+        if plan_filter and plan_filter in ['MONTHLY', 'ANNUAL', 'LIFETIME']:
+            memberships = memberships.filter(plan__plan_type=plan_filter)
+        
+        # Aplicar filtro de estado
+        if status_filter and status_filter in ['ACTIVE', 'PENDING', 'EXPIRED']:
+            memberships = memberships.filter(status=status_filter)
+        
+        # Ordenar por fecha de inicio (más recientes primero)
+        memberships = memberships.order_by('-start_date')
+        
+        # Aplicar paginación (10 membresías por página)
+        paginator = Paginator(memberships, 10)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        
+        # Calcular estadísticas
         total_subscriptions = UserMembership.objects.count()
         active_count = UserMembership.objects.filter(status='ACTIVE').count()
         pending_count = UserMembership.objects.filter(status='PENDING').count()
+        
+        # Obtener todos los planes para el modal de edición
+        MembershipPlan = apps.get_model('membership', 'MembershipPlan')
+        plans = MembershipPlan.objects.filter(is_active=True)
+        
     except Exception:
+        page_obj = None
         memberships = []
+        plans = []
         total_subscriptions = 0
         active_count = 0
         pending_count = 0
+        search_query = ''
+        plan_filter = ''
+        status_filter = ''
     
     context = {
         'active_nav': 'subscriptions',
         'page_title': 'Subscription History',
-        'memberships': memberships,
+        'page_obj': page_obj,
+        'memberships': page_obj if page_obj else memberships,
+        'plans': plans,
         'total_subscriptions': total_subscriptions,
         'active_count': active_count,
         'pending_count': pending_count,
+        # Pasar valores de filtros para persistencia
+        'search_query': search_query,
+        'plan_filter': plan_filter,
+        'status_filter': status_filter,
     }
     
     return render(request, 'dashboard_admin/subscriptions_list.html', context)
 
 
 @admin_required
+def edit_subscription(request, subscription_id):
+    """
+    Vista para editar una suscripción (plan y estado).
+    """
+    if request.method == 'POST':
+        try:
+            UserMembership = apps.get_model('membership', 'UserMembership')
+            MembershipPlan = apps.get_model('membership', 'MembershipPlan')
+            
+            membership = UserMembership.objects.get(pk=subscription_id)
+            user_name = f"{membership.user.first_name} {membership.user.last_name}" if membership.user.first_name or membership.user.last_name else membership.user.email
+            
+            # Obtener datos del formulario
+            new_plan_id = request.POST.get('plan_id')
+            new_status = request.POST.get('status')
+            
+            changes = []
+            
+            # Actualizar plan si cambió
+            if new_plan_id and int(new_plan_id) != membership.plan.id:
+                old_plan_name = membership.plan.name
+                new_plan = MembershipPlan.objects.get(pk=new_plan_id)
+                membership.plan = new_plan
+                changes.append(f"Plan changed from {old_plan_name} to {new_plan.name}")
+            
+            # Actualizar estado si cambió
+            if new_status and new_status != membership.status:
+                old_status = membership.status
+                membership.status = new_status
+                changes.append(f"Status changed from {old_status} to {new_status}")
+                
+                # Sincronizar estado del Payment con el estado de la membresía
+                Payment = apps.get_model('payments', 'Payment')
+                payment = Payment.objects.filter(
+                    user=membership.user,
+                    membership_plan=membership.plan,
+                    transaction_id=membership.payment_reference
+                ).first()
+                
+                if payment:
+                    # PENDING → ACTIVE: Marcar pago como COMPLETED
+                    if new_status == 'ACTIVE' and old_status == 'PENDING':
+                        payment.status = 'COMPLETED'
+                        payment.save()
+                        changes.append("Payment marked as COMPLETED")
+                    
+                    # ACTIVE → PENDING: Revertir pago a PENDING
+                    elif new_status == 'PENDING' and old_status == 'ACTIVE':
+                        payment.status = 'PENDING'
+                        payment.save()
+                        changes.append("Payment reverted to PENDING")
+                    
+                    # ACTIVE/PENDING → EXPIRED: Mantener el pago como estaba (no cambiar)
+                    # Los pagos ya procesados no deberían revertirse al expirar
+            
+            if changes:
+                membership.save()
+                from django.contrib import messages
+                messages.success(request, f'Subscription for {user_name} updated: {", ".join(changes)}')
+            else:
+                from django.contrib import messages
+                messages.info(request, 'No changes were made to the subscription.')
+                
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error updating subscription: {str(e)}')
+            
+    return redirect('dashboard_admin:subscriptions_list')
+
+
+@admin_required
+def cancel_subscription(request, subscription_id):
+    """
+    Vista para cancelar una suscripción.
+    Cambia el estado de la membresía a EXPIRED.
+    """
+    if request.method == 'POST':
+        try:
+            UserMembership = apps.get_model('membership', 'UserMembership')
+            
+            membership = UserMembership.objects.get(pk=subscription_id)
+            user_name = f"{membership.user.first_name} {membership.user.last_name}" if membership.user.first_name or membership.user.last_name else membership.user.email
+            plan_name = membership.plan.name
+            
+            # Cambiar estado a EXPIRED
+            membership.status = 'EXPIRED'
+            membership.save()
+            
+            from django.contrib import messages
+            messages.success(request, f'Subscription for {user_name} to plan "{plan_name}" has been cancelled successfully!')
+            
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error cancelling subscription: {str(e)}')
+    
+    return redirect('dashboard_admin:subscriptions_list')
+
+
+@admin_required
+def delete_subscription(request, subscription_id):
+    """
+    Vista para eliminar una suscripción.
+    Elimina el registro de la base de datos.
+    """
+    if request.method == 'POST':
+        try:
+            UserMembership = apps.get_model('membership', 'UserMembership')
+            
+            membership = UserMembership.objects.get(pk=subscription_id)
+            user_name = f"{membership.user.first_name} {membership.user.last_name}" if membership.user.first_name or membership.user.last_name else membership.user.email
+            
+            membership.delete()
+            
+            from django.contrib import messages
+            messages.success(request, f'Subscription record for {user_name} deleted successfully!')
+            
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting subscription: {str(e)}')
+    
+    return redirect('dashboard_admin:subscriptions_list')
+
+
+@admin_required
 def reports(request):
     """
-    Vista de reportes de ingresos.
+    Vista de reportes con análisis de ingresos y métricas.
+    Soporta filtrado por período (monthly, quarterly, yearly).
     """
-    User = get_user_model()
-    Course = apps.get_model('course_app', 'Course')
-    
-    # Calculate basic stats
+    from django.db.models import Sum, Count, Q
     from django.utils import timezone
     from datetime import timedelta
+    from dateutil.relativedelta import relativedelta
+    from decimal import Decimal
     
-    one_month_ago = timezone.now() - timedelta(days=30)
+    User = get_user_model()
+    Course = apps.get_model('course_app', 'Course')
+    Payment = apps.get_model('payments', 'Payment')
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    MembershipPlan = apps.get_model('membership', 'MembershipPlan')
     
+    # Obtener período seleccionado (por defecto: monthly)
+    period = request.GET.get('period', 'monthly').lower()
+    if period not in ['monthly', 'quarterly', 'yearly']:
+        period = 'monthly'
+    
+    now = timezone.now()
+    
+    # Calcular fechas según período
+    if period == 'monthly':
+        # Comenzar desde 11 meses atrás para que el mes actual sea el último
+        start_date = now.replace(day=1) - relativedelta(months=11)
+        data_points = 12
+    elif period == 'quarterly':
+        start_date = now - relativedelta(months=12)  # 4 quarters
+        data_points = 4
+    else:  # yearly
+        # Comenzar desde 4 años atrás para que el año actual sea el último
+        start_date = now.replace(month=1, day=1) - relativedelta(years=4)
+        data_points = 5
+    
+    # Calcular revenue total y por período
+    total_payments = Payment.objects.filter(
+        status='COMPLETED',
+        created_at__gte=start_date
+    )
+    
+    total_revenue = total_payments.aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    
+    # Calcular revenue del período anterior para comparación
+    if period == 'monthly':
+        prev_start = start_date - relativedelta(months=1)
+        prev_end = start_date
+    elif period == 'quarterly':
+        prev_start = start_date - relativedelta(months=3)
+        prev_end = start_date
+    else:
+        prev_start = start_date - relativedelta(years=1)
+        prev_end = start_date
+    
+    prev_revenue = Payment.objects.filter(
+        status='COMPLETED',
+        created_at__gte=prev_start,
+        created_at__lt=prev_end
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+    
+    # Calcular porcentaje de crecimiento
+    if prev_revenue > 0:
+        revenue_growth = ((total_revenue - prev_revenue) / prev_revenue) * 100
+    else:
+        revenue_growth = 0
+    
+    
+    # Generar datos del gráfico con etiquetas basadas en fechas reales
+    chart_data = []
+    for i in range(data_points):
+        if period == 'monthly':
+            period_start = start_date + relativedelta(months=i)
+            period_end = period_start + relativedelta(months=1)
+            # Usar el nombre del mes real
+            label = period_start.strftime('%b')  # Jan, Feb, Mar, etc.
+        elif period == 'quarterly':
+            period_start = start_date + relativedelta(months=i*3)
+            period_end = period_start + relativedelta(months=3)
+            # Usar Q1, Q2, etc. con el año si es necesario
+            quarter_num = (period_start.month - 1) // 3 + 1
+            label = f'Q{quarter_num}'
+        else:
+            period_start = start_date + relativedelta(years=i)
+            period_end = period_start + relativedelta(years=1)
+            # Usar el año real
+            label = str(period_start.year)
+        
+        period_revenue = Payment.objects.filter(
+            status='COMPLETED',
+            created_at__gte=period_start,
+            created_at__lt=period_end
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        
+        chart_data.append({
+            'label': label,
+            'value': float(period_revenue),
+            'height': min(90, max(10, (float(period_revenue) / float(total_revenue) * 100) if total_revenue > 0 else 10)),
+            'period_start': period_start,
+            'period_end': period_end
+        })
+    
+    # Calcular market share por plan
+    plan_distribution = UserMembership.objects.filter(
+        status='ACTIVE'
+    ).values('plan__name').annotate(
+        count=Count('id')
+    )
+    
+    total_active = UserMembership.objects.filter(status='ACTIVE').count()
+    market_share = []
+    
+    for item in plan_distribution:
+        if total_active > 0:
+            percentage = (item['count'] / total_active) * 100
+            market_share.append({
+                'name': item['plan__name'] or 'Unknown',
+                'count': item['count'],
+                'percentage': round(percentage, 1)
+            })
+    
+    # Calcular estadísticas de usuarios
+    one_month_ago = now - timedelta(days=30)
     user_stats = {
         'total_users': User.objects.count(),
         'new_users_this_month': User.objects.filter(date_joined__gte=one_month_ago).count()
     }
     
+    # Calcular estadísticas de cursos
     course_stats = {
         'total_courses': Course.objects.count(),
         'published_courses': Course.objects.filter(publicado=True).count()
     }
     
-    # Default revenue values (placeholders)
-    revenue_month = {'current_revenue': 45230, 'goal': 52000, 'progress_percentage': 87}
-    revenue_quarter = {'current_revenue': 128430, 'goal': 156000, 'progress_percentage': 82}
-    revenue_year = {'current_revenue': 452300, 'goal': 600000, 'progress_percentage': 75}
+    # Calcular transacción promedio
+    completed_payments = Payment.objects.filter(status='COMPLETED')
+    avg_transaction = completed_payments.aggregate(avg=Sum('amount'))['avg'] or Decimal('0.00')
+    if completed_payments.count() > 0:
+        avg_transaction = avg_transaction / completed_payments.count()
+    
+    # Calcular tasa de retención (active / total memberships created)
+    total_memberships = UserMembership.objects.count()
+    active_memberships = UserMembership.objects.filter(status='ACTIVE').count()
+    retention_rate = (active_memberships / total_memberships * 100) if total_memberships > 0 else 0
+    
+    # Calcular forecast simple (promedio de últimos 3 períodos proyectado)
+    if len(chart_data) >= 3:
+        recent_avg = sum([d['value'] for d in chart_data[-3:]]) / 3
+        forecast_growth = recent_avg
+    else:
+        forecast_growth = 0
     
     context = {
         'active_nav': 'reports',
         'page_title': 'Revenue Analytics',
+        'period': period,
         'user_stats': user_stats,
         'course_stats': course_stats,
-        'revenue_month': revenue_month,
-        'revenue_quarter': revenue_quarter,
-        'revenue_year': revenue_year,
+        'total_revenue': float(total_revenue),
+        'revenue_growth': round(float(revenue_growth), 1),
+        'chart_data': chart_data,
+        'market_share': market_share,
+        'avg_transaction': float(avg_transaction),
+        'retention_rate': round(retention_rate, 1),
+        'forecast_growth': round(forecast_growth, 2),
     }
     
     return render(request, 'dashboard_admin/reports.html', context)
+
+
+@admin_required
+def export_report_pdf(request):
+    """
+    Exporta el reporte actual como PDF.
+    Usa WeasyPrint o similar para generar PDF desde HTML.
+    """
+    from django.http import HttpResponse
+    from django.template.loader import render_to_string
+    
+    # Por ahora, retornar mensaje de funcionalidad en desarrollo
+    # TODO: Implementar generación de PDF con WeasyPrint o ReportLab
+    
+    period = request.GET.get('period', 'monthly')
+    
+    # Mensaje temporal (cuando se implemente PDF real, reemplazar)
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Revenue Report - {period.title()}</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; padding: 40px; }}
+            h1 {{ color: #137FEC; }}
+            p {{ color: #666; }}
+            .info {{ background: #f5f5f5; padding: 20px; border-radius: 8px; }}
+        </style>
+    </head>
+    <body>
+        <h1>📊 Revenue Report ({period.title()})</h1>
+        <div class="info">
+            <p><strong>Status:</strong> PDF Export feature is ready for implementation</p>
+            <p><strong>Period:</strong> {period.title()}</p>
+            <p><strong>Next Steps:</strong> Install WeasyPrint or ReportLab for full PDF generation</p>
+            <p><strong>Note:</strong> This is a placeholder. The real implementation will include charts, tables, and all metrics.</p>
+        </div>
+        <h2>Installation Instructions:</h2>
+        <pre>pip install weasyprint</pre>
+        <p>Then uncomment the PDF generation code in the view.</p>
+    </body>
+    </html>
+    """
+    
+    return HttpResponse(html_content, content_type='text/html')
+    
+    # CÓDIGO PARA PDF REAL (descomentar cuando se instale WeasyPrint):
+    # try:
+    #     from weasyprint import HTML
+    #     
+    #     # Obtener los mismos datos del reporte
+    #     context = reports(request).context_data  # Obtener contexto del reporte
+    #     
+    #     # Renderizar template específico para PDF
+    #     html_string = render_to_string('dashboard_admin/reports_pdf.html', context)
+    #     
+    #     # Generar PDF
+    #     pdf_file = HTML(string=html_string).write_pdf()
+    #     
+    #     # Retornar como descarga
+    #     response = HttpResponse(pdf_file, content_type='application/pdf')
+    #     response['Content-Disposition'] = f'attachment; filename="revenue_report_{period}.pdf"'
+    #     return response
+    # except ImportError:
+    #     return HttpResponse("WeasyPrint no está instalado. Por favor instala: pip install weasyprint")
+
 
 
 @admin_required

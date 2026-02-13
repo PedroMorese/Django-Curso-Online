@@ -225,16 +225,17 @@ def membership_subscribe_redirect(request, plan_slug):
         else:
             end_date = start_date + relativedelta(months=1)
         
+        # Crear membresía en estado PENDING (requiere aprobación del admin)
         UserMembership.objects.create(
             user=request.user,
             plan=plan,
             start_date=start_date,
             end_date=end_date,
-            status='ACTIVE',
+            status='PENDING',
             payment_reference='DEMO-' + str(request.user.id)
         )
         
-        messages.success(request, f'¡Suscripción a {plan.name} activada!')
+        messages.success(request, f'¡Solicitud de suscripción a {plan.name} enviada! Espera la aprobación del administrador.')
         return redirect('home:index')
         
     except Exception:

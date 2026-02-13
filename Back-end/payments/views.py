@@ -211,7 +211,7 @@ def process_payment(request):
         # Generar ID de transacción único
         transaction_id = generate_transaction_id()
         
-        # Crear registro de pago
+        # Crear registro de pago en estado PENDING (requiere aprobación del admin)
         payment = Payment.objects.create(
             user=request.user,
             membership_plan=plan,
@@ -221,7 +221,7 @@ def process_payment(request):
             card_last_four=card_last_four,
             card_brand=card_brand,
             cardholder_name=cardholder_name,
-            status='COMPLETED',  # En DEMO siempre es exitoso
+            status='PENDING',
             transaction_id=transaction_id
         )
         
@@ -234,13 +234,13 @@ def process_payment(request):
         else:
             end_date = start_date + relativedelta(months=1)
         
-        # Crear membresía
+        # Crear membresía en estado PENDING (requiere aprobación del admin)
         membership = UserMembership.objects.create(
             user=request.user,
             plan=plan,
             start_date=start_date,
             end_date=end_date,
-            status='ACTIVE',
+            status='PENDING',
             payment_reference=transaction_id
         )
         
@@ -249,7 +249,7 @@ def process_payment(request):
             'payment_id': payment.id,
             'transaction_id': transaction_id,
             'membership_id': membership.id,
-            'message': f'¡Pago procesado exitosamente! Membresía {plan.name} activada.',
+            'message': f'¡Pago procesado exitosamente! Tu solicitud de membresía {plan.name} está pendiente de aprobación por el administrador.',
             'redirect_url': '/membership/payment/success/'
         })
         
