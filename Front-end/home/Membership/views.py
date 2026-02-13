@@ -113,22 +113,26 @@ def membership_plans(request):
 
 def subscribe(request, plan_slug):
     """
-    Inicia el proceso de suscripción a un plan.
+    Redirige al proceso de checkout para suscribirse a un plan.
+    
+    Esta función ya NO crea membresías directamente.
+    Las membresías solo se crean cuando se procesa un pago exitoso.
     """
     if not request.user.is_authenticated:
+        # Guardar el plan seleccionado en la sesión
+        request.session['pending_subscription'] = plan_slug
         messages.info(request, 'Inicia sesión para suscribirte.')
-        return redirect('Auth:login')
+        return redirect('home:login')
     
     try:
         MembershipPlan = apps.get_model('membership', 'MembershipPlan')
         UserMembership = apps.get_model('membership', 'UserMembership')
         from django.utils import timezone
-        from dateutil.relativedelta import relativedelta
         
         plan = MembershipPlan.objects.filter(slug=plan_slug, is_active=True).first()
         if not plan:
             messages.error(request, 'Plan no encontrado.')
-            return redirect('membership_ux:plans')
+            return redirect('home:membership_plans')
         
         # Verificar si ya tiene membresía activa
         existing = UserMembership.objects.filter(
@@ -140,30 +144,86 @@ def subscribe(request, plan_slug):
         
         if existing:
             messages.info(request, 'Ya tienes una membresía activa.')
-            return redirect('membership_ux:plans')
+            return redirect('home:membership_plans')
         
-        # Calcular fechas
-        start_date = timezone.now()
-        if plan.plan_type == 'MONTHLY':
-            end_date = start_date + relativedelta(months=1)
-        elif plan.plan_type == 'ANNUAL':
-            end_date = start_date + relativedelta(years=1)
-        else:
-            end_date = start_date + relativedelta(months=1)
-        
-        # Crear membresía (en producción iría a pasarela de pago)
-        membership = UserMembership.objects.create(
-            user=request.user,
-            plan=plan,
-            start_date=start_date,
-            end_date=end_date,
-            status='ACTIVE',
-            payment_reference='DEMO-' + str(request.user.id)
-        )
-        
-        messages.success(request, f'¡Suscripción a {plan.name} activada exitosamente!')
-        return redirect('home:index')
+        # Redirigir al checkout para procesar el pago
+        # La membresía se creará SOLO cuando el pago sea exitoso
+        return redirect('home:membership_checkout', plan_slug=plan_slug)
         
     except Exception as e:
         messages.error(request, 'Servicio no disponible temporalmente.')
-        return redirect('membership_ux:plans')
+        return redirect('home:membership_plans')
+
+
+
+def checkout(request, plan_slug):
+    """
+    Página de checkout para procesar el pago.
+    
+    Muestra el formulario de pago y el resumen del plan seleccionado.
+    """
+    if not request.user.is_authenticated:
+        # Guardar el plan seleccionado en la sesión
+        request.session['pending_subscription'] = plan_slug
+        messages.info(request, 'Inicia sesión para continuar con el pago.')
+        return redirect('home:login')
+    
+    try:
+        MembershipPlan = apps.get_model('membership', 'MembershipPlan')
+        UserMembership = apps.get_model('membership', 'UserMembership')
+        from django.utils import timezone
+        
+        # Obtener el plan
+        plan = MembershipPlan.objects.filter(slug=plan_slug, is_active=True).first()
+        if not plan:
+            messages.error(request, 'Plan no encontrado.')
+            return redirect('membership_ux:plans')
+        
+        # Verificar si ya tiene membresía activa
+        existing_membership = UserMembership.objects.filter(
+            user=request.user,
+            status='ACTIVE',
+            start_date__lte=timezone.now(),
+            end_date__gte=timezone.now()
+        ).first()
+        
+        if existing_membership:
+            messages.info(request, 'Ya tienes una membresía activa.')
+            return redirect('membership_ux:plans')
+        
+        # Preparar datos del plan para el template
+        plan_data = {
+            'id': plan.id,
+            'name': plan.name,
+            'slug': plan.slug,
+            'description': plan.description,
+            'price': plan.price,
+            'original_price': plan.original_price,
+            'savings': plan.savings,
+            'plan_type': plan.plan_type,
+            'features': plan.features if plan.features else [],
+            'is_featured': plan.is_featured
+        }
+        
+        context = {
+            'plan': plan_data
+        }
+        
+        return render(request, 'membership/checkout.html', context)
+        
+    except Exception as e:
+        messages.error(request, 'Error al cargar la página de pago.')
+        return redirect('home:membership_plans')
+
+
+def payment_success(request):
+    """
+    Página de confirmación de pago exitoso.
+    
+    Muestra un mensaje de éxito y opciones para continuar.
+    """
+    if not request.user.is_authenticated:
+        return redirect('home:login')
+    
+    return render(request, 'membership/payment_success.html')
+

@@ -5,35 +5,67 @@
 {% block page_title %}Platform User Management{% endblock %}
 
 {% block page_actions %}
-<button class="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+<a href="{% url 'dashboard_admin:create_user' %}" class="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
     <span class="material-symbols-outlined text-sm">person_add</span>
     Provision New User
-</button>
+</a>
 {% endblock %}
 
 {% block admin_content %}
 <div class="space-y-8">
     <!-- Filters Hub -->
     <div class="card p-6 border-b-2 border-b-primary/20">
-        <div class="flex flex-wrap gap-6 items-center">
-            <div class="flex-1 min-w-[300px] relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#637588] text-sm">search</span>
-                <input type="text" class="w-full bg-background-dark border border-border-dark rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-[#232d38]" placeholder="Query users by name or UID...">
+        <form method="GET" action="{% url 'dashboard_admin:users_list' %}" id="filterForm">
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="flex-1 min-w-[300px] relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#637588] text-sm">search</span>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ search_query }}"
+                        class="w-full bg-background-dark border border-border-dark rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-[#637588]" 
+                        placeholder="Query users by name or UID..."
+                    >
+                </div>
+                <div class="flex gap-4">
+                    <select 
+                        name="role"
+                        class="bg-charcoal border border-border-dark rounded-xl pl-4 pr-10 py-2.5 text-xs font-bold text-[#9dabb9] uppercase tracking-widest focus:ring-primary focus:border-primary"
+                        onchange="document.getElementById('filterForm').submit()"
+                    >
+                        <option value="">Filter Category</option>
+                        <option value="ADMIN" {% if role_filter == 'ADMIN' %}selected{% endif %}>ADMIN</option>
+                        <option value="PROFESOR" {% if role_filter == 'PROFESOR' %}selected{% endif %}>PROFESOR</option>
+                        <option value="CLIENTE" {% if role_filter == 'CLIENTE' %}selected{% endif %}>CLIENTE</option>
+                    </select>
+                    <select 
+                        name="status"
+                        class="bg-charcoal border border-border-dark rounded-xl pl-4 pr-10 py-2.5 text-xs font-bold text-[#9dabb9] uppercase tracking-widest focus:ring-primary focus:border-primary"
+                        onchange="document.getElementById('filterForm').submit()"
+                    >
+                        <option value="">System Status</option>
+                        <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>ACTIVE</option>
+                        <option value="INACTIVE" {% if status_filter == 'INACTIVE' %}selected{% endif %}>INACTIVE</option>
+                    </select>
+                    <button 
+                        type="submit"
+                        class="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                    >
+                        <span class="material-symbols-outlined text-sm">search</span>
+                        Search
+                    </button>
+                    {% if search_query or role_filter or status_filter %}
+                    <a 
+                        href="{% url 'dashboard_admin:users_list' %}"
+                        class="bg-charcoal text-[#9dabb9] px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark flex items-center gap-2"
+                    >
+                        <span class="material-symbols-outlined text-sm">close</span>
+                        Clear
+                    </a>
+                    {% endif %}
+                </div>
             </div>
-            <div class="flex gap-4">
-                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
-                    <option>Filter Category</option>
-                    <option>ADMIN</option>
-                    <option>PROFESOR</option>
-                    <option>CLIENTE</option>
-                </select>
-                <select class="bg-charcoal border border-border-dark rounded-xl px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest focus:ring-primary focus:border-primary">
-                    <option>System Status</option>
-                    <option>ACTIVE</option>
-                    <option>SUSPENDED</option>
-                </select>
-            </div>
-        </div>
+        </form>
     </div>
 
     <!-- Data Table -->
@@ -50,7 +82,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-border-dark">
-                {% for user in users %}
+                {% for user in page_obj %}
                 <tr class="hover:bg-primary/5 transition-colors group">
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
@@ -91,10 +123,10 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <button class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-white hover:border-primary transition-all">
+                            <a href="{% url 'dashboard_admin:edit_user' user.id %}" class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-white hover:border-primary transition-all">
                                 <span class="material-symbols-outlined text-sm">edit</span>
-                            </button>
-                            <button class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-red-400 hover:border-red-400 transition-all">
+                            </a>
+                            <button onclick="confirmDelete({{ user.id }}, '{{ user.first_name }} {{ user.last_name }}')" class="size-8 flex items-center justify-center rounded-lg bg-charcoal border border-border-dark text-[#637588] hover:text-red-400 hover:border-red-400 transition-all">
                                 <span class="material-symbols-outlined text-sm">delete</span>
                             </button>
                         </div>
@@ -112,16 +144,57 @@
         </table>
     </div>
 
-    <!-- Registry Footer -->
-    <div class="flex items-center justify-between px-2">
-        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest">
-            Synchronized: <span class="text-white">{{ users|length }}</span> of platform population
-        </p>
-        <div class="flex gap-4">
-            <button class="px-4 py-2 bg-charcoal border border-border-dark rounded-lg text-[10px] font-black uppercase tracking-widest text-[#637588] hover:text-white transition-colors">Previous</button>
-            <button class="px-4 py-2 bg-charcoal border border-border-dark rounded-lg text-[10px] font-black uppercase tracking-widest text-[#637588] hover:text-white transition-colors">Next Phase</button>
+    <!-- Pagination Controls -->
+    <div class="flex items-center justify-between pt-8 border-t border-border-dark">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-[#637588]">
+            Synchronized: <span class="text-primary">{{ page_obj.start_index }}-{{ page_obj.end_index }}</span> of <span class="text-primary">{{ page_obj.paginator.count }}</span> Platform Population
+        </div>
+        <div class="flex gap-3">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="px-6 py-2.5 rounded-lg bg-charcoal border border-border-dark text-[#9dabb9] text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all">
+                Previous
+            </a>
+            {% else %}
+            <button disabled class="px-6 py-2.5 rounded-lg bg-charcoal border border-border-dark text-[#637588] text-xs font-bold uppercase tracking-widest opacity-50 cursor-not-allowed">
+                Previous
+            </button>
+            {% endif %}
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="px-6 py-2.5 rounded-lg bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                Next Phase
+            </a>
+            {% else %}
+            <button disabled class="px-6 py-2.5 rounded-lg bg-charcoal border border-border-dark text-[#637588] text-xs font-bold uppercase tracking-widest opacity-50 cursor-not-allowed">
+                Next Phase
+            </button>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+function confirmDelete(userId, userName) {
+    if (confirm(`¿Estás seguro de que deseas eliminar al usuario "${userName}"?\n\nEsta acción no se puede deshacer.`)) {
+        // Create a form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/dashboard/admin/users/delete/${userId}/`;
+        
+        // Add CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken.value;
+            form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 {% endblock %}
 

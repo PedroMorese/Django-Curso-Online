@@ -1,0 +1,147 @@
+{% extends "dashboard_admin/base_admin.html" %}
+
+{% block title %}Edit Course - EduMinimal Admin{% endblock %}
+{% block page_name %}Course Management{% endblock %}
+{% block page_title %}Edit Course Metadata{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'dashboard_admin:courses_list' %}" class="bg-charcoal text-[#9dabb9] px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark flex items-center gap-2">
+    <span class="material-symbols-outlined text-sm">arrow_back</span>
+    Back to Catalog
+</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="max-w-4xl">
+    <div class="card p-8 border border-border-dark">
+        <form method="POST" action="{% url 'dashboard_admin:edit_course' course.id %}">
+            {% csrf_token %}
+            
+            <!-- Course Title -->
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-[#637588] uppercase tracking-widest mb-2">
+                    Course Title *
+                </label>
+                <input 
+                    type="text" 
+                    name="titulo" 
+                    value="{{ course.titulo }}"
+                    class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    required
+                >
+            </div>
+
+            <!-- Description -->
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-[#637588] uppercase tracking-widest mb-2">
+                    Description
+                </label>
+                <textarea 
+                    name="descripcion" 
+                    rows="4"
+                    class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"
+                >{{ course.descripcion }}</textarea>
+            </div>
+
+            <!-- Cover Image URL -->
+            <div class="mb-6">
+                <label class="block text-xs font-bold text-[#637588] uppercase tracking-widest mb-2">
+                    Cover Image URL
+                </label>
+                <input 
+                    type="url" 
+                    name="imagen_portada" 
+                    value="{% if course.imagen_portada %}{{ course.imagen_portada }}{% endif %}"
+                    class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="https://example.com/image.jpg"
+                >
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <!-- Difficulty Level -->
+                <div>
+                    <label class="block text-xs font-bold text-[#637588] uppercase tracking-widest mb-2">
+                        Difficulty Level *
+                    </label>
+                    <style>
+                        select[name="nivel"] option {
+                            background-color: white !important;
+                            color: #1a2332 !important;
+                        }
+                        select[name="nivel"] {
+                            color-scheme: light;
+                        }
+                    </style>
+                    <select 
+                        name="nivel"
+                        class="w-full bg-charcoal border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none"
+                        style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%239dabb9%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; background-color: #1a2332;"
+                        required
+                    >
+                        <option value="PRINCIPIANTE" {% if course.nivel == 'PRINCIPIANTE' %}selected{% endif %}>Principiante</option>
+                        <option value="INTERMEDIO" {% if course.nivel == 'INTERMEDIO' %}selected{% endif %}>Intermedio</option>
+                        <option value="AVANZADO" {% if course.nivel == 'AVANZADO' %}selected{% endif %}>Avanzado</option>
+                    </select>
+                </div>
+
+                <!-- Published Status -->
+                <div>
+                    <label class="block text-xs font-bold text-[#637588] uppercase tracking-widest mb-2">
+                        Publication Status
+                    </label>
+                    <label class="flex items-center gap-3 bg-background-dark border border-border-dark rounded-xl px-4 py-3 cursor-pointer hover:border-primary transition-all">
+                        <input 
+                            type="checkbox" 
+                            name="publicado"
+                            {% if course.publicado %}checked{% endif %}
+                            class="w-5 h-5 rounded bg-charcoal border-border-dark text-primary focus:ring-primary focus:ring-offset-0"
+                        >
+                        <span class="text-sm text-white font-medium">Published</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Professor Info (Read-only) -->
+            <div class="mb-8 p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl">
+                <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-2">Course Owner</p>
+                <div class="flex items-center gap-3">
+                    <div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                        {{ course.profesor.first_name|slice:":1"|upper }}{{ course.profesor.last_name|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-white">{{ course.profesor.first_name }} {{ course.profesor.last_name }}</p>
+                        <p class="text-xs text-[#637588]">{{ course.profesor.email }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Messages -->
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div class="p-4 rounded-xl border {% if message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-400{% else %}bg-emerald-500/10 border-emerald-500/30 text-emerald-400{% endif %}">
+                    <p class="text-sm font-medium">{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button 
+                    type="submit"
+                    class="flex-1 bg-primary text-white px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                >
+                    Save Changes
+                </button>
+                <a 
+                    href="{% url 'dashboard_admin:courses_list' %}"
+                    class="flex-1 bg-charcoal text-[#9dabb9] px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark text-center"
+                >
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

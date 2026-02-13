@@ -1,0 +1,169 @@
+{% extends "dashboard_admin/base_admin.html" %}
+
+{% block title %}Create User - EduMinimal Admin{% endblock %}
+{% block page_name %}User Management{% endblock %}
+{% block page_title %}Provision New User{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'dashboard_admin:users_list' %}" class="bg-charcoal text-[#9dabb9] px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark flex items-center gap-2">
+    <span class="material-symbols-outlined text-sm">arrow_back</span>
+    Back to Users
+</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="space-y-8">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="space-y-3">
+        {% for message in messages %}
+        <div class="card p-4 border-l-4 {% if message.tags == 'error' %}border-red-500 bg-red-500/10{% elif message.tags == 'success' %}border-emerald-500 bg-emerald-500/10{% else %}border-primary bg-primary/10{% endif %}">
+            <p class="text-sm font-medium {% if message.tags == 'error' %}text-red-400{% elif message.tags == 'success' %}text-emerald-400{% else %}text-primary{% endif %}">
+                {{ message }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Create Form -->
+    <div class="card p-8">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- First Name -->
+                <div>
+                    <label for="first_name" class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                        First Name
+                    </label>
+                    <input 
+                        type="text" 
+                        id="first_name" 
+                        name="first_name" 
+                        value="{% if form_data %}{{ form_data.first_name }}{% endif %}"
+                        class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                        placeholder="Enter first name"
+                    >
+                </div>
+
+                <!-- Last Name -->
+                <div>
+                    <label for="last_name" class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                        Last Name
+                    </label>
+                    <input 
+                        type="text" 
+                        id="last_name" 
+                        name="last_name" 
+                        value="{% if form_data %}{{ form_data.last_name }}{% endif %}"
+                        class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                        placeholder="Enter last name"
+                    >
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                    Email Address <span class="text-red-400">*</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value="{% if form_data %}{{ form_data.email }}{% endif %}"
+                    required
+                    class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="user@example.com"
+                >
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password" class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                    Password <span class="text-red-400">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required
+                    minlength="6"
+                    class="w-full bg-background-dark border border-border-dark rounded-xl px-4 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="Minimum 6 characters"
+                >
+                <p class="mt-1 text-xs text-[#637588]">Password must be at least 6 characters long</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Role -->
+                <div>
+                    <label for="role" class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                        User Role <span class="text-red-400">*</span>
+                    </label>
+                    <select 
+                        id="role" 
+                        name="role" 
+                        required
+                        class="w-full bg-background-dark border border-border-dark rounded-xl pl-4 pr-10 py-3 text-sm text-white focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                    >
+                        <option value="">Select a role</option>
+                        <option value="CLIENTE" {% if form_data and form_data.role == 'CLIENTE' %}selected{% endif %}>CLIENTE</option>
+                        <option value="PROFESOR" {% if form_data and form_data.role == 'PROFESOR' %}selected{% endif %}>PROFESOR</option>
+                        <option value="ADMIN" {% if form_data and form_data.role == 'ADMIN' %}selected{% endif %}>ADMIN</option>
+                    </select>
+                </div>
+
+                <!-- Active Status -->
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-[#637588] mb-2">
+                        Account Status
+                    </label>
+                    <div class="flex items-center gap-3 h-[46px]">
+                        <input 
+                            type="checkbox" 
+                            id="is_active" 
+                            name="is_active"
+                            {% if not form_data or form_data.is_active %}checked{% endif %}
+                            class="size-5 rounded bg-background-dark border-border-dark text-primary focus:ring-primary focus:ring-offset-0"
+                        >
+                        <label for="is_active" class="text-sm font-medium text-white cursor-pointer">
+                            Active User
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-primary/10 border border-primary/20 rounded-xl p-4">
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary text-xl">info</span>
+                    <div class="text-xs text-[#9dabb9] space-y-1">
+                        <p><span class="font-bold text-white">Email</span> will be used as the username for login</p>
+                        <p><span class="font-bold text-white">Password</span> can be changed later by the user</p>
+                        <p><span class="font-bold text-white">Role</span> determines user permissions in the system</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-4 pt-4 border-t border-border-dark">
+                <button 
+                    type="submit"
+                    class="bg-primary text-white px-8 py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                >
+                    <span class="material-symbols-outlined text-sm">person_add</span>
+                    Create User
+                </button>
+                <a 
+                    href="{% url 'dashboard_admin:users_list' %}"
+                    class="bg-charcoal text-[#9dabb9] px-8 py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark"
+                >
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

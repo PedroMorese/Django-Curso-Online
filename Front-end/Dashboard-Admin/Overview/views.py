@@ -126,31 +126,306 @@ def overview(request):
 @admin_required
 def users_list(request):
     """
-    Vista de gestión de usuarios.
+    Vista de gestión de usuarios con búsqueda y filtros.
     """
+    from django.db.models import Q
+    from django.core.paginator import Paginator
+    
     User = get_user_model()
     
-    users = User.objects.all().order_by('-date_joined')[:50]
+    # Obtener parámetros de búsqueda y filtros
+    search_query = request.GET.get('search', '').strip()
+    role_filter = request.GET.get('role', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    
+    # Comenzar con todos los usuarios
+    users = User.objects.all()
+    
+    # Aplicar búsqueda (nombre, email, o ID)
+    if search_query:
+        users = users.filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(id__icontains=search_query)
+        )
+    
+    # Aplicar filtro de rol
+    if role_filter and role_filter in ['ADMIN', 'PROFESOR', 'CLIENTE']:
+        users = users.filter(role=role_filter)
+    
+    # Aplicar filtro de estado
+    if status_filter == 'ACTIVE':
+        users = users.filter(is_active=True)
+    elif status_filter == 'INACTIVE':
+        users = users.filter(is_active=False)
+    
+    # Ordenar por fecha de registro (más recientes primero)
+    users = users.order_by('-date_joined')
+    
+    # Aplicar paginación (10 usuarios por página)
+    paginator = Paginator(users, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
     total_users = User.objects.count()
     
     context = {
         'active_nav': 'users',
         'page_title': 'User Management',
-        'users': users,
+        'page_obj': page_obj,
         'total_users': total_users,
+        # Pasar valores de filtros para persistencia en el formulario
+        'search_query': search_query,
+        'role_filter': role_filter,
+        'status_filter': status_filter,
     }
     
     return render(request, 'dashboard_admin/users_list.html', context)
 
 
 @admin_required
+def edit_user(request, user_id):
+    """
+    Vista de edición de usuario.
+    Permite al admin modificar información del usuario.
+    """
+    User = get_user_model()
+    
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        from django.contrib import messages
+        messages.error(request, 'User not found.')
+        return redirect('dashboard_admin:users_list')
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        role = request.POST.get('role', '').upper()
+        is_active = request.POST.get('is_active') == 'on'
+        
+        # Validaciones
+        errors = []
+        
+        if not email:
+            errors.append('Email is required.')
+        
+        if not role or role not in ['ADMIN', 'PROFESOR', 'CLIENTE']:
+            errors.append('Invalid role selected.')
+        
+        # Verificar email único (excluyendo el usuario actual)
+        if email and User.objects.filter(email=email).exclude(pk=user_id).exists():
+            errors.append('A user with this email already exists.')
+        
+        if errors:
+            from django.contrib import messages
+            for error in errors:
+                messages.error(request, error)
+            
+            context = {
+                'active_nav': 'users',
+                'page_title': 'Edit User',
+                'edit_user': user,
+                'form_data': {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'email': email,
+                    'role': role,
+                    'is_active': is_active,
+                }
+            }
+            return render(request, 'dashboard_admin/user_edit.html', context)
+        
+        # Actualizar usuario
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.role = role
+        user.is_active = is_active
+        user.save()
+        
+        from django.contrib import messages
+        messages.success(request, f'User {user.first_name} {user.last_name} updated successfully!')
+        return redirect('dashboard_admin:users_list')
+    
+    # GET request - mostrar formulario
+    context = {
+        'active_nav': 'users',
+        'page_title': 'Edit User',
+        'edit_user': user,
+    }
+    
+    return render(request, 'dashboard_admin/user_edit.html', context)
+
+
+@admin_required
+def create_user(request):
+    """
+    Vista de creación de usuario.
+    Permite al admin crear nuevos usuarios.
+    """
+    User = get_user_model()
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
+        role = request.POST.get('role', '').upper()
+        is_active = request.POST.get('is_active') == 'on'
+        
+        # Validaciones
+        errors = []
+        
+        if not email:
+            errors.append('Email is required.')
+        
+        if not password:
+            errors.append('Password is required.')
+        elif len(password) < 6:
+            errors.append('Password must be at least 6 characters long.')
+        
+        if not role or role not in ['ADMIN', 'PROFESOR', 'CLIENTE']:
+            errors.append('Invalid role selected.')
+        
+        # Verificar email único
+        if email and User.objects.filter(email=email).exists():
+            errors.append('A user with this email already exists.')
+        
+        if errors:
+            from django.contrib import messages
+            for error in errors:
+                messages.error(request, error)
+            
+            context = {
+                'active_nav': 'users',
+                'page_title': 'Create User',
+                'form_data': {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'email': email,
+                    'role': role,
+                    'is_active': is_active,
+                }
+            }
+            return render(request, 'dashboard_admin/user_create.html', context)
+        
+        # Crear usuario
+        try:
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+            )
+            user.role = role
+            user.is_active = is_active
+            user.save()
+            
+            from django.contrib import messages
+            messages.success(request, f'User {user.first_name} {user.last_name} created successfully!')
+            return redirect('dashboard_admin:users_list')
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error creating user: {str(e)}')
+            
+            context = {
+                'active_nav': 'users',
+                'page_title': 'Create User',
+                'form_data': {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'email': email,
+                    'role': role,
+                    'is_active': is_active,
+                }
+            }
+            return render(request, 'dashboard_admin/user_create.html', context)
+    
+    # GET request - mostrar formulario
+    context = {
+        'active_nav': 'users',
+        'page_title': 'Create User',
+    }
+    
+    return render(request, 'dashboard_admin/user_create.html', context)
+
+
+@admin_required
+def delete_user(request, user_id):
+    """
+    Vista de eliminación de usuario.
+    Permite al admin eliminar usuarios.
+    """
+    if request.method == 'POST':
+        User = get_user_model()
+        
+        try:
+            user = User.objects.get(pk=user_id)
+            user_name = f"{user.first_name} {user.last_name}" if user.first_name or user.last_name else user.email
+            user.delete()
+            
+            from django.contrib import messages
+            messages.success(request, f'User {user_name} deleted successfully!')
+        except User.DoesNotExist:
+            from django.contrib import messages
+            messages.error(request, 'User not found.')
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting user: {str(e)}')
+    
+    return redirect('dashboard_admin:users_list')
+
 def courses_list(request):
     """
-    Vista de catálogo de cursos (admin).
+    Vista de catálogo de cursos (admin) con búsqueda y filtros.
     """
+    from django.db.models import Q
+    from django.core.paginator import Paginator
+    
     Course = apps.get_model('course_app', 'Course')
     
-    courses = Course.objects.select_related('profesor').all().order_by('-fecha_creacion')[:50]
+    # Obtener parámetros de búsqueda y filtros
+    search_query = request.GET.get('search', '').strip()
+    difficulty_filter = request.GET.get('difficulty', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+    
+    # Comenzar con todos los cursos
+    courses = Course.objects.select_related('profesor').all()
+    
+    # Aplicar búsqueda (título, profesor, o ID)
+    if search_query:
+        courses = courses.filter(
+            Q(titulo__icontains=search_query) |
+            Q(profesor__first_name__icontains=search_query) |
+            Q(profesor__last_name__icontains=search_query) |
+            Q(profesor__email__icontains=search_query) |
+            Q(id__icontains=search_query)
+        )
+    
+    # Aplicar filtro de dificultad
+    if difficulty_filter and difficulty_filter in ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO']:
+        courses = courses.filter(nivel=difficulty_filter)
+    
+    # Aplicar filtro de estado
+    if status_filter == 'PUBLISHED':
+        courses = courses.filter(publicado=True)
+    elif status_filter == 'DRAFT':
+        courses = courses.filter(publicado=False)
+    
+    # Ordenar por fecha de creación
+    courses = courses.order_by('-fecha_creacion')
+    
+    # Aplicar paginación (9 cursos por página)
+    paginator = Paginator(courses, 9)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
     total_courses = Course.objects.count()
     published_count = Course.objects.filter(publicado=True).count()
     draft_count = Course.objects.filter(publicado=False).count()
@@ -158,13 +433,125 @@ def courses_list(request):
     context = {
         'active_nav': 'courses',
         'page_title': 'Course Catalog',
-        'courses': courses,
+        'page_obj': page_obj,
         'total_courses': total_courses,
         'published_count': published_count,
         'draft_count': draft_count,
+        # Pasar valores de filtros para persistencia
+        'search_query': search_query,
+        'difficulty_filter': difficulty_filter,
+        'status_filter': status_filter,
     }
     
     return render(request, 'dashboard_admin/courses_list.html', context)
+
+
+@admin_required
+def view_course(request, course_id):
+    """
+    Vista de detalles de curso (admin).
+    Muestra información del curso.
+    """
+    Course = apps.get_model('course_app', 'Course')
+    
+    try:
+        course = Course.objects.select_related('profesor').get(pk=course_id)
+    except Course.DoesNotExist:
+        from django.contrib import messages
+        messages.error(request, 'Course not found.')
+        return redirect('dashboard_admin:courses_list')
+    
+    context = {
+        'active_nav': 'courses',
+        'page_title': 'Course Details',
+        'course': course,
+    }
+    
+    return render(request, 'dashboard_admin/course_view.html', context)
+
+
+@admin_required
+def edit_course(request, course_id):
+    """
+    Vista de edición de curso (admin).
+    Permite editar metadata del curso.
+    """
+    Course = apps.get_model('course_app', 'Course')
+    
+    try:
+        course = Course.objects.select_related('profesor').get(pk=course_id)
+    except Course.DoesNotExist:
+        from django.contrib import messages
+        messages.error(request, 'Course not found.')
+        return redirect('dashboard_admin:courses_list')
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        titulo = request.POST.get('titulo', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        imagen_portada = request.POST.get('imagen_portada', '').strip()
+        nivel = request.POST.get('nivel', '').strip()
+        publicado = request.POST.get('publicado') == 'on'
+        
+        # Validaciones
+        errors = []
+        
+        if not titulo:
+            errors.append('Title is required.')
+        
+        if nivel not in ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO']:
+            errors.append('Invalid difficulty level.')
+        
+        if errors:
+            from django.contrib import messages
+            for error in errors:
+                messages.error(request, error)
+        else:
+            # Actualizar curso
+            course.titulo = titulo
+            course.descripcion = descripcion
+            course.imagen_portada = imagen_portada if imagen_portada else None
+            course.nivel = nivel
+            course.publicado = publicado
+            course.save()
+            
+            from django.contrib import messages
+            messages.success(request, f'Course "{course.titulo}" updated successfully!')
+            return redirect('dashboard_admin:courses_list')
+    
+    context = {
+        'active_nav': 'courses',
+        'page_title': 'Edit Course',
+        'course': course,
+    }
+    
+    return render(request, 'dashboard_admin/course_edit.html', context)
+
+
+@admin_required
+def delete_course(request, course_id):
+    """
+    Vista de eliminación de curso (admin).
+    Permite eliminar cursos.
+    """
+    if request.method == 'POST':
+        Course = apps.get_model('course_app', 'Course')
+        
+        try:
+            course = Course.objects.get(pk=course_id)
+            course_title = course.titulo
+            course.delete()
+            
+            from django.contrib import messages
+            messages.success(request, f'Course "{course_title}" deleted successfully!')
+        except Course.DoesNotExist:
+            from django.contrib import messages
+            messages.error(request, 'Course not found.')
+        except Exception as e:
+            from django.contrib import messages
+            messages.error(request, f'Error deleting course: {str(e)}')
+    
+    return redirect('dashboard_admin:courses_list')
 
 
 @admin_required

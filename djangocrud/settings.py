@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Back-end.membership.apps.MembershipConfig',
     'Back-end.Auth.apps.AuthConfig',
     'Back-end.Media.apps.MediaConfig',
+    'Back-end.payments.apps.PaymentsConfig',  # Sistema de pagos
     # Frontend Apps
     'Front-end.Documentation.apps.DocumentationConfig',
 ]

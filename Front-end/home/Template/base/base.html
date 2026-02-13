@@ -244,6 +244,17 @@
                     }
                 });
             }
+            
+            // Auto-open modals based on context variables
+            {% if open_login %}
+            // Abrir modal de login automáticamente
+            showLoginModal();
+            {% endif %}
+            
+            {% if open_register %}
+            // Abrir modal de registro automáticamente
+            showRegisterModal();
+            {% endif %}
         });
     </script>
     {% block extra_js %}{% endblock %}

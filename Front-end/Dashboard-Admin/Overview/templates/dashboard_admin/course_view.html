@@ -1,0 +1,126 @@
+{% extends "dashboard_admin/base_admin.html" %}
+
+{% block title %}Course Details - EduMinimal Admin{% endblock %}
+{% block page_name %}Course Information{% endblock %}
+{% block page_title %}{{ course.titulo }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'dashboard_admin:courses_list' %}" class="bg-charcoal text-[#9dabb9] px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-charcoal/80 transition-all border border-border-dark flex items-center gap-2">
+    <span class="material-symbols-outlined text-sm">arrow_back</span>
+    Back to Catalog
+</a>
+{% endblock %}
+
+{% block admin_content %}
+<div class="max-w-5xl space-y-8">
+    <!-- Course Header -->
+    <div class="card p-8 border border-border-dark">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cover Image -->
+            <div class="lg:col-span-1">
+                <div class="aspect-video bg-background-dark rounded-xl overflow-hidden border border-border-dark">
+                    {% if course.imagen_portada %}
+                    <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-6xl text-[#232d38]">landscape</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Status Badges -->
+                <div class="flex gap-2 mt-4">
+                    <span class="px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest 
+                        {% if course.publicado %}bg-emerald-500 text-white{% else %}bg-amber-500 text-white{% endif %}">
+                        {% if course.publicado %}Published{% else %}Draft{% endif %}
+                    </span>
+                    <span class="px-3 py-1.5 rounded-lg bg-charcoal border border-border-dark text-xs font-black uppercase tracking-widest text-white">
+                        {{ course.get_nivel_display }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Course Info -->
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-bold text-white mb-4">{{ course.titulo }}</h2>
+                
+                <p class="text-[#9dabb9] text-sm leading-relaxed mb-6">
+                    {{ course.descripcion|default:"No description provided for this course." }}
+                </p>
+
+                <!-- Professor Info -->
+                <div class="p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl mb-6">
+                    <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-3">Course Instructor</p>
+                    <div class="flex items-center gap-3">
+                        <div class="size-12 rounded-full bg-primary/20 flex items-center justify-center text-base font-bold text-primary">
+                            {{ course.profesor.first_name|slice:":1"|upper }}{{ course.profesor.last_name|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-white">{{ course.profesor.first_name }} {{ course.profesor.last_name }}</p>
+                            <p class="text-xs text-[#637588]">{{ course.profesor.email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl">
+                        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-1">Created</p>
+                        <p class="text-sm font-medium text-white">{{ course.fecha_creacion|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl">
+                        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-1">Last Updated</p>
+                        <p class="text-sm font-medium text-white">{{ course.fecha_actualizacion|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl">
+                        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-1">Course ID</p>
+                        <p class="text-sm font-medium text-white">UID-{{ course.id }}</p>
+                    </div>
+                    <div class="p-4 bg-background-dark/50 border border-border-dark/50 rounded-xl">
+                        <p class="text-[10px] font-bold text-[#637588] uppercase tracking-widest mb-1">Total Classes</p>
+                        <p class="text-sm font-medium text-white">{{ course.total_clases }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-4">
+        <a 
+            href="{% url 'dashboard_admin:edit_course' course.id %}"
+            class="flex-1 bg-primary text-white px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 text-center"
+        >
+            Edit Course
+        </a>
+        <button 
+            onclick="confirmDelete({{ course.id }}, '{{ course.titulo }}')"
+            class="flex-1 bg-charcoal text-red-400 px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-red-500/10 transition-all border border-red-500/30 text-center"
+        >
+            Delete Course
+        </button>
+    </div>
+</div>
+
+<script>
+function confirmDelete(courseId, courseTitle) {
+    if (confirm(`¿Estás seguro de que deseas eliminar el curso "${courseTitle}"?\n\nEsta acción no se puede deshacer.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/dashboard/admin/courses/delete/${courseId}/`;
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken.value;
+            form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

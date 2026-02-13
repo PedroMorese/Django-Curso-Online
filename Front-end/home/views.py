@@ -123,7 +123,7 @@ def membership_plans_redirect(request):
                 'original_price': p.original_price,
                 'savings': p.savings,
                 'plan_type': p.plan_type,
-                'features': p.features_list,
+                'features': p.features if p.features else [],
                 'is_featured': p.is_featured
             }
             plans.append(plan_data)
@@ -190,6 +190,8 @@ def membership_plans_redirect(request):
 def membership_subscribe_redirect(request, plan_slug):
     """Inicia el proceso de suscripción a un plan."""
     if not request.user.is_authenticated:
+        # Guardar el plan seleccionado en la sesión para después del login
+        request.session['pending_subscription'] = plan_slug
         messages.info(request, 'Inicia sesión para suscribirte.')
         return redirect('home:login')
     

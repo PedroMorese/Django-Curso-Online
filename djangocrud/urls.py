@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/classes/', include('Back-end.Class.urls')),
     path('api/membership/', include('Back-end.membership.urls')),
     path('api/media/', include('Back-end.Media.urls')),
+    path('api/payments/', include('Back-end.payments.urls')),  # API de pagos
     
     # ===========================================
     # FRONTEND - Dashboard URLs

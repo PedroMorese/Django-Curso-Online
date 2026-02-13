@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación de Operaciones ORM - Base de Datos del Proyecto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #000;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            border-bottom: 4px solid #2874a6;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        h2 {
+            color: #1a5490;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #bdc3c7;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        h3 {
+            color: #212121;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+        
+        h4 {
+            color: #2c2c2c;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            color: #000;
+        }
+        
+        strong {
+            color: #000;
+            font-weight: 700;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        
+        thead tr {
+            background-color: #1a5490;
+            color: white;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #999;
+            color: #000;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #999;
+        }
+        
+        tbody tr:nth-of-type(even) {
+            background-color: #f0f0f0;
+        }
+        
+        tbody tr:hover {
+            background-color: #e3f2fd;
+            cursor: pointer;
+        }
+        
+        code {
+            background-color: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #c0392b;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        pre {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #2874a6;
+        }
+        
+        pre code {
+            background-color: transparent;
+            color: #f0f0f0;
+            padding: 0;
+        }
+        
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 40px 0;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .header-info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .header-info p {
+            margin: 5px 0;
+        }
+        
+        .metric-highlight {
+            background: #e8f5e9;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        @media print {
+            /* Forzar fondo blanco y eliminar sombras */
+            body {
+                background: white !important;
+                padding: 0;
+                color: #000 !important;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            /* Forzar todo el texto a negro puro */
+            * {
+                color: #000 !important;
+            }
+            
+            /* Headers en negro */
+            h1, h2, h3, h4, h5, h6 {
+                color: #000 !important;
+                page-break-after: avoid;
+            }
+            
+            /* Párrafos y texto en negro */
+            p, li, td, th, span, div {
+                color: #000 !important;
+            }
+            
+            /* Negritas más oscuras */
+            strong, b {
+                color: #000 !important;
+                font-weight: 700 !important;
+            }
+            
+            /* Tablas con bordes negros */
+            table {
+                border: 2px solid #000 !important;
+                page-break-inside: avoid;
+            }
+            
+            th {
+                background-color: #d0d0d0 !important;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                font-weight: 700 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+            
+            /* Código en negro */
+            code {
+                color: #000 !important;
+                background-color: #e0e0e0 !important;
+                border: 1px solid #999 !important;
+                font-weight: 600 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            pre {
+                background-color: #f0f0f0 !important;
+                border: 2px solid #000 !important;
+                color: #000 !important;
+                page-break-inside: avoid;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            pre code {
+                color: #000 !important;
+                background-color: transparent !important;
+            }
+            
+            /* Enlaces en negro */
+            a {
+                color: #000 !important;
+                text-decoration: underline !important;
+            }
+            
+            /* Eliminar efectos hover */
+            tbody tr:hover {
+                background-color: transparent !important;
+            }
+            
+            /* Filas alternas con fondo gris claro */
+            tbody tr:nth-of-type(even) {
+                background-color: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            /* Evitar saltos de página en elementos importantes */
+            table, pre, blockquote {
+                page-break-inside: avoid;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            table {
+                font-size: 0.85em;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentación de Operaciones ORM - Base de Datos del Proyecto</h1>
+<p><strong>Proyecto:</strong> Sistema de Gestión de Cursos Online<br />
+<strong>Fecha:</strong> 2026-02-05<br />
+<strong>Objetivo:</strong> Documentar todas las operaciones de base de datos realizadas mediante el ORM de Django</p>
+<hr />
+<h2>Tabla de Contenidos</h2>
+<ol>
+<li><a href="#módulo-auth">Módulo Auth (Autenticación)</a></li>
+<li><a href="#módulo-course">Módulo Course (Cursos)</a></li>
+<li><a href="#módulo-class">Módulo Class (Clases)</a></li>
+<li><a href="#módulo-membership">Módulo Membership (Membresías)</a></li>
+<li><a href="#resumen-de-operaciones">Resumen de Operaciones</a></li>
+</ol>
+<hr />
+<h2>Módulo Auth</h2>
+<h3>Modelos Definidos</h3>
+<h4>Modelo <code>Persona</code></h4>
+<p>Extiende <code>AbstractUser</code> de Django para agregar roles y campos personalizados.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Persona</span><span class="p">(</span><span class="n">AbstractUser</span><span class="p">):</span>
+    <span class="n">role</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">ROLE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;CLIENTE&#39;</span><span class="p">)</span>
+    <span class="n">phone</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Tabla en BD:</strong> <code>auth_persona</code></p>
+<hr />
+<h3>Operaciones del ORM - Auth</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Función ORM</th>
+<th>Descripción</th>
+<th>SQL Equivalente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L49">views.py</a></td>
+<td><code>get_user_model()</code></td>
+<td>Obtiene el modelo de usuario activo (Persona)</td>
+<td>N/A - Función de Django</td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L67">views.py</a></td>
+<td><code>User.objects.create_user(**kwargs, password=password)</code></td>
+<td>Crea un nuevo usuario con password hasheado usando PBKDF2</td>
+<td><code>INSERT INTO auth_persona (username, email, password, first_name, last_name, role, phone, is_active, date_joined) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L78">views.py</a></td>
+<td><code>user.save()</code></td>
+<td>Guarda cambios en el usuario existente</td>
+<td><code>UPDATE auth_persona SET first_name=?, last_name=?, role=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L123">views.py</a></td>
+<td><code>authenticate(request, username=email, password=password)</code></td>
+<td>Verifica credenciales del usuario comparando password con hash en BD</td>
+<td><code>SELECT * FROM auth_persona WHERE username=? LIMIT 1</code> + verificación de hash</td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L130">views.py</a></td>
+<td><code>User.objects.filter(email__iexact=email).first()</code></td>
+<td>Busca usuario por email (case-insensitive) y retorna el primero</td>
+<td><code>SELECT * FROM auth_persona WHERE LOWER(email) = LOWER(?) LIMIT 1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L143">views.py</a></td>
+<td><code>login(request, user)</code></td>
+<td>Crea sesión de usuario y envía cookie <code>sessionid</code></td>
+<td><code>INSERT INTO django_session (session_key, session_data, expire_date) VALUES (?, ?, ?)</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Auth/views.py#L154">views.py</a></td>
+<td><code>logout(request)</code></td>
+<td>Destruye la sesión del usuario</td>
+<td><code>DELETE FROM django_session WHERE session_key=?</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Módulo Course</h2>
+<h3>Modelos Definidos</h3>
+<h4>Modelo <code>Course</code></h4>
+<p>Representa un curso creado por un profesor.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Course</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">titulo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">descripcion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">imagen_portada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">profesor</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;cursos_creados&#39;</span><span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">fecha_actualizacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">publicado</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">nivel</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">NIVEL_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;PRINCIPIANTE&#39;</span><span class="p">)</span>
+    <span class="n">duracion_estimada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Tabla en BD:</strong> <code>curso</code></p>
+<hr />
+<h3>Operaciones del ORM - Course</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Función ORM</th>
+<th>Descripción</th>
+<th>SQL Equivalente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L54">views.py</a></td>
+<td><code>Course.objects.all()</code></td>
+<td>Obtiene todos los cursos</td>
+<td><code>SELECT * FROM curso</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L64">views.py</a></td>
+<td><code>cursos.filter(Q(profesor=user) \| Q(publicado=True))</code></td>
+<td>Filtra cursos del profesor o publicados (OR lógico)</td>
+<td><code>SELECT * FROM curso WHERE (profesor_id=? OR publicado=1)</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L67">views.py</a></td>
+<td><code>cursos.filter(publicado=True)</code></td>
+<td>Filtra solo cursos publicados</td>
+<td><code>SELECT * FROM curso WHERE publicado=1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L73">views.py</a></td>
+<td><code>cursos.filter(publicado=publicado_bool)</code></td>
+<td>Filtra por estado de publicación</td>
+<td><code>SELECT * FROM curso WHERE publicado=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L77">views.py</a></td>
+<td><code>cursos.filter(nivel=nivel.upper())</code></td>
+<td>Filtra cursos por nivel de dificultad</td>
+<td><code>SELECT * FROM curso WHERE nivel=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L81-L83">views.py</a></td>
+<td><code>cursos.filter(Q(titulo__icontains=search) \| Q(descripcion__icontains=search))</code></td>
+<td>Búsqueda de texto en título o descripción (case-insensitive)</td>
+<td><code>SELECT * FROM curso WHERE (titulo LIKE '%?%' OR descripcion LIKE '%?%')</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L87">views.py</a></td>
+<td><code>cursos.filter(profesor_id=profesor_id)</code></td>
+<td>Filtra cursos por ID del profesor</td>
+<td><code>SELECT * FROM curso WHERE profesor_id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L91">views.py</a></td>
+<td><code>cursos.select_related('profesor')</code></td>
+<td>Optimiza query con JOIN para evitar N+1 queries</td>
+<td><code>SELECT * FROM curso INNER JOIN auth_persona ON curso.profesor_id = auth_persona.id</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L142-L150">views.py</a></td>
+<td><code>Course.objects.create(titulo=..., profesor=user, ...)</code></td>
+<td>Crea un nuevo curso</td>
+<td><code>INSERT INTO curso (titulo, descripcion, imagen_portada, profesor_id, nivel, duracion_estimada, publicado, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L179">views.py</a></td>
+<td><code>Course.objects.select_related('profesor').get(id=course_id)</code></td>
+<td>Obtiene un curso por ID con JOIN al profesor</td>
+<td><code>SELECT * FROM curso INNER JOIN auth_persona ON curso.profesor_id = auth_persona.id WHERE curso.id=? LIMIT 1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L244">views.py</a></td>
+<td><code>curso.save()</code></td>
+<td>Actualiza campos del curso</td>
+<td><code>UPDATE curso SET titulo=?, descripcion=?, imagen_portada=?, nivel=?, duracion_estimada=?, publicado=?, fecha_actualizacion=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L271">views.py</a></td>
+<td><code>curso.delete()</code></td>
+<td>Elimina un curso (CASCADE elimina clases relacionadas)</td>
+<td><code>DELETE FROM curso WHERE id=?</code> + <code>DELETE FROM clase WHERE curso_id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L312">views.py</a></td>
+<td><code>curso.save(update_fields=['publicado'])</code></td>
+<td>Actualiza solo el campo especificado (optimización)</td>
+<td><code>UPDATE curso SET publicado=?, fecha_actualizacion=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/views.py#L338">views.py</a></td>
+<td><code>Course.objects.filter(profesor=user).order_by('-fecha_creacion')</code></td>
+<td>Filtra cursos del profesor ordenados por fecha descendente</td>
+<td><code>SELECT * FROM curso WHERE profesor_id=? ORDER BY fecha_creacion DESC</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Course/models.py#L70">models.py</a></td>
+<td><code>self.clases.count()</code></td>
+<td>Cuenta clases relacionadas (propiedad <code>total_clases</code>)</td>
+<td><code>SELECT COUNT(*) FROM clase WHERE curso_id=?</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Módulo Class</h2>
+<h3>Modelos Definidos</h3>
+<h4>Modelo <code>Class</code></h4>
+<p>Representa una clase/lección dentro de un curso.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Class</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">curso</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;course_app.Course&#39;</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;clases&#39;</span><span class="p">)</span>
+    <span class="n">titulo</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">descripcion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">orden</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">video_url</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">imagen_portada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">URLField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">duracion_estimada</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">fecha_creacion</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Tabla en BD:</strong> <code>clase</code></p>
+<hr />
+<h3>Operaciones del ORM - Class</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Función ORM</th>
+<th>Descripción</th>
+<th>SQL Equivalente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Class/views.py#L29">views.py</a></td>
+<td><code>Class.objects.all()</code></td>
+<td>Obtiene todas las clases</td>
+<td><code>SELECT * FROM clase</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Class/views.py#L32">views.py</a></td>
+<td><code>classes.filter(curso_id=curso_id)</code></td>
+<td>Filtra clases por ID del curso</td>
+<td><code>SELECT * FROM clase WHERE curso_id=?</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Class/views.py#L34">views.py</a></td>
+<td><code>classes.order_by('orden')</code></td>
+<td>Ordena clases por campo <code>orden</code> ascendente</td>
+<td><code>SELECT * FROM clase ORDER BY orden ASC</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Class/views.py#L57">views.py</a></td>
+<td><code>Class.objects.select_related('curso').get(id=class_id)</code></td>
+<td>Obtiene clase por ID con JOIN al curso</td>
+<td><code>SELECT * FROM clase INNER JOIN curso ON clase.curso_id = curso.id WHERE clase.id=? LIMIT 1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/Class/views.py#L111">views.py</a></td>
+<td><code>clase.save()</code></td>
+<td>Actualiza campos de la clase</td>
+<td><code>UPDATE clase SET titulo=?, descripcion=?, orden=?, duracion_estimada=?, video_url=?, imagen_portada=? WHERE id=?</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Módulo Membership</h2>
+<h3>Modelos Definidos</h3>
+<h4>Modelo <code>MembershipPlan</code></h4>
+<p>Define los planes de membresía disponibles.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MembershipPlan</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">slug</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">SlugField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">plan_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">PLAN_TYPE_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;MONTHLY&#39;</span><span class="p">)</span>
+    <span class="n">duration_days</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">original_price</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">JSONField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_featured</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">display_order</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Tabla en BD:</strong> <code>membership_plan</code></p>
+<h4>Modelo <code>UserMembership</code></h4>
+<p>Representa la suscripción de un usuario a un plan.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">UserMembership</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;memberships&#39;</span><span class="p">)</span>
+    <span class="n">plan</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">MembershipPlan</span><span class="p">,</span> <span class="n">on_delete</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">PROTECT</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;subscriptions&#39;</span><span class="p">)</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">end_date</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">STATUS_CHOICES</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;PENDING&#39;</span><span class="p">)</span>
+    <span class="n">auto_renew</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">payment_reference</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>Tabla en BD:</strong> <code>user_membership</code></p>
+<hr />
+<h3>Operaciones del ORM - Membership</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Función ORM</th>
+<th>Descripción</th>
+<th>SQL Equivalente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>views.py (via services)</td>
+<td><code>MembershipPlan.objects.filter(is_active=True).order_by('display_order', 'price')</code></td>
+<td>Obtiene planes activos ordenados</td>
+<td><code>SELECT * FROM membership_plan WHERE is_active=1 ORDER BY display_order ASC, price ASC</code></td>
+</tr>
+<tr>
+<td>views.py (via services)</td>
+<td><code>MembershipPlan.objects.filter(slug=slug, is_active=True).first()</code></td>
+<td>Busca plan por slug</td>
+<td><code>SELECT * FROM membership_plan WHERE slug=? AND is_active=1 LIMIT 1</code></td>
+</tr>
+<tr>
+<td>views.py (via services)</td>
+<td><code>UserMembership.objects.filter(user=user, status='ACTIVE').select_related('plan').first()</code></td>
+<td>Obtiene membresía activa del usuario con JOIN al plan</td>
+<td><code>SELECT * FROM user_membership INNER JOIN membership_plan ON user_membership.plan_id = membership_plan.id WHERE user_id=? AND status='ACTIVE' LIMIT 1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/membership/views.py#L174">views.py</a></td>
+<td><code>MembershipPlan.objects.get(slug=slug)</code></td>
+<td>Obtiene plan por slug (lanza excepción si no existe)</td>
+<td><code>SELECT * FROM membership_plan WHERE slug=? LIMIT 1</code></td>
+</tr>
+<tr>
+<td><a href="file:///c:/Users/Pedro/Desktop/Proyecto_db/Back-end/membership/views.py#L178">views.py</a></td>
+<td><code>plan.save()</code></td>
+<td>Actualiza precio y configuración del plan</td>
+<td><code>UPDATE membership_plan SET price=?, original_price=?, is_active=?, updated_at=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td>models.py</td>
+<td><code>membership.activate()</code></td>
+<td>Cambia status a ACTIVE</td>
+<td><code>UPDATE user_membership SET status='ACTIVE', updated_at=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td>models.py</td>
+<td><code>membership.cancel()</code></td>
+<td>Cancela membresía y desactiva auto-renovación</td>
+<td><code>UPDATE user_membership SET status='CANCELLED', auto_renew=0, updated_at=? WHERE id=?</code></td>
+</tr>
+<tr>
+<td>models.py</td>
+<td><code>membership.expire()</code></td>
+<td>Marca membresía como expirada</td>
+<td><code>UPDATE user_membership SET status='EXPIRED', updated_at=? WHERE id=?</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Resumen de Operaciones</h2>
+<h3>Operaciones por Tipo</h3>
+<table>
+<thead>
+<tr>
+<th>Tipo de Operación</th>
+<th>Función ORM</th>
+<th>Cantidad de Usos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CREATE</strong></td>
+<td><code>objects.create()</code>, <code>create_user()</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><strong>READ</strong></td>
+<td><code>objects.all()</code>, <code>objects.get()</code>, <code>objects.filter()</code></td>
+<td>20+</td>
+</tr>
+<tr>
+<td><strong>UPDATE</strong></td>
+<td><code>save()</code>, <code>save(update_fields=[])</code></td>
+<td>10+</td>
+</tr>
+<tr>
+<td><strong>DELETE</strong></td>
+<td><code>delete()</code></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h3>Optimizaciones Implementadas</h3>
+<table>
+<thead>
+<tr>
+<th>Optimización</th>
+<th>Descripción</th>
+<th>Beneficio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>select_related()</code></td>
+<td>JOIN en queries de ForeignKey</td>
+<td>Reduce queries de N+1 a 1</td>
+</tr>
+<tr>
+<td><code>save(update_fields=[])</code></td>
+<td>Actualiza solo campos específicos</td>
+<td>Reduce tamaño de query UPDATE</td>
+</tr>
+<tr>
+<td><code>filter().first()</code></td>
+<td>Usa LIMIT 1 en búsquedas</td>
+<td>Más eficiente que <code>get()</code> cuando puede no existir</td>
+</tr>
+<tr>
+<td>Índices en BD</td>
+<td><code>indexes = [...]</code> en Meta</td>
+<td>Acelera búsquedas frecuentes</td>
+</tr>
+</tbody>
+</table>
+<h3>Queries Complejos</h3>
+<h4>1. Búsqueda con OR lógico</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">cursos</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">titulo__icontains</span><span class="o">=</span><span class="n">search</span><span class="p">)</span> <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">descripcion__icontains</span><span class="o">=</span><span class="n">search</span><span class="p">))</span>
+</code></pre></div>
+
+<p><strong>SQL:</strong> <code>WHERE (titulo LIKE '%?%' OR descripcion LIKE '%?%')</code></p>
+<h4>2. Filtros combinados con permisos</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">cursos</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Q</span><span class="p">(</span><span class="n">profesor</span><span class="o">=</span><span class="n">user</span><span class="p">)</span> <span class="o">|</span> <span class="n">Q</span><span class="p">(</span><span class="n">publicado</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</code></pre></div>
+
+<p><strong>SQL:</strong> <code>WHERE (profesor_id=? OR publicado=1)</code></p>
+<h4>3. JOIN optimizado</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">Course</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s1">&#39;profesor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">course_id</span><span class="p">)</span>
+</code></pre></div>
+
+<p><strong>SQL:</strong> <code>SELECT * FROM curso INNER JOIN auth_persona ON curso.profesor_id = auth_persona.id WHERE curso.id=?</code></p>
+<hr />
+<h2>Estadísticas del Proyecto</h2>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total de Modelos</strong></td>
+<td>5 (Persona, Course, Class, MembershipPlan, UserMembership)</td>
+</tr>
+<tr>
+<td><strong>Total de Tablas en BD</strong></td>
+<td>5 + tablas de Django (session, migrations, etc.)</td>
+</tr>
+<tr>
+<td><strong>Operaciones CRUD Implementadas</strong></td>
+<td>35+</td>
+</tr>
+<tr>
+<td><strong>Endpoints API</strong></td>
+<td>15+</td>
+</tr>
+<tr>
+<td><strong>Relaciones ForeignKey</strong></td>
+<td>4</td>
+</tr>
+<tr>
+<td><strong>Campos con Índices</strong></td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Notas Técnicas</h2>
+<h3>Seguridad</h3>
+<ul>
+<li>✅ Passwords hasheados con PBKDF2</li>
+<li>✅ Autenticación basada en sesiones</li>
+<li>✅ Validación de permisos por rol (ADMIN, PROFESOR, CLIENTE)</li>
+<li>⚠️ CSRF deshabilitado en algunos endpoints (requiere revisión para producción)</li>
+</ul>
+<h3>Rendimiento</h3>
+<ul>
+<li>✅ Uso de <code>select_related()</code> para evitar N+1 queries</li>
+<li>✅ Índices en campos frecuentemente consultados</li>
+<li>✅ <code>update_fields</code> para actualizaciones parciales</li>
+<li>✅ Ordenamiento en nivel de BD con <code>order_by()</code></li>
+</ul>
+<h3>Escalabilidad</h3>
+<ul>
+<li>✅ Separación por módulos (Auth, Course, Class, Membership)</li>
+<li>✅ Uso de <code>related_name</code> para queries inversas</li>
+<li>✅ Campos JSON para datos flexibles (features en MembershipPlan)</li>
+<li>✅ Soft deletes mediante status (en UserMembership)</li>
+</ul>
+    </div>
+</body>
+</html>
