@@ -29,7 +29,7 @@
             </div>
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
                 {% for course in recommended_courses %}
-                <div class="min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer relative">
+                <div class="relative min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer relative">
                     <!-- Thumbnail -->
                     <div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden"
                          {% if course.imagen_portada %}
@@ -82,7 +82,7 @@
             </div>
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
                 {% for course in recent_courses %}
-                <div class="min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer relative">
+                <div class="relative min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer relative">
                     <!-- Thumbnail -->
                     <div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden"
                          {% if course.imagen_portada %}

@@ -86,10 +86,26 @@ def course_preview(request, course_id):
     except:
         classes = []
     
+    # Verificar si el usuario tiene membresía activa
+    has_active_membership = False
+    if request.user.is_authenticated:
+        try:
+            UserMembership = apps.get_model('membership', 'UserMembership')
+            from django.utils import timezone
+            has_active_membership = UserMembership.objects.filter(
+                user=request.user,
+                status='ACTIVE',
+                start_date__lte=timezone.now(),
+                end_date__gte=timezone.now()
+            ).exists()
+        except Exception:
+            has_active_membership = False
+    
     context = {
         'course': course,
         'classes': classes,
         'page_title': course.titulo,
+        'has_active_membership': has_active_membership,
     }
     
     return render(request, 'catalog/course_preview.html', context)

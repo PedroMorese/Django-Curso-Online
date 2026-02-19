@@ -40,7 +40,7 @@
         <div class="flex gap-6 flex-wrap">
             {% for course in courses %}
             <div
-                class="min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
+                class="relative min-w-[280px] max-w-[280px] group flex flex-col gap-3 rounded-xl bg-card-dark p-3 border border-border-dark hover:border-primary transition-all duration-300 cursor-pointer">
                 <!-- Thumbnail -->
                 <div class="w-full relative bg-center bg-no-repeat aspect-[16/9] bg-cover rounded-lg overflow-hidden"
                     {% if course.imagen_portada %}

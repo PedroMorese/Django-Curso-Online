@@ -5,14 +5,13 @@
 
 {% block body %}
 <div class="bg-background-dark font-display text-white overflow-x-hidden min-h-screen flex flex-col">
-    <!-- Top Header -->
-    <header
-        class="h-16 flex items-center justify-between px-6 border-b border-slate-800 bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+
+    <!-- ── Top Header ─────────────────────────────────────────────────── -->
+    <header class="h-16 flex items-center justify-between px-6 border-b border-slate-800 bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
         <div class="flex items-center gap-6">
             <a href="{% url 'home:course_catalog' %}"
-                class="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors group">
-                <span
-                    class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+               class="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors group">
+                <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
                 Back to Courses
             </a>
             <div class="h-4 w-px bg-slate-700"></div>
@@ -20,7 +19,6 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <!-- Progress -->
             <div class="hidden md:flex flex-col items-end">
                 <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Progress</p>
                 <div class="flex items-center gap-3">
@@ -30,65 +28,179 @@
                     <span class="text-xs font-medium">{{ progress }}%</span>
                 </div>
             </div>
-
             <div class="h-8 w-px bg-slate-700 ml-2"></div>
-
-            <!-- User Avatar -->
-            <div
-                class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs border border-slate-700">
+            <div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs border border-slate-700">
                 {{ user.first_name|slice:":1"|upper|default:"U" }}
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- ── Main Layout ─────────────────────────────────────────────────── -->
     <div class="flex flex-1 overflow-hidden">
-        <!-- Video Player Area -->
+
+        <!-- Video Area -->
         <main class="flex-1 overflow-y-auto custom-scrollbar">
             <div class="max-w-5xl mx-auto p-6 lg:p-10">
                 {% if current_class %}
-                <!-- Video Player -->
-                <div
-                    class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl group border border-slate-700">
+
+                <!-- ===== VIDEO PLAYER ===== -->
+                <div id="player-wrapper"
+                     class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+
                     {% if current_class.video_url %}
-                    <div class="absolute inset-0 flex items-center justify-center bg-center bg-cover"
-                        style="background-image: url('{{ current_class.imagen_portada|default:course.imagen_portada }}');">
-                        <div class="absolute inset-0 bg-black/40"></div>
-                        <a href="{{ current_class.video_url }}" target="_blank"
-                            class="size-20 rounded-full bg-primary flex items-center justify-center text-white shadow-xl hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined filled" style="font-size: 48px;">play_arrow</span>
-                        </a>
-                    </div>
+                    {% with url=current_class.video_url %}
+
+                        {# ── YouTube (con IFrame Player API para detectar errores de embedding) ── #}
+                        {% if "youtube.com" in url or "youtu.be" in url %}
+                            {# Contenedor del player de YouTube #}
+                            <div id="yt-container" class="absolute inset-0 w-full h-full"></div>
+
+                            {# Fallback: se muestra si el video no permite embedding #}
+                            <div id="yt-fallback"
+                                 class="absolute inset-0 hidden flex-col items-center justify-center bg-slate-900 gap-5 p-6 text-center">
+                                <div class="size-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-red-400 text-4xl">play_circle</span>
+                                </div>
+                                <div>
+                                    <p class="text-white font-semibold mb-1">Este video no permite reproducción embebida</p>
+                                    <p class="text-slate-400 text-sm">El autor deshabilitó la reproducción en sitios externos.</p>
+                                </div>
+                                <a id="yt-external-link"
+                                   href="{{ url }}"
+                                   target="_blank" rel="noopener"
+                                   class="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition-colors">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                                    </svg>
+                                    Ver en YouTube
+                                </a>
+                            </div>
+
+                            <script>
+                                (function(){
+                                    const raw = "{{ url|escapejs }}";
+                                    let ytVid = null;
+                                    try {
+                                        const u = new URL(raw);
+                                        ytVid = u.searchParams.get('v');
+                                        if (!ytVid && raw.includes('youtu.be/')) {
+                                            ytVid = raw.split('youtu.be/')[1].split('?')[0];
+                                        }
+                                        if (!ytVid && raw.includes('/shorts/')) {
+                                            ytVid = raw.split('/shorts/')[1].split('?')[0];
+                                        }
+                                    } catch(e) {}
+
+                                    // Actualizar el link externo con la URL original
+                                    const extLink = document.getElementById('yt-external-link');
+                                    if (extLink) extLink.href = raw;
+
+                                    function showFallback() {
+                                        const container = document.getElementById('yt-container');
+                                        const fallback  = document.getElementById('yt-fallback');
+                                        if (container) container.style.display = 'none';
+                                        if (fallback) {
+                                            fallback.classList.remove('hidden');
+                                            fallback.style.display = 'flex';
+                                        }
+                                    }
+
+                                    function onYouTubeIframeAPIReady() {
+                                        if (!ytVid) { showFallback(); return; }
+                                        new YT.Player('yt-container', {
+                                            videoId: ytVid,
+                                            playerVars: {
+                                                rel: 0,
+                                                modestbranding: 1,
+                                                origin: window.location.origin
+                                            },
+                                            events: {
+                                                onError: function(e) {
+                                                    // 100: no encontrado, 101/150: embedding deshabilitado
+                                                    if ([100, 101, 150, 151, 153].includes(e.data)) {
+                                                        showFallback();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                    // Cargar el script de la API de forma segura (une vez)
+                                    if (!window.YT) {
+                                        const tag = document.createElement('script');
+                                        tag.src = 'https://www.youtube.com/iframe_api';
+                                        document.head.appendChild(tag);
+                                        window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+                                    } else {
+                                        onYouTubeIframeAPIReady();
+                                    }
+                                })();
+                            </script>
+
+                        {# ── Vimeo ── #}
+                        {% elif "vimeo.com" in url %}
+                            <iframe id="vimeo-player"
+                                class="absolute inset-0 w-full h-full"
+                                src=""
+                                frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                            <script>
+                                (function(){
+                                    const raw = "{{ url|escapejs }}";
+                                    const match = raw.match(/vimeo\.com\/(\d+)/);
+                                    const vid = match ? match[1] : '';
+                                    document.getElementById('vimeo-player').src =
+                                        'https://player.vimeo.com/video/' + vid + '?title=0&byline=0&portrait=0';
+                                })();
+                            </script>
+
+                        {# ── Video nativo ── #}
+                        {% else %}
+                            <video id="native-player"
+                                class="absolute inset-0 w-full h-full"
+                                controls
+                                controlslist="nodownload"
+                                preload="metadata"
+                                {% if current_class.imagen_portada %}poster="{{ current_class.imagen_portada }}"
+                                {% elif course.imagen_portada %}poster="{{ course.imagen_portada }}"{% endif %}>
+                                <source src="{{ url }}" type="video/mp4">
+                                <source src="{{ url }}" type="video/webm">
+                                Tu navegador no soporta la reproducción de video.
+                            </video>
+                        {% endif %}
+
+                    {% endwith %}
+
+                    {# Botón fullscreen solo para iframe (YouTube/Vimeo) #}
+                    {% with url=current_class.video_url %}
+                    {% if "youtube.com" in url or "youtu.be" in url or "vimeo.com" in url %}
+                    <button id="fs-btn"
+                        onclick="toggleFullscreen()"
+                        title="Pantalla completa (F)"
+                        class="absolute bottom-3 right-3 size-9 rounded-lg bg-black/60 backdrop-blur hover:bg-black/80 flex items-center justify-center text-white transition-colors z-10">
+                        <span class="material-symbols-outlined text-[18px]">fullscreen</span>
+                    </button>
+                    {% endif %}
+                    {% endwith %}
+
                     {% else %}
-                    <div class="absolute inset-0 flex items-center justify-center bg-slate-900">
-                        <div class="text-center">
-                            <span class="material-symbols-outlined text-6xl text-slate-600 mb-4">videocam_off</span>
-                            <p class="text-slate-400">Video not available</p>
-                        </div>
+                    <!-- Sin video -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 gap-3">
+                        <span class="material-symbols-outlined text-6xl text-slate-600">videocam_off</span>
+                        <p class="text-slate-400 text-sm">Esta lección no tiene video todavía</p>
                     </div>
                     {% endif %}
-
-                    <!-- Video Controls -->
-                    <div
-                        class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="flex items-center gap-4">
-                            <span class="material-symbols-outlined text-white cursor-pointer">pause</span>
-                            <div class="flex-1 h-1 bg-white/30 rounded-full relative">
-                                <div class="absolute top-0 left-0 h-full w-1/3 bg-primary rounded-full"></div>
-                            </div>
-                            <span class="text-xs font-medium text-white">{{ current_class.duracion_estimada|default:"--"
-                                }} min</span>
-                            <span class="material-symbols-outlined text-white cursor-pointer">settings</span>
-                            <span class="material-symbols-outlined text-white cursor-pointer">fullscreen</span>
-                        </div>
-                    </div>
                 </div>
+                <!-- ===== END VIDEO PLAYER ===== -->
 
-                <!-- Navigation Buttons -->
+                <!-- Navegación entre lecciones -->
                 <div class="flex items-center justify-between mt-6 mb-8">
                     {% if prev_class %}
                     <a href="{% url 'home:course_player_class' course_id=course.id class_id=prev_class.id %}"
-                        class="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-sm font-medium">
+                       id="btn-prev"
+                       class="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors text-sm font-medium">
                         <span class="material-symbols-outlined text-[18px]">chevron_left</span>
                         Previous
                     </a>
@@ -97,11 +209,11 @@
                     {% endif %}
 
                     <div class="flex items-center gap-2">
-                        <button
+                        <button id="btn-like" onclick="toggleLike(this)" title="Like this lesson"
                             class="size-10 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">thumb_up</span>
                         </button>
-                        <button
+                        <button id="btn-share" onclick="shareLesson()" title="Share"
                             class="size-10 flex items-center justify-center rounded-lg border border-slate-700 hover:bg-slate-800 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">share</span>
                         </button>
@@ -109,68 +221,87 @@
 
                     {% if next_class %}
                     <a href="{% url 'home:course_player_class' course_id=course.id class_id=next_class.id %}"
-                        class="flex items-center gap-2 px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors text-sm font-bold">
+                       id="btn-next"
+                       class="flex items-center gap-2 px-6 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors text-sm font-bold">
                         Next Lesson
                         <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                     </a>
                     {% else %}
                     <a href="{% url 'home:course_catalog' %}"
-                        class="flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors text-sm font-bold">
+                       class="flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors text-sm font-bold">
                         <span class="material-symbols-outlined text-[18px]">check_circle</span>
                         Complete Course
                     </a>
                     {% endif %}
                 </div>
 
-                <!-- Lesson Info -->
+                <!-- Info de la lección -->
                 <div class="flex flex-col gap-6">
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center gap-2">
                             <span class="text-primary font-bold text-sm">LESSON {{ current_index }}</span>
                             <span class="text-slate-600">•</span>
-                            <span class="text-slate-400 text-sm">{{ current_class.duracion_estimada|default:"--" }}
-                                minutes</span>
+                            <span class="text-slate-400 text-sm">{{ current_class.duracion_estimada|default:"--" }} minutes</span>
                         </div>
                         <h2 class="text-3xl font-bold tracking-tight">{{ current_class.titulo }}</h2>
-                        <p class="text-slate-400 leading-relaxed max-w-3xl mt-2">
+                        {% comment %} <p class="text-slate-400 leading-relaxed max-w-3xl mt-2">
                             {{ current_class.descripcion|default:"No description available." }}
-                        </p>
+                        </p> {% endcomment %}
                     </div>
 
-                    <!-- Resources Tab -->
+                    <!-- Tabs: Resources / Notes -->
                     <div class="border-t border-slate-700 pt-8">
                         <div class="flex gap-8 border-b border-slate-700 mb-6">
-                            <button
-                                class="pb-4 border-b-2 border-primary text-white text-sm font-medium">Resources</button>
-                            <button
-                                class="pb-4 text-slate-400 hover:text-white text-sm font-medium transition-colors">Transcripts</button>
-                            <button
-                                class="pb-4 text-slate-400 hover:text-white text-sm font-medium transition-colors">Notes</button>
-                            <button
-                                class="pb-4 text-slate-400 hover:text-white text-sm font-medium transition-colors">Discussion</button>
+                            <button onclick="switchTab('resources', this)"
+                                class="tab-btn pb-4 border-b-2 border-primary text-white text-sm font-medium">
+                                Resources
+                            </button>
+                            <button onclick="switchTab('notes', this)"
+                                class="tab-btn pb-4 border-b-2 border-transparent text-slate-400 hover:text-white text-sm font-medium transition-colors">
+                                Notes
+                            </button>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <a href="#"
-                                class="flex items-center justify-between p-4 rounded-xl bg-slate-800 border border-slate-700 hover:border-primary transition-all group">
-                                <div class="flex items-center gap-4">
-                                    <div
-                                        class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                                        <span class="material-symbols-outlined">picture_as_pdf</span>
+                        <!-- Resources -->
+                        <div id="tab-resources" class="tab-panel">
+                            {% if current_class.video_url %}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <a href="{{ current_class.video_url }}" target="_blank" rel="noopener"
+                                    class="flex items-center justify-between p-4 rounded-xl bg-slate-800 border border-slate-700 hover:border-primary transition-all group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                            <span class="material-symbols-outlined">open_in_new</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold">Ver video externo</p>
+                                            <p class="text-[11px] text-slate-400 max-w-[180px] truncate">{{ current_class.video_url }}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-sm font-semibold">Lesson_Resources.pdf</p>
-                                        <p class="text-[11px] text-slate-400">2.4 MB • PDF Document</p>
-                                    </div>
-                                </div>
-                                <span
-                                    class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">download</span>
-                            </a>
+                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">link</span>
+                                </a>
+                            </div>
+                            {% else %}
+                            <p class="text-slate-500 text-sm">No hay recursos disponibles para esta lección.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Notes -->
+                        <div id="tab-notes" class="tab-panel hidden">
+                            <div class="flex flex-col gap-3">
+                                <textarea id="lesson-notes"
+                                    placeholder="Escribe tus notas de esta lección aquí..."
+                                    class="w-full min-h-[160px] bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-primary resize-none transition-colors"
+                                    oninput="saveNotes(this.value)"></textarea>
+                                <p class="text-[11px] text-slate-500">
+                                    Las notas se guardan automáticamente en tu navegador.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 {% else %}
-                <!-- No Classes Available -->
+                <!-- Sin clases -->
                 <div class="flex flex-col items-center justify-center py-20 text-center">
                     <span class="material-symbols-outlined text-6xl text-slate-600 mb-4">school</span>
                     <h2 class="text-2xl font-bold mb-2">No lessons available yet</h2>
@@ -181,31 +312,32 @@
             </div>
         </main>
 
-        <!-- Sidebar - Course Content -->
+        <!-- ── Sidebar ─────────────────────────────────────────────────── -->
         <aside class="w-[360px] hidden lg:flex flex-col border-l border-slate-700 bg-slate-900">
             <div class="p-5 border-b border-slate-700 flex items-center justify-between">
                 <h3 class="font-bold text-sm flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">playlist_play</span>
                     Course Content
                 </h3>
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{{ total_classes }}
-                    Lessons</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    {{ total_classes }} Lessons
+                </span>
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar">
                 {% for lesson in all_classes %}
                 <a href="{% url 'home:course_player_class' course_id=course.id class_id=lesson.id %}"
-                    class="block p-4 {% if lesson.id == current_class.id %}bg-primary/5 border-l-4 border-primary{% else %}hover:bg-slate-800/40 border-b border-slate-700/50{% endif %} cursor-pointer transition-colors group">
+                   class="block p-4 {% if lesson.id == current_class.id %}bg-primary/5 border-l-4 border-primary{% else %}hover:bg-slate-800/40 border-b border-slate-700/50{% endif %} cursor-pointer transition-colors group">
                     <div class="flex gap-4">
-                        <div class="size-16 shrink-0 rounded bg-center bg-cover border {% if lesson.id == current_class.id %}border-primary/30{% else %}border-slate-700{% endif %} relative"
-                            {% if lesson.imagen_portada %}style="background-image: url('{{ lesson.imagen_portada }}')"
-                            {% else %}style="background-color: #1f2937" {% endif %}>
+                        <div class="size-16 shrink-0 rounded bg-center bg-cover border relative
+                                    {% if lesson.id == current_class.id %}border-primary/30{% else %}border-slate-700{% endif %}"
+                             {% if lesson.imagen_portada %}style="background-image: url('{{ lesson.imagen_portada }}')"
+                             {% else %}style="background-color: #1f2937"{% endif %}>
                             {% if lesson.id != current_class.id %}
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
                             {% else %}
                             <div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                                <span
-                                    class="material-symbols-outlined text-primary text-[20px] filled">play_arrow</span>
+                                <span class="material-symbols-outlined text-primary text-[20px] filled">play_arrow</span>
                             </div>
                             {% endif %}
                         </div>
@@ -213,22 +345,135 @@
                             {% if lesson.id == current_class.id %}
                             <span class="text-[10px] text-primary font-bold uppercase tracking-tight">Now Playing</span>
                             {% endif %}
-                            <h4
-                                class="text-sm font-{% if lesson.id == current_class.id %}semibold{% else %}medium{% endif %} {% if lesson.id != current_class.id %}text-slate-400 group-hover:text-white{% endif %} transition-colors leading-tight">
+                            <h4 class="text-sm leading-tight transition-colors
+                                       {% if lesson.id == current_class.id %}font-semibold
+                                       {% else %}font-medium text-slate-400 group-hover:text-white{% endif %}">
                                 {{ forloop.counter }}. {{ lesson.titulo }}
                             </h4>
-                            <span class="text-[11px] text-slate-500 mt-1">{{ lesson.duracion_estimada|default:"--" }}
-                                min</span>
+                            <span class="text-[11px] text-slate-500 mt-1">
+                                {{ lesson.duracion_estimada|default:"--" }} min
+                            </span>
                         </div>
                     </div>
                 </a>
                 {% empty %}
-                <div class="p-8 text-center text-slate-500">
-                    No lessons available
-                </div>
+                <div class="p-8 text-center text-slate-500">No lessons available</div>
                 {% endfor %}
             </div>
         </aside>
     </div>
 </div>
+
+{% block scripts %}
+<script>
+// ── Fullscreen ────────────────────────────────────────────────────────────
+function toggleFullscreen() {
+    const wrapper = document.getElementById('player-wrapper');
+    if (!document.fullscreenElement) {
+        wrapper.requestFullscreen().catch(err => console.warn('Fullscreen error:', err));
+    } else {
+        document.exitFullscreen();
+    }
+}
+document.addEventListener('fullscreenchange', () => {
+    const btn = document.getElementById('fs-btn');
+    if (!btn) return;
+    btn.querySelector('.material-symbols-outlined').textContent =
+        document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen';
+});
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === 'l') {
+        document.getElementById('btn-next')?.click();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'j') {
+        document.getElementById('btn-prev')?.click();
+    }
+    if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+    }
+});
+
+// ── Like (localStorage) ───────────────────────────────────────────────────
+const LIKE_KEY = 'liked_class_{{ current_class.id|default:"0" }}';
+
+function toggleLike(btn) {
+    const icon = btn.querySelector('.material-symbols-outlined');
+    const liked = localStorage.getItem(LIKE_KEY) === '1';
+    if (liked) {
+        localStorage.removeItem(LIKE_KEY);
+        icon.style.color = '';
+        btn.title = 'Like this lesson';
+    } else {
+        localStorage.setItem(LIKE_KEY, '1');
+        icon.style.color = 'var(--color-primary, #6366f1)';
+        btn.title = 'Unlike this lesson';
+    }
+}
+// Restaurar estado al cargar
+(function () {
+    const btn = document.getElementById('btn-like');
+    if (btn && localStorage.getItem(LIKE_KEY) === '1') {
+        btn.querySelector('.material-symbols-outlined').style.color = 'var(--color-primary, #6366f1)';
+    }
+})();
+
+// ── Share ─────────────────────────────────────────────────────────────────
+function shareLesson() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ current_class.titulo|escapejs }}',
+            text: 'Estoy aprendiendo: {{ current_class.titulo|escapejs }}',
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('Enlace copiado al portapapeles ✓');
+        });
+    }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.className =
+        'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-sm px-5 py-3 rounded-xl shadow-xl z-[9999]';
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.4s';
+        setTimeout(() => toast.remove(), 400);
+    }, 2500);
+}
+
+// ── Notes (localStorage) ──────────────────────────────────────────────────
+const NOTES_KEY = 'notes_class_{{ current_class.id|default:"0" }}';
+
+function saveNotes(value) {
+    localStorage.setItem(NOTES_KEY, value);
+}
+(function () {
+    const ta = document.getElementById('lesson-notes');
+    if (ta) {
+        const saved = localStorage.getItem(NOTES_KEY);
+        if (saved) ta.value = saved;
+    }
+})();
+
+// ── Tabs ──────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-primary', 'text-white');
+        b.classList.add('border-transparent', 'text-slate-400');
+    });
+    document.getElementById('tab-' + name).classList.remove('hidden');
+    btn.classList.add('border-primary', 'text-white');
+    btn.classList.remove('border-transparent', 'text-slate-400');
+}
+</script>
+{% endblock %}
 {% endblock %}
