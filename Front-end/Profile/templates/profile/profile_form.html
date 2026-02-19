@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-16">
     <div class="{% if user.role != 'ADMIN' and user.role != 'PROFESOR' %}grid grid-cols-1 md:grid-cols-2 gap-24{% else %}max-w-xl mx-auto w-full{% endif %}">
         {% if user.role != 'ADMIN' and user.role != 'PROFESOR' %}
-        <!-- Left Column: Membership (Visible only for Students/Clients) -->
+        <!-- Left Column: Membership (Visible only for Clients) -->
         <section class="flex flex-col gap-10">
             <div>
                 <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#9dabb9] mb-8">My Membership</h2>
@@ -46,11 +46,24 @@
                 </div>
             </div>
 
+            <!-- Cancel Membership Button -->
             <div class="pt-4">
-                <button class="text-[#637588] text-xs font-medium hover:text-red-400 transition-colors flex items-center gap-2">
+                {% if membership and membership.is_active %}
+                <button
+                    id="btn-cancel-membership"
+                    type="button"
+                    class="text-[#637588] text-xs font-medium hover:text-red-400 transition-colors flex items-center gap-2"
+                    onclick="document.getElementById('modal-cancel-membership').classList.remove('hidden')"
+                >
                     <span class="material-symbols-outlined" style="font-size: 16px;">cancel</span>
                     Cancel Membership
                 </button>
+                {% else %}
+                <a href="{% url 'home:membership_plans' %}" class="text-primary text-xs font-medium hover:underline flex items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">workspace_premium</span>
+                    Get a Membership
+                </a>
+                {% endif %}
             </div>
         </section>
         {% endif %}
@@ -64,24 +77,31 @@
                     <!-- Full Name -->
                     <div class="flex flex-col gap-2">
                         <label class="text-xs font-medium text-[#9dabb9]" for="name">Full Name</label>
-                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
+                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white"
                             id="name" name="first_name" type="text" value="{{ user.first_name }} {{ user.last_name }}"/>
                     </div>
 
                     <!-- Email -->
                     <div class="flex flex-col gap-2">
                         <label class="text-xs font-medium text-[#9dabb9]" for="email">Email Address</label>
-                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white" 
+                        <input class="bg-transparent border-b border-border-dark border-x-0 border-t-0 px-0 py-2 text-xl font-medium focus:ring-0 focus:border-primary transition-colors text-white"
                             id="email" name="email" type="email" value="{{ user.email }}"/>
                     </div>
 
                     <!-- Password -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-xs font-medium text-[#9dabb9]" for="password">Password</label>
+                        <label class="text-xs font-medium text-[#9dabb9]" for="password_display">Password</label>
                         <div class="flex items-center justify-between border-b border-border-dark">
-                            <input class="bg-transparent border-none px-0 py-2 text-xl font-medium focus:ring-0 flex-1 text-white" 
-                                id="password" type="password" value="••••••••••••" readonly/>
-                            <button class="text-xs font-bold text-primary uppercase tracking-wider" type="button">Change</button>
+                            <input class="bg-transparent border-none px-0 py-2 text-xl font-medium focus:ring-0 flex-1 text-white"
+                                id="password_display" type="password" value="••••••••••••" readonly/>
+                            <button
+                                type="button"
+                                class="text-xs font-bold text-primary uppercase tracking-wider hover:text-primary/80 transition-colors flex items-center gap-1"
+                                onclick="document.getElementById('modal-change-password').classList.remove('hidden')"
+                            >
+                                <span class="material-symbols-outlined" style="font-size: 14px;">lock_reset</span>
+                                Change
+                            </button>
                         </div>
                     </div>
 
@@ -92,18 +112,204 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Profile Picture -->
-            <div class="mt-auto pt-8 border-t border-border-dark">
-                <div class="flex items-center gap-4">
-                    <div class="size-12 rounded-full bg-center bg-cover border border-border-dark" 
-                        style='background-image: url("https://ui-avatars.com/api/?name={{ user.username }}&background=137fec&color=fff");'></div>
-                    <div>
-                        <p class="text-sm font-bold">Profile Picture</p>
-                        <button class="text-xs text-primary font-medium hover:underline">Upload new image</button>
-                    </div>
-                </div>
-            </div>
         </section>
     </div>
 </div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: Cancel Membership
+═══════════════════════════════════════════════════════════ -->
+<div id="modal-cancel-membership" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+         onclick="document.getElementById('modal-cancel-membership').classList.add('hidden')"></div>
+
+    <!-- Dialog -->
+    <div class="relative z-10 w-full max-w-md bg-[#111827] border border-border-dark rounded-2xl p-8 shadow-2xl">
+        <!-- Icon -->
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-red-400 text-4xl">warning</span>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-bold text-white text-center mb-2">Cancel Membership?</h3>
+        <p class="text-[#9dabb9] text-sm text-center mb-8">
+            Your membership will be cancelled immediately. You will lose access to all courses and content.
+            This action <strong class="text-white">cannot be undone</strong>.
+        </p>
+
+        <div class="flex flex-col gap-3">
+            <form method="post" action="{% url 'profile:cancel_membership' %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors text-sm uppercase tracking-wider"
+                >
+                    Yes, Cancel My Membership
+                </button>
+            </form>
+            <button
+                type="button"
+                onclick="document.getElementById('modal-cancel-membership').classList.add('hidden')"
+                class="w-full py-3 bg-[#1a1a1a] hover:bg-[#222] text-[#9dabb9] hover:text-white font-semibold rounded-lg transition-colors text-sm"
+            >
+                Keep My Membership
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: Change Password
+═══════════════════════════════════════════════════════════ -->
+<div id="modal-change-password" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+         onclick="document.getElementById('modal-change-password').classList.add('hidden')"></div>
+
+    <!-- Dialog -->
+    <div class="relative z-10 w-full max-w-md bg-[#111827] border border-border-dark rounded-2xl p-8 shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-xl">lock_reset</span>
+                </div>
+                <h3 class="text-xl font-bold text-white">Change Password</h3>
+            </div>
+            <button
+                type="button"
+                onclick="document.getElementById('modal-change-password').classList.add('hidden')"
+                class="text-[#637588] hover:text-white transition-colors"
+            >
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <form method="post" action="{% url 'profile:change_password' %}" class="flex flex-col gap-5" onsubmit="return validatePasswordForm()">
+            {% csrf_token %}
+
+            <!-- Current Password -->
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-medium text-[#9dabb9]" for="current_password">Current Password</label>
+                <div class="relative">
+                    <input
+                        class="w-full bg-[#0a0f14] border border-border-dark rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors pr-10"
+                        id="current_password" name="current_password" type="password" placeholder="Enter your current password" required
+                    />
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#637588] hover:text-white transition-colors"
+                            onclick="togglePassword('current_password', this)">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Password -->
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-medium text-[#9dabb9]" for="new_password">New Password</label>
+                <div class="relative">
+                    <input
+                        class="w-full bg-[#0a0f14] border border-border-dark rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors pr-10"
+                        id="new_password" name="new_password" type="password" placeholder="At least 8 characters" minlength="8" required
+                    />
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#637588] hover:text-white transition-colors"
+                            onclick="togglePassword('new_password', this)">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                </div>
+                <p class="text-xs text-[#637588]">Minimum 8 characters.</p>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-medium text-[#9dabb9]" for="confirm_password">Confirm New Password</label>
+                <div class="relative">
+                    <input
+                        class="w-full bg-[#0a0f14] border border-border-dark rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors pr-10"
+                        id="confirm_password" name="confirm_password" type="password" placeholder="Repeat your new password" minlength="8" required
+                    />
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#637588] hover:text-white transition-colors"
+                            onclick="togglePassword('confirm_password', this)">
+                        <span class="material-symbols-outlined text-lg">visibility</span>
+                    </button>
+                </div>
+                <p id="password-match-hint" class="text-xs hidden"></p>
+            </div>
+
+            <!-- Client-side error -->
+            <div id="pw-error" class="hidden bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm"></div>
+
+            <div class="flex gap-3 pt-2">
+                <button
+                    type="button"
+                    onclick="document.getElementById('modal-change-password').classList.add('hidden')"
+                    class="flex-1 py-3 bg-[#1a1a1a] hover:bg-[#222] text-[#9dabb9] hover:text-white font-semibold rounded-lg transition-colors text-sm"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="flex-1 py-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors text-sm"
+                >
+                    Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon  = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+    } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+    }
+}
+
+function validatePasswordForm() {
+    const newPw  = document.getElementById('new_password').value;
+    const confPw = document.getElementById('confirm_password').value;
+    const hint   = document.getElementById('password-match-hint');
+    const errBox = document.getElementById('pw-error');
+
+    if (newPw !== confPw) {
+        hint.textContent = '⚠ Passwords do not match';
+        hint.className = 'text-xs text-red-400';
+        hint.classList.remove('hidden');
+        errBox.textContent = 'The new password and confirmation do not match.';
+        errBox.classList.remove('hidden');
+        return false;
+    }
+    return true;
+}
+
+// Feedback en tiempo real al escribir la confirmación
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const newPw  = document.getElementById('new_password').value;
+    const hint   = document.getElementById('password-match-hint');
+    hint.classList.remove('hidden');
+    if (this.value === newPw) {
+        hint.textContent = '✓ Passwords match';
+        hint.className = 'text-xs text-emerald-400';
+    } else {
+        hint.textContent = '⚠ Passwords do not match';
+        hint.className = 'text-xs text-red-400';
+    }
+});
+
+// Cerrar modales con Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('modal-cancel-membership').classList.add('hidden');
+        document.getElementById('modal-change-password').classList.add('hidden');
+    }
+});
+</script>

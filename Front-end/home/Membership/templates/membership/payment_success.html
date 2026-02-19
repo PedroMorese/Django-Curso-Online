@@ -1,43 +1,102 @@
 {% extends "base/base.html" %}
 
-{% block title %}Payment Successful!{% endblock %}
+{% block title %}{% if is_bank_transfer %}Transferencia Registrada{% else %}Payment Successful!{% endif %}{% endblock %}
 
 {% block content %}
 <div class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-2xl">
         <div class="card text-center">
-            <!-- Success Icon -->
+
+            <!-- Icon -->
             <div class="mb-8">
+                {% if is_bank_transfer %}
+                <div class="w-20 h-20 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-amber-400 text-5xl">account_balance</span>
+                </div>
+                <h1 class="text-3xl font-black text-white mb-2">¡Transferencia Registrada!</h1>
+                <p class="text-slate-400">Tu número de referencia ha sido recibido. Estamos verificando tu pago.</p>
+                {% else %}
                 <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span class="material-symbols-outlined text-green-500 text-5xl">check_circle</span>
                 </div>
                 <h1 class="text-3xl font-black text-white mb-2">Payment Successful!</h1>
                 <p class="text-slate-400">Your membership request is pending approval</p>
+                {% endif %}
             </div>
 
-            <!-- Details -->
+            {% if is_bank_transfer %}
+            <!-- Resumen de la transferencia -->
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-5 mb-6 text-left">
+                <h2 class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">receipt</span>
+                    Resumen de tu solicitud
+                </h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Método de pago</span>
+                        <span class="text-white font-semibold">Transferencia Bancaria</span>
+                    </div>
+                    {% if bank_reference %}
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">N° de Referencia</span>
+                        <span class="text-amber-300 font-mono font-bold">{{ bank_reference }}</span>
+                    </div>
+                    {% endif %}
+                    {% if plan_name %}
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Plan</span>
+                        <span class="text-white font-semibold">{{ plan_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Details / Next Steps -->
             <div class="bg-slate-800/50 rounded-xl p-6 mb-8 text-left">
-                <h2 class="text-lg font-bold text-white mb-4">What's Next?</h2>
+                <h2 class="text-lg font-bold text-white mb-4">¿Qué sigue?</h2>
                 <ul class="space-y-3">
                     <li class="flex items-start gap-3">
                         <span class="material-symbols-outlined text-amber-500 text-xl mt-0.5">schedule</span>
                         <div>
-                            <p class="text-white font-semibold">Awaiting Approval</p>
-                            <p class="text-slate-400 text-sm">Your subscription is currently under review by our admin team</p>
+                            <p class="text-white font-semibold">Verificación en proceso</p>
+                            <p class="text-slate-400 text-sm">
+                                {% if is_bank_transfer %}
+                                El administrador verificará tu número de referencia bancaria y activará tu membresía.
+                                {% else %}
+                                Your subscription is currently under review by our admin team.
+                                {% endif %}
+                            </p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
                         <span class="material-symbols-outlined text-primary text-xl mt-0.5">notifications</span>
                         <div>
-                            <p class="text-white font-semibold">You'll Be Notified</p>
-                            <p class="text-slate-400 text-sm">We'll send you an email once your membership is activated</p>
+                            <p class="text-white font-semibold">
+                                {% if is_bank_transfer %}Serás notificado{% else %}You'll Be Notified{% endif %}
+                            </p>
+                            <p class="text-slate-400 text-sm">
+                                {% if is_bank_transfer %}
+                                Recibirás una confirmación una vez que tu pago sea verificado y tu membresía activada.
+                                {% else %}
+                                We'll send you an email once your membership is activated.
+                                {% endif %}
+                            </p>
                         </div>
                     </li>
                     <li class="flex items-start gap-3">
                         <span class="material-symbols-outlined text-primary text-xl mt-0.5">school</span>
                         <div>
-                            <p class="text-white font-semibold">Get Ready to Learn</p>
-                            <p class="text-slate-400 text-sm">Once approved, you'll have access to all courses and resources</p>
+                            <p class="text-white font-semibold">
+                                {% if is_bank_transfer %}Prepárate para aprender{% else %}Get Ready to Learn{% endif %}
+                            </p>
+                            <p class="text-slate-400 text-sm">
+                                {% if is_bank_transfer %}
+                                Una vez aprobada tu membresía, tendrás acceso completo a todos los cursos.
+                                {% else %}
+                                Once approved, you'll have access to all courses and resources.
+                                {% endif %}
+                            </p>
                         </div>
                     </li>
                 </ul>
@@ -45,23 +104,27 @@
 
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row gap-4">
-                <a 
-                    href="{% url 'home:course_catalog' %}" 
+                <a
+                    href="{% url 'home:course_catalog' %}"
                     class="flex-1 py-4 text-center font-bold rounded-xl bg-primary hover:bg-primary/90 text-white transition-colors"
                 >
-                    Browse Courses
+                    {% if is_bank_transfer %}Ver Catálogo{% else %}Browse Courses{% endif %}
                 </a>
-                <a 
-                    href="{% url 'home:index' %}" 
+                <a
+                    href="{% url 'home:index' %}"
                     class="flex-1 py-4 text-center font-bold rounded-xl bg-slate-700 hover:bg-slate-600 text-white transition-colors"
                 >
-                    Go to Dashboard
+                    {% if is_bank_transfer %}Ir al Inicio{% else %}Go to Dashboard{% endif %}
                 </a>
             </div>
 
             <!-- Footer Note -->
             <p class="text-slate-500 text-sm mt-8">
+                {% if is_bank_transfer %}
+                Guarda tu número de referencia bancaria como comprobante mientras se procesa tu solicitud.
+                {% else %}
                 A payment confirmation has been sent to your inbox. You'll receive another email once your membership is activated.
+                {% endif %}
             </p>
         </div>
     </div>

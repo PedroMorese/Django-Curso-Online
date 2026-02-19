@@ -48,6 +48,13 @@ class Course(models.Model):
         help_text="Duración estimada en minutos",
         verbose_name="Duración Estimada (min)"
     )
+    pdf_adjuntos = models.TextField(
+        blank=True,
+        null=True,
+        default='[]',
+        help_text="Lista de URLs de PDFs adjuntos en formato JSON",
+        verbose_name="PDFs Adjuntos"
+    )
     
     class Meta:
         db_table = 'curso'

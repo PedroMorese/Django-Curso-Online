@@ -77,9 +77,6 @@
                         </div>
                         <div class="flex-1">
                             <h4 class="font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ lesson.titulo }}</h4>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">
-                                {{ lesson.duracion_estimada|default:"--" }} min
-                            </p>
                         </div>
                         <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">play_circle</span>
                     </a>
@@ -90,9 +87,6 @@
                         </div>
                         <div class="flex-1">
                             <h4 class="font-semibold text-slate-900 dark:text-white">{{ lesson.titulo }}</h4>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">
-                                {{ lesson.duracion_estimada|default:"--" }} min
-                            </p>
                         </div>
                         <span class="material-symbols-outlined text-slate-400">lock</span>
                     </div>
@@ -104,6 +98,56 @@
                     {% endfor %}
                 </div>
             </div>
+
+            <!-- Course Resources (PDFs) -->
+            {% if pdfs %}
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+                    Course Resources
+                </h2>
+
+                <div class="card p-0 divide-y divide-slate-200 dark:divide-slate-700">
+                    {% for pdf in pdfs %}
+                    <div class="flex items-center gap-4 p-4 {% if not forloop.last %}border-b border-slate-200 dark:border-slate-700{% endif %} group transition-colors hover:bg-red-50 dark:hover:bg-red-500/5">
+
+                        <!-- Icon -->
+                        <div class="size-10 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 flex-shrink-0 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-slate-900 dark:text-white truncate">{{ pdf.name }}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 uppercase tracking-wider font-medium">PDF Document</p>
+                        </div>
+
+                        <!-- Download button -->
+                        {% if has_active_membership %}
+                        <a href="{{ pdf.url }}" target="_blank" download
+                           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold uppercase tracking-wider hover:bg-red-500 hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-sm">download</span>
+                            Download
+                        </a>
+                        {% else %}
+                        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed"
+                             title="Get a membership to download this resource">
+                            <span class="material-symbols-outlined text-sm">lock</span>
+                            Members only
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if not has_active_membership %}
+                <p class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base text-primary">info</span>
+                    <a href="{% url 'home:membership_plans' %}" class="text-primary font-semibold hover:underline">Get a membership</a>
+                    to unlock all {{ pdfs|length }} downloadable resource{{ pdfs|length|pluralize }}.
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
 
         <!-- Sidebar - CTA -->
@@ -117,7 +161,7 @@
                 <ul class="space-y-3">
                     <li class="flex items-center gap-3 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
-                        Full lifetime access
+                        Full access to all courses
                     </li>
                     <li class="flex items-center gap-3 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
@@ -129,7 +173,7 @@
                     </li>
                     <li class="flex items-center gap-3 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg">check_circle</span>
-                        Certificate of completion
+                        Certificate of participation
                     </li>
                 </ul>
 

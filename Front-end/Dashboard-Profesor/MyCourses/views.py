@@ -49,24 +49,33 @@ def my_courses(request):
     con opción de filtrar por estado (publicado/borrador).
     """
     Course = apps.get_model('course_app', 'Course')
-    
-    # Filtrar cursos del profesor autenticado
-    courses = Course.objects.filter(
-        profesor=request.user
-    ).order_by('-fecha_creacion')
-    
-    # Contar por estado
-    total_courses = courses.count()
-    published_count = courses.filter(publicado=True).count()
-    draft_count = courses.filter(publicado=False).count()
-    
+    Class  = apps.get_model('class_app',  'Class')
+
+    # Cursos del profesor autenticado
+    courses = list(
+        Course.objects.filter(profesor=request.user).order_by('-fecha_creacion')
+    )
+
+    # Anotar número real de clases en cada curso
+    for course in courses:
+        course.class_count = Class.objects.filter(curso=course).count()
+
+    # Contar por estado y separar listas
+    total_courses    = len(courses)
+    published_courses = [c for c in courses if c.publicado]
+    draft_courses     = [c for c in courses if not c.publicado]
+    published_count  = len(published_courses)
+    draft_count      = len(draft_courses)
+
     context = {
-        'active_nav': 'courses',
-        'page_title': 'My Courses',
-        'courses': courses,
-        'total_courses': total_courses,
+        'active_nav':      'courses',
+        'page_title':      'My Courses',
+        'courses':         courses,
+        'total_courses':   total_courses,
         'published_count': published_count,
-        'draft_count': draft_count,
+        'draft_count':     draft_count,
+        'published_courses': published_courses,
+        'draft_courses':   draft_courses,
     }
     
     return render(request, 'dashboard_profesor/my_courses.html', context)
@@ -117,41 +126,107 @@ def course_detail(request, course_id):
     """
     Vista de detalle y gestión de un curso específico.
     """
+    import json
     Course = apps.get_model('course_app', 'Course')
     Class = apps.get_model('class_app', 'Class')
-    
+
     course = get_object_or_404(Course, id=course_id, profesor=request.user)
-    
-    # Manejar creación de clases (POST)
-    if request.method == 'POST' and request.POST.get('action') == 'add_class':
-        titulo = request.POST.get('titulo', '').strip()
-        orden = request.POST.get('orden', '1')
-        imagen_portada = request.POST.get('imagen_portada', '').strip()
-        video_url = request.POST.get('video_url', '').strip()
-        
-        if titulo:
-            Class.objects.create(
-                curso=course,
-                titulo=titulo,
-                orden=int(orden),
-                imagen_portada=imagen_portada or None,
-                video_url=video_url or None
-            )
-            messages.success(request, f'Clase "{titulo}" añadida exitosamente.')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        # ── Editar metadatos del curso ────────────────────────────────
+        if action == 'edit_course':
+            titulo = request.POST.get('titulo', '').strip()
+            descripcion = request.POST.get('descripcion', '').strip()
+            nivel = request.POST.get('nivel', course.nivel)
+            imagen_portada = request.POST.get('imagen_portada', '').strip()
+
+            if not titulo:
+                messages.error(request, 'El título es obligatorio.')
+            else:
+                course.titulo = titulo
+                course.descripcion = descripcion or None
+                course.nivel = nivel
+                if imagen_portada:
+                    course.imagen_portada = imagen_portada
+                course.save(update_fields=['titulo', 'descripcion', 'nivel', 'imagen_portada'])
+                messages.success(request, 'Curso actualizado correctamente.')
             return redirect('dashboard_profesor:course_detail', course_id=course.id)
-        else:
-            messages.error(request, 'El título de la clase es obligatorio.')
-    
+
+        # ── Añadir PDF adjunto ────────────────────────────────────────
+        elif action == 'add_pdf':
+            pdf_url  = request.POST.get('pdf_url', '').strip()
+            pdf_name = request.POST.get('pdf_name', 'Documento').strip()
+            if pdf_url:
+                try:
+                    pdfs = json.loads(course.pdf_adjuntos or '[]')
+                except Exception:
+                    pdfs = []
+                pdfs.append({'url': pdf_url, 'name': pdf_name})
+                course.pdf_adjuntos = json.dumps(pdfs)
+                course.save(update_fields=['pdf_adjuntos'])
+                messages.success(request, f'PDF "{pdf_name}" adjuntado.')
+            return redirect('dashboard_profesor:course_detail', course_id=course.id)
+
+        # ── Eliminar PDF adjunto ──────────────────────────────────────
+        elif action == 'remove_pdf':
+            pdf_index = request.POST.get('pdf_index')
+            try:
+                pdfs = json.loads(course.pdf_adjuntos or '[]')
+                idx = int(pdf_index)
+                if 0 <= idx < len(pdfs):
+                    removed = pdfs.pop(idx)
+                    course.pdf_adjuntos = json.dumps(pdfs)
+                    course.save(update_fields=['pdf_adjuntos'])
+                    messages.success(request, f'PDF eliminado.')
+            except Exception:
+                messages.error(request, 'No se pudo eliminar el PDF.')
+            return redirect('dashboard_profesor:course_detail', course_id=course.id)
+
+        # ── Añadir clase ──────────────────────────────────────────────
+        elif action == 'add_class':
+            titulo = request.POST.get('titulo', '').strip()
+            orden  = request.POST.get('orden', '1')
+            imagen_portada = request.POST.get('imagen_portada', '').strip()
+            video_url = request.POST.get('video_url', '').strip()
+
+            if titulo:
+                Class.objects.create(
+                    curso=course,
+                    titulo=titulo,
+                    orden=int(orden),
+                    imagen_portada=imagen_portada or None,
+                    video_url=video_url or None
+                )
+                messages.success(request, f'Clase "{titulo}" añadida exitosamente.')
+                return redirect('dashboard_profesor:course_detail', course_id=course.id)
+            else:
+                messages.error(request, 'El título de la clase es obligatorio.')
+
     # Obtener clases del curso
     classes = Class.objects.filter(curso=course).order_by('orden')
-    
+
+    # Parsear PDFs
+    import json as _json
+    try:
+        pdfs = _json.loads(course.pdf_adjuntos or '[]')
+    except Exception:
+        pdfs = []
+
     context = {
         'active_nav': 'courses',
         'page_title': course.titulo,
         'course': course,
         'classes': classes,
+        'pdfs': pdfs,
+        'nivel_choices': [
+            ('PRINCIPIANTE', 'Principiante'),
+            ('INTERMEDIO', 'Intermedio'),
+            ('AVANZADO', 'Avanzado'),
+        ],
     }
-    
+
     return render(request, 'dashboard_profesor/course_detail.html', context)
 
 

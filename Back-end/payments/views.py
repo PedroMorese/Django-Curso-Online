@@ -15,12 +15,13 @@ from dateutil.relativedelta import relativedelta
 import json
 import uuid
 import re
+import urllib.parse
 
 
 def generate_transaction_id():
     """
     Genera un ID único de transacción.
-    
+
     Returns:
         str: ID de transacción en formato TXN-XXXXXXXX
     """
@@ -30,25 +31,15 @@ def generate_transaction_id():
 def validate_card_number(card_number):
     """
     Valida el número de tarjeta usando el algoritmo de Luhn.
-    
-    Args:
-        card_number (str): Número de tarjeta a validar
-        
-    Returns:
-        bool: True si es válido, False en caso contrario
     """
-    # Remover espacios y guiones
     card_number = re.sub(r'[\s-]', '', card_number)
-    
-    # Verificar que solo contenga dígitos
+
     if not card_number.isdigit():
         return False
-    
-    # Verificar longitud (13-19 dígitos)
+
     if len(card_number) < 13 or len(card_number) > 19:
         return False
-    
-    # Algoritmo de Luhn
+
     def luhn_checksum(card_num):
         def digits_of(n):
             return [int(d) for d in str(n)]
@@ -59,22 +50,16 @@ def validate_card_number(card_number):
         for d in even_digits:
             checksum += sum(digits_of(d * 2))
         return checksum % 10
-    
+
     return luhn_checksum(card_number) == 0
 
 
 def get_card_brand(card_number):
     """
     Detecta la marca de la tarjeta basándose en el número.
-    
-    Args:
-        card_number (str): Número de tarjeta
-        
-    Returns:
-        str: Marca de la tarjeta (VISA, MASTERCARD, AMEX, etc.)
     """
     card_number = re.sub(r'[\s-]', '', card_number)
-    
+
     if card_number.startswith('4'):
         return 'VISA'
     elif card_number.startswith(('51', '52', '53', '54', '55')):
@@ -90,28 +75,21 @@ def get_card_brand(card_number):
 def validate_expiry_date(expiry):
     """
     Valida la fecha de expiración de la tarjeta.
-    
-    Args:
-        expiry (str): Fecha en formato MM/YY
-        
-    Returns:
-        bool: True si es válida y futura, False en caso contrario
     """
     try:
         month, year = expiry.split('/')
         month = int(month)
-        year = int('20' + year)  # Asume 20XX
-        
+        year = int('20' + year)
+
         if month < 1 or month > 12:
             return False
-        
-        # Verificar que sea fecha futura
+
         now = timezone.now()
         if year < now.year or (year == now.year and month < now.month):
             return False
-        
+
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -120,41 +98,28 @@ def validate_expiry_date(expiry):
 def process_payment(request):
     """
     Procesa un pago de membresía.
-    
-    Este endpoint recibe los datos de pago, valida la información,
-    crea el registro de pago y activa la membresía del usuario.
-    
-    En modo DEMO, no se realizan cargos reales.
-    
-    Request JSON:
-        {
-            "plan_slug": "monthly",
-            "payment_method": "CREDIT_CARD",
-            "card_number": "4242424242424242",
-            "card_expiry": "12/25",
-            "card_cvv": "123",
-            "cardholder_name": "John Doe"
-        }
-    
-    Returns:
-        JsonResponse: Resultado del procesamiento
+
+    Soporta:
+      - CREDIT_CARD / DEBIT_CARD: valida datos de tarjeta (modo DEMO).
+      - BANK_TRANSFER: registra el número de referencia bancaria del cliente
+        y crea el pago/membresía en estado PENDING para revisión del admin.
     """
     try:
-        # Parsear datos del request
         data = json.loads(request.body)
-        
-        plan_slug = data.get('plan_slug')
-        payment_method = data.get('payment_method', 'CREDIT_CARD')
-        card_number = data.get('card_number', '')
-        card_expiry = data.get('card_expiry', '')
-        card_cvv = data.get('card_cvv', '')
+
+        plan_slug       = data.get('plan_slug')
+        payment_method  = data.get('payment_method', 'CREDIT_CARD')
+        card_number     = data.get('card_number', '')
+        card_expiry     = data.get('card_expiry', '')
+        card_cvv        = data.get('card_cvv', '')
         cardholder_name = data.get('cardholder_name', '')
-        
+        bank_reference  = data.get('bank_reference', '').strip()
+
         # Obtener modelos
         MembershipPlan = apps.get_model('membership', 'MembershipPlan')
         UserMembership = apps.get_model('membership', 'UserMembership')
-        Payment = apps.get_model('payments', 'Payment')
-        
+        Payment        = apps.get_model('payments', 'Payment')
+
         # Validar que el plan existe
         plan = MembershipPlan.objects.filter(slug=plan_slug, is_active=True).first()
         if not plan:
@@ -162,56 +127,69 @@ def process_payment(request):
                 'success': False,
                 'error': 'Plan no encontrado o no está activo.'
             }, status=404)
-        
-        # Verificar que el usuario no tenga ya una membresía activa
+
+        # Verificar membresía activa existente
         existing_membership = UserMembership.objects.filter(
             user=request.user,
             status='ACTIVE',
             start_date__lte=timezone.now(),
             end_date__gte=timezone.now()
         ).first()
-        
+
         if existing_membership:
             return JsonResponse({
                 'success': False,
                 'error': 'Ya tienes una membresía activa.'
             }, status=400)
-        
-        # Validar datos de la tarjeta
-        if not cardholder_name or len(cardholder_name.strip()) == 0:
-            return JsonResponse({
-                'success': False,
-                'error': 'El nombre del titular es requerido.'
-            }, status=400)
-        
-        if not validate_card_number(card_number):
-            return JsonResponse({
-                'success': False,
-                'error': 'Número de tarjeta inválido.'
-            }, status=400)
-        
-        if not validate_expiry_date(card_expiry):
-            return JsonResponse({
-                'success': False,
-                'error': 'Fecha de expiración inválida o vencida.'
-            }, status=400)
-        
-        if not card_cvv or len(card_cvv) < 3 or len(card_cvv) > 4:
-            return JsonResponse({
-                'success': False,
-                'error': 'CVV inválido.'
-            }, status=400)
-        
-        # Detectar marca de tarjeta
-        card_brand = get_card_brand(card_number)
-        
-        # Obtener últimos 4 dígitos
-        card_last_four = card_number.replace(' ', '').replace('-', '')[-4:]
-        
+
+        # ── Validaciones según método ────────────────────────────────────────
+        card_brand     = ''
+        card_last_four = ''
+
+        if payment_method == 'BANK_TRANSFER':
+            if not bank_reference:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'El número de referencia bancaria es requerido.'
+                }, status=400)
+            if not re.fullmatch(r'\d{6,12}', bank_reference):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'La referencia bancaria debe contener solo dígitos y tener entre 6 y 12 caracteres.'
+                }, status=400)
+
+        else:
+            if not cardholder_name.strip():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'El nombre del titular es requerido.'
+                }, status=400)
+
+            if not validate_card_number(card_number):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Número de tarjeta inválido.'
+                }, status=400)
+
+            if not validate_expiry_date(card_expiry):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Fecha de expiración inválida o vencida.'
+                }, status=400)
+
+            if not card_cvv or len(card_cvv) < 3 or len(card_cvv) > 4:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'CVV inválido.'
+                }, status=400)
+
+            card_brand     = get_card_brand(card_number)
+            card_last_four = card_number.replace(' ', '').replace('-', '')[-4:]
+
         # Generar ID de transacción único
         transaction_id = generate_transaction_id()
-        
-        # Crear registro de pago en estado PENDING (requiere aprobación del admin)
+
+        # Crear registro de pago en estado PENDING
         payment = Payment.objects.create(
             user=request.user,
             membership_plan=plan,
@@ -221,10 +199,11 @@ def process_payment(request):
             card_last_four=card_last_four,
             card_brand=card_brand,
             cardholder_name=cardholder_name,
+            bank_reference=bank_reference if payment_method == 'BANK_TRANSFER' else '',
             status='PENDING',
             transaction_id=transaction_id
         )
-        
+
         # Calcular fechas de membresía
         start_date = timezone.now()
         if plan.plan_type == 'MONTHLY':
@@ -233,7 +212,7 @@ def process_payment(request):
             end_date = start_date + relativedelta(years=1)
         else:
             end_date = start_date + relativedelta(months=1)
-        
+
         # Crear membresía en estado PENDING (requiere aprobación del admin)
         membership = UserMembership.objects.create(
             user=request.user,
@@ -243,22 +222,30 @@ def process_payment(request):
             status='PENDING',
             payment_reference=transaction_id
         )
-        
+
+        # URL de redirect con contexto para payment_success
+        params = {'method': payment_method}
+        if payment_method == 'BANK_TRANSFER':
+            params['ref']  = bank_reference
+            params['plan'] = plan.name
+
+        redirect_url = '/membership/payment/success/?' + urllib.parse.urlencode(params)
+
         return JsonResponse({
             'success': True,
             'payment_id': payment.id,
             'transaction_id': transaction_id,
             'membership_id': membership.id,
-            'message': f'¡Pago procesado exitosamente! Tu solicitud de membresía {plan.name} está pendiente de aprobación por el administrador.',
-            'redirect_url': '/membership/payment/success/'
+            'message': f'Solicitud de membresía {plan.name} registrada. Pendiente de aprobación.',
+            'redirect_url': redirect_url
         })
-        
+
     except json.JSONDecodeError:
         return JsonResponse({
             'success': False,
             'error': 'Datos JSON inválidos.'
         }, status=400)
-    
+
     except Exception as e:
         return JsonResponse({
             'success': False,

@@ -17,62 +17,85 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.apps import apps
+from django.utils import timezone
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper: verificación de membresía activa
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _require_active_membership(request):
+    """
+    Verifica que el usuario tenga una membresía ACTIVE cuya end_date no haya pasado.
+
+    Retorna True si tiene acceso.
+    Retorna False si no tiene membresía activa (la función NO redirige,
+    el caller decide qué hacer).
+
+    Nunca silencia errores de importación/ORM — si hay un problema en el
+    sistema de membresías, lanza la excepción para que sea visible.
+    """
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    now = timezone.now()
+
+    return UserMembership.objects.filter(
+        user=request.user,
+        status='ACTIVE',
+        start_date__lte=now,
+        end_date__gte=now,
+    ).exists()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Vistas
+# ─────────────────────────────────────────────────────────────────────────────
 
 @login_required
 def course_player(request, course_id, class_id=None):
     """
     Vista del reproductor de clase.
-    
-    Muestra el video de la clase con navegación
-    entre lecciones y recursos disponibles.
+
+    Requiere membresía ACTIVE. Si el usuario canceló su membresía,
+    es redirigido a la página de planes sin importar si antes tenía acceso.
     """
     Course = apps.get_model('course_app', 'Course')
-    
+
+    # Verificar membresía ANTES de cargar cualquier dato de curso.
+    # No se captura la excepción: si el modelo falla, Django mostrará
+    # el error real en vez de dar acceso indebido.
+    if not _require_active_membership(request):
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para acceder a este contenido. '
+            'Tu membresía puede haber expirado o sido cancelada.'
+        )
+        return redirect('home:membership_plans')
+
     # Obtener el curso
     course = get_object_or_404(Course, id=course_id, publicado=True)
-    
-    # Verificar acceso (membresía activa) - opcional
-    try:
-        UserMembership = apps.get_model('membership', 'UserMembership')
-        from django.utils import timezone
-        
-        has_active = UserMembership.objects.filter(
-            user=request.user,
-            status='ACTIVE',
-            start_date__lte=timezone.now(),
-            end_date__gte=timezone.now()
-        ).exists()
-        
-        if not has_active:
-            messages.warning(request, 'Necesitas una membresía activa para acceder a este contenido.')
-            return redirect('home:membership_plans')
-    except Exception:
-        # Si no hay sistema de membresías, permitir acceso
-        pass
-    
+
     # Obtener todas las clases del curso
     try:
         Class = apps.get_model('class_app', 'Class')
         all_classes = Class.objects.filter(curso=course).order_by('orden')
-    except:
+    except Exception:
         all_classes = []
-    
+
     # Determinar clase actual
     current_class = None
     if class_id:
         try:
             Class = apps.get_model('class_app', 'Class')
             current_class = get_object_or_404(Class, id=class_id, curso=course)
-        except:
+        except Exception:
             pass
     elif all_classes:
         current_class = all_classes.first()
-    
+
     # Calcular clase anterior y siguiente
     prev_class = None
     next_class = None
-    
+
     if current_class and all_classes and all_classes.count() > 1:
         classes_list = list(all_classes)
         try:
@@ -83,7 +106,7 @@ def course_player(request, course_id, class_id=None):
                 next_class = classes_list[current_index + 1]
         except ValueError:
             pass
-    
+
     # Calcular progreso
     total_classes = all_classes.count() if hasattr(all_classes, 'count') else len(list(all_classes))
     current_index = 0
@@ -93,7 +116,7 @@ def course_player(request, course_id, class_id=None):
         except ValueError:
             current_index = 1
     progress = int((current_index / total_classes) * 100) if total_classes > 0 else 0
-    
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -104,7 +127,7 @@ def course_player(request, course_id, class_id=None):
         'current_index': current_index,
         'total_classes': total_classes,
     }
-    
+
     return render(request, 'course_player/player.html', context)
 
 
@@ -112,20 +135,29 @@ def course_player(request, course_id, class_id=None):
 def course_overview(request, course_id):
     """
     Vista general del curso (lista de clases).
+
+    Requiere membresía activa, igual que el reproductor.
     """
+    # Verificar membresía — misma regla que course_player
+    if not _require_active_membership(request):
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para acceder a este contenido.'
+        )
+        return redirect('home:membership_plans')
+
     Course = apps.get_model('course_app', 'Course')
-    
     course = get_object_or_404(Course, id=course_id, publicado=True)
-    
+
     try:
         Class = apps.get_model('class_app', 'Class')
         classes = Class.objects.filter(curso=course).order_by('orden')
-    except:
+    except Exception:
         classes = []
-    
+
     context = {
         'course': course,
         'classes': classes,
     }
-    
+
     return render(request, 'course_player/overview.html', context)

@@ -89,13 +89,13 @@
                     {% csrf_token %}
 
                     <!-- Cardholder Name -->
-                    <div>
+                    <div id="wrap-cardholder">
                         <label for="cardholder_name" class="block text-sm font-semibold text-slate-300 mb-2">
                             Cardholder Name
                         </label>
-                        <input 
-                            type="text" 
-                            id="cardholder_name" 
+                        <input
+                            type="text"
+                            id="cardholder_name"
                             name="cardholder_name"
                             class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors"
                             placeholder="John Doe"
@@ -104,14 +104,14 @@
                     </div>
 
                     <!-- Card Number -->
-                    <div>
+                    <div id="wrap-card-number">
                         <label for="card_number" class="block text-sm font-semibold text-slate-300 mb-2">
                             Card Number
                         </label>
                         <div class="relative">
-                            <input 
-                                type="text" 
-                                id="card_number" 
+                            <input
+                                type="text"
+                                id="card_number"
                                 name="card_number"
                                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors"
                                 placeholder="4242 4242 4242 4242"
@@ -124,14 +124,14 @@
                     </div>
 
                     <!-- Expiry and CVV -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div id="wrap-expiry-cvv" class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="card_expiry" class="block text-sm font-semibold text-slate-300 mb-2">
                                 Expiration Date
                             </label>
-                            <input 
-                                type="text" 
-                                id="card_expiry" 
+                            <input
+                                type="text"
+                                id="card_expiry"
                                 name="card_expiry"
                                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors"
                                 placeholder="MM/YY"
@@ -143,9 +143,9 @@
                             <label for="card_cvv" class="block text-sm font-semibold text-slate-300 mb-2">
                                 CVV
                             </label>
-                            <input 
-                                type="text" 
-                                id="card_cvv" 
+                            <input
+                                type="text"
+                                id="card_cvv"
                                 name="card_cvv"
                                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors"
                                 placeholder="123"
@@ -160,14 +160,77 @@
                         <label for="payment_method" class="block text-sm font-semibold text-slate-300 mb-2">
                             Payment Method
                         </label>
-                        <select 
-                            id="payment_method" 
+                        <select
+                            id="payment_method"
                             name="payment_method"
+                            onchange="handlePaymentMethodChange(this.value)"
                             class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary transition-colors"
                         >
-                            <option value="CREDIT_CARD">Credit Card</option>
-                            <option value="DEBIT_CARD">Debit Card</option>
+                            <option value="CREDIT_CARD">💳 Credit Card</option>
+                            <option value="DEBIT_CARD">🏧 Debit Card</option>
+                            <option value="BANK_TRANSFER">🏦 Transferencia Bancaria</option>
                         </select>
+                    </div>
+
+                    <!-- Panel: Transferencia Bancaria -->
+                    <div id="bank-transfer-panel" class="hidden space-y-4">
+
+                        <!-- Datos bancarios -->
+                        <div class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-5 space-y-4">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="material-symbols-outlined text-amber-400 text-xl">account_balance</span>
+                                <h4 class="font-bold text-white text-sm uppercase tracking-wider">Datos para Transferencia</h4>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                <div class="bg-slate-800/60 rounded-lg p-3">
+                                    <p class="text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Banco</p>
+                                    <p class="text-white font-semibold">Banco de Venezuela</p>
+                                </div>
+                                <div class="bg-slate-800/60 rounded-lg p-3">
+                                    <p class="text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">RIF / CI del Beneficiario</p>
+                                    <p class="text-white font-semibold font-mono">J-40123456-7</p>
+                                </div>
+                                <div class="bg-slate-800/60 rounded-lg p-3 sm:col-span-2">
+                                    <p class="text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Número de Cuenta</p>
+                                    <p class="text-white font-semibold font-mono tracking-widest">0102-0000-12-0000123456</p>
+                                    <p class="text-slate-500 text-[10px] mt-1">Formato: Banco - Agencia - Tipo - Número de cuenta</p>
+                                </div>
+                                <div class="bg-slate-800/60 rounded-lg p-3">
+                                    <p class="text-slate-400 text-[10px] uppercase tracking-wider font-bold mb-1">Tipo de Cuenta</p>
+                                    <p class="text-white font-semibold">Corriente</p>
+                                </div>
+                                <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                                    <p class="text-amber-400 text-[10px] uppercase tracking-wider font-bold mb-1">Monto a Transferir</p>
+                                    <p class="text-amber-300 font-black text-lg">${{ plan.price }} USD</p>
+                                </div>
+                            </div>
+
+                            <p class="text-slate-400 text-xs flex items-start gap-2">
+                                <span class="material-symbols-outlined text-slate-500 text-sm mt-0.5">info</span>
+                                Realiza la transferencia por el monto exacto y registra tu número de referencia a continuación. Tu membresía será activada una vez verificado el pago por el administrador.
+                            </p>
+                        </div>
+
+                        <!-- Campo de referencia bancaria -->
+                        <div>
+                            <label for="bank_reference" class="block text-sm font-semibold text-slate-300 mb-2">
+                                Número de Referencia Bancaria *
+                            </label>
+                            <input
+                                type="text"
+                                id="bank_reference"
+                                name="bank_reference"
+                                class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors font-mono tracking-wider"
+                                placeholder="Ej: 123456789012"
+                                minlength="6"
+                                maxlength="12"
+                                pattern="\d{6,12}"
+                                inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            >
+                            <p class="text-xs text-slate-500 mt-1">Solo números &middot; Entre 6 y 12 dígitos &middot; Aparece en el comprobante de transferencia.</p>
+                        </div>
                     </div>
 
                     <!-- Error Message -->
@@ -219,6 +282,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorText = document.getElementById('error-text');
     const cardBrandElement = document.getElementById('card-brand');
 
+    // ── Mostrar/ocultar campos según método ──────────────────────────────
+    window.handlePaymentMethodChange = function(method) {
+        const isTransfer = (method === 'BANK_TRANSFER');
+
+        // IDs de los wrappers de campos de tarjeta
+        const cardWrapIds = ['wrap-cardholder', 'wrap-card-number', 'wrap-expiry-cvv'];
+        cardWrapIds.forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = isTransfer ? 'none' : '';
+        });
+
+        // Campos required
+        ['cardholder_name', 'card_number', 'card_expiry', 'card_cvv'].forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el) el.required = !isTransfer;
+        });
+
+        // Panel bancario
+        const bankPanel = document.getElementById('bank-transfer-panel');
+        if (bankPanel) bankPanel.style.display = isTransfer ? 'block' : 'none';
+
+        // Required en referencia
+        const refInput = document.getElementById('bank_reference');
+        if (refInput) refInput.required = isTransfer;
+
+        // Cambiar texto del botón
+        buttonText.textContent = isTransfer ? 'Registrar Transferencia' : 'Complete Payment';
+    };
+
+    // Estado inicial
+    handlePaymentMethodChange(document.getElementById('payment_method').value);
+
     // Format card number with spaces
     cardNumberInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\s/g, '');
@@ -265,13 +360,27 @@ document.addEventListener('DOMContentLoaded', function() {
         buttonLoader.classList.remove('hidden');
 
         // Get form data
+        const selectedMethod = document.getElementById('payment_method').value;
+        const bankRef = document.getElementById('bank_reference').value.trim();
+
+        // Validar referencia si es transferencia
+        if (selectedMethod === 'BANK_TRANSFER' && !bankRef) {
+            errorText.textContent = 'Debes ingresar el número de referencia bancaria.';
+            errorMessage.classList.remove('hidden');
+            submitButton.disabled = false;
+            buttonText.classList.remove('hidden');
+            buttonLoader.classList.add('hidden');
+            return;
+        }
+
         const formData = {
             plan_slug: '{{ plan.slug }}',
-            payment_method: document.getElementById('payment_method').value,
+            payment_method: selectedMethod,
             card_number: cardNumberInput.value.replace(/\s/g, ''),
             card_expiry: cardExpiryInput.value,
             card_cvv: cardCvvInput.value,
-            cardholder_name: document.getElementById('cardholder_name').value
+            cardholder_name: document.getElementById('cardholder_name').value,
+            bank_reference: bankRef
         };
 
         try {

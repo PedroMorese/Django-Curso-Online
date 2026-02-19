@@ -7,6 +7,7 @@ de pago realizadas por los usuarios al suscribirse a planes de membresía.
 
 from django.db import models
 from django.conf import settings
+from django.core.validators import RegexValidator
 
 
 class Payment(models.Model):
@@ -21,6 +22,7 @@ class Payment(models.Model):
         ('CREDIT_CARD', 'Credit Card'),
         ('DEBIT_CARD', 'Debit Card'),
         ('PAYPAL', 'PayPal'),
+        ('BANK_TRANSFER', 'Transferencia Bancaria'),
     ]
     
     STATUS_CHOICES = [
@@ -98,6 +100,20 @@ class Payment(models.Model):
         max_length=100,
         unique=True,
         verbose_name='ID de Transacción'
+    )
+    bank_reference = models.CharField(
+        max_length=12,
+        blank=True,
+        null=True,
+        verbose_name='Número de Referencia Bancaria',
+        help_text='Entre 6 y 12 dígitos numéricos del comprobante de transferencia',
+        validators=[
+            RegexValidator(
+                regex=r'^\d{6,12}$',
+                message='La referencia bancaria debe contener solo dígitos y tener entre 6 y 12 caracteres.',
+                code='invalid_bank_reference'
+            )
+        ]
     )
     
     # Timestamps

@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.apps import apps
+from django.utils import timezone
 from django.db import IntegrityError
 import json
 
@@ -101,11 +102,18 @@ def course_preview(request, course_id):
         except Exception:
             has_active_membership = False
     
+    # Parsear PDFs adjuntos al curso
+    try:
+        pdfs = json.loads(course.pdf_adjuntos or '[]')
+    except Exception:
+        pdfs = []
+
     context = {
         'course': course,
         'classes': classes,
         'page_title': course.titulo,
         'has_active_membership': has_active_membership,
+        'pdfs': pdfs,
     }
     
     return render(request, 'catalog/course_preview.html', context)
@@ -265,24 +273,41 @@ def membership_subscribe_redirect(request, plan_slug):
 
 @login_required
 def course_player_redirect(request, course_id):
-    """Vista del reproductor de clase."""
+    """Vista del reproductor de clase. Requiere membersía activa."""
+
+    # ── Verificación de membresía ─────────────────────────────
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    now = timezone.now()
+    has_active = UserMembership.objects.filter(
+        user=request.user,
+        status='ACTIVE',
+        start_date__lte=now,
+        end_date__gte=now,
+    ).exists()
+    if not has_active:
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para acceder a este contenido.'
+        )
+        return redirect('home:membership_plans')
+    # ───────────────────────────────────────────────
+
     Course = apps.get_model('course_app', 'Course')
-    
     course = get_object_or_404(Course, id=course_id, publicado=True)
-    
+
     try:
         Class = apps.get_model('class_app', 'Class')
         all_classes = Class.objects.filter(curso=course).order_by('orden')
-    except:
+    except Exception:
         all_classes = []
-    
+
     current_class = None
     if all_classes:
         current_class = all_classes.first()
-    
+
     prev_class = None
     next_class = None
-    
+
     if current_class and all_classes and all_classes.count() > 1:
         classes_list = list(all_classes)
         try:
@@ -293,11 +318,11 @@ def course_player_redirect(request, course_id):
                 next_class = classes_list[current_index + 1]
         except ValueError:
             pass
-    
+
     total_classes = all_classes.count() if hasattr(all_classes, 'count') else len(list(all_classes))
     current_index = 1 if current_class else 0
     progress = int((current_index / total_classes) * 100) if total_classes > 0 else 0
-    
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -308,28 +333,45 @@ def course_player_redirect(request, course_id):
         'current_index': current_index,
         'total_classes': total_classes,
     }
-    
+
     return render(request, 'course_player/player.html', context)
 
 
 @login_required
 def course_player_class_redirect(request, course_id, class_id):
-    """Vista del reproductor con clase específica."""
+    """Vista del reproductor con clase específica. Requiere membresía activa."""
+
+    # ── Verificación de membresía ─────────────────────────────
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    now = timezone.now()
+    has_active = UserMembership.objects.filter(
+        user=request.user,
+        status='ACTIVE',
+        start_date__lte=now,
+        end_date__gte=now,
+    ).exists()
+    if not has_active:
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para acceder a este contenido.'
+        )
+        return redirect('home:membership_plans')
+    # ───────────────────────────────────────────────
+
     Course = apps.get_model('course_app', 'Course')
-    
     course = get_object_or_404(Course, id=course_id, publicado=True)
-    
+
     try:
         Class = apps.get_model('class_app', 'Class')
         all_classes = Class.objects.filter(curso=course).order_by('orden')
         current_class = get_object_or_404(Class, id=class_id, curso=course)
-    except:
+    except Exception:
         all_classes = []
         current_class = None
-    
+
     prev_class = None
     next_class = None
-    
+
     if current_class and all_classes and all_classes.count() > 1:
         classes_list = list(all_classes)
         try:
@@ -340,16 +382,16 @@ def course_player_class_redirect(request, course_id, class_id):
                 next_class = classes_list[current_index + 1]
         except ValueError:
             pass
-    
+
     total_classes = all_classes.count() if hasattr(all_classes, 'count') else 0
     idx = 0
     if current_class:
         try:
             idx = list(all_classes).index(current_class) + 1
-        except:
+        except Exception:
             idx = 1
     progress = int((idx / total_classes) * 100) if total_classes > 0 else 0
-    
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -360,5 +402,5 @@ def course_player_class_redirect(request, course_id, class_id):
         'current_index': idx,
         'total_classes': total_classes,
     }
-    
+
     return render(request, 'course_player/player.html', context)

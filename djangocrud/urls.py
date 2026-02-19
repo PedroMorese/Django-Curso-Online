@@ -28,7 +28,7 @@ urlpatterns = [
     # ===========================================
     path('dashboard/profesor/', include('Front-end.Dashboard-Profesor.MyCourses.urls')),
     path('dashboard/admin/', include('Front-end.Dashboard-Admin.Overview.urls')),
-    path('profile/', include('Front-end.Profile.urls')),
+    path('profile/', include(('Front-end.Profile.urls', 'profile'), namespace='profile')),
     
     # ===========================================
     # FRONTEND - Documentation

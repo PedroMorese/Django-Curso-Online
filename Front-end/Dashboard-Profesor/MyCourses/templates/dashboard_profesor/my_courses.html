@@ -11,66 +11,77 @@
         <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Total Courses</span>
         <div class="flex items-baseline gap-2">
             <span class="text-3xl font-bold">{{ total_courses }}</span>
-            <span class="text-xs text-primary font-bold">Manage tracks</span>
+            <span class="text-xs text-primary font-bold">All tracks</span>
         </div>
     </div>
-    {% comment %} <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
-        <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Active Learners</span>
+    <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Published</span>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold">1.2k</span>
-            <span class="text-xs text-emerald-400 font-bold">+12% this month</span>
+            <span class="text-3xl font-bold text-emerald-400">{{ published_count }}</span>
+            <span class="text-xs text-[#637588] font-bold">Live courses</span>
         </div>
-    </div> {% endcomment %}
-    {% comment %} <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
-        <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Revenue Generated</span>
+    </div>
+    <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Drafts</span>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold">$4,250</span>
-            <span class="text-xs text-[#9dabb9]">Net earnings</span>
+            <span class="text-3xl font-bold text-amber-400">{{ draft_count }}</span>
+            <span class="text-xs text-[#637588] font-bold">Pending publish</span>
         </div>
-    </div> {% endcomment %}
+    </div>
 </div>
 
 <!-- Course List Header -->
 <div class="flex items-center justify-between mb-8">
-    <div class="flex items-center gap-6">
-        <button class="text-sm font-bold text-white border-b-2 border-primary pb-1">All Courses</button>
-        <button class="text-sm font-bold text-[#637588] hover:text-white transition-colors">Published ({{ published_count }})</button>
-        <button class="text-sm font-bold text-[#637588] hover:text-white transition-colors">Drafts ({{ draft_count }})</button>
-    </div>
-    <div class="flex gap-2">
-        <button class="p-2 rounded bg-charcoal border border-border-dark text-[#637588] hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-sm">filter_list</span>
+    <div class="flex items-center gap-6" id="filter-tabs">
+        <button
+            data-filter="all"
+            onclick="filterCourses('all', this)"
+            class="tab-btn text-sm font-bold text-white border-b-2 border-primary pb-1 transition-colors">
+            All Courses
         </button>
-        <button class="p-2 rounded bg-charcoal border border-border-dark text-[#637588] hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-sm">grid_view</span>
+        <button
+            data-filter="published"
+            onclick="filterCourses('published', this)"
+            class="tab-btn text-sm font-bold text-[#637588] hover:text-white border-b-2 border-transparent pb-1 transition-colors">
+            Published ({{ published_count }})
+        </button>
+        <button
+            data-filter="draft"
+            onclick="filterCourses('draft', this)"
+            class="tab-btn text-sm font-bold text-[#637588] hover:text-white border-b-2 border-transparent pb-1 transition-colors">
+            Drafts ({{ draft_count }})
         </button>
     </div>
 </div>
 
 <!-- Course Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="courses-grid">
+
     {% for course in courses %}
-    <div class="group flex flex-col bg-charcoal rounded-xl overflow-hidden border border-border-dark transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5">
+    <div class="course-card group flex flex-col bg-charcoal rounded-xl overflow-hidden border border-border-dark transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5"
+         data-status="{% if course.publicado %}published{% else %}draft{% endif %}">
+
         <!-- Course Thumbnail -->
         <div class="aspect-video w-full relative overflow-hidden bg-background-dark">
             {% if course.imagen_portada %}
-            <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <img src="{{ course.imagen_portada }}" alt="{{ course.titulo }}"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
             {% else %}
             <div class="w-full h-full flex items-center justify-center bg-primary/5">
                 <span class="material-symbols-outlined text-primary/20 text-5xl">school</span>
             </div>
             {% endif %}
-            
+
             <!-- Quick Link Overlay -->
             <div class="absolute inset-0 bg-background-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                <a href="{% url 'dashboard_profesor:course_detail' course_id=course.id %}" 
+                <a href="{% url 'dashboard_profesor:course_detail' course_id=course.id %}"
                    class="bg-white text-background-dark px-4 py-2 rounded font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
                     Edit Content
                 </a>
             </div>
 
             <!-- Publish Badge -->
-            <div class="absolute top-4 left-4">
+            <div class="absolute top-3 left-3">
                 {% if course.publicado %}
                 <span class="bg-emerald-500/90 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded shadow-lg backdrop-blur-md">Published</span>
                 {% else %}
@@ -80,36 +91,80 @@
         </div>
 
         <!-- Course Info -->
-        <div class="p-6 flex flex-col gap-4">
+        <div class="p-5 flex flex-col gap-3 flex-1">
             <div>
-                <div class="flex justify-between items-start mb-2">
+                <div class="flex justify-between items-start mb-1.5">
                     <span class="text-[10px] uppercase tracking-widest text-[#637588] font-bold">{{ course.nivel }}</span>
-                    <span class="text-[10px] text-primary font-bold">12 Lessons</span>
+                    <span class="text-[10px] text-primary font-bold">
+                        {{ course.class_count }} lesson{{ course.class_count|pluralize }}
+                    </span>
                 </div>
-                <h3 class="text-lg font-bold text-white line-clamp-1 group-hover:text-primary transition-colors">{{ course.titulo }}</h3>
+                <h3 class="text-base font-bold text-white line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                    {{ course.titulo }}
+                </h3>
             </div>
-            
-            <div class="flex items-center justify-between pt-4 border-t border-border-dark/50">
-                <div class="flex -space-x-2">
-                    <div class="size-6 rounded-full border border-background-dark bg-slate-700"></div>
-                    <div class="size-6 rounded-full border border-background-dark bg-slate-600"></div>
-                </div>
-                <span class="text-[10px] font-bold text-[#637588] uppercase tracking-wider">Updated {{ course.fecha_creacion|timesince }} ago</span>
+
+            <div class="mt-auto flex items-center justify-between pt-3 border-t border-border-dark/50">
+                <span class="text-[10px] font-bold text-[#637588] uppercase tracking-wider">
+                    Updated {{ course.fecha_creacion|timesince }} ago
+                </span>
+                <a href="{% url 'dashboard_profesor:course_detail' course_id=course.id %}"
+                   class="flex items-center gap-1 text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">
+                    Manage
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                </a>
             </div>
         </div>
     </div>
     {% empty %}
     <!-- Empty State -->
-    <div class="col-span-full py-24 flex flex-col items-center justify-center text-center">
+    <div class="col-span-full py-24 flex flex-col items-center justify-center text-center" id="empty-state">
         <div class="size-20 bg-charcoal border border-border-dark rounded-full flex items-center justify-center mb-6">
             <span class="material-symbols-outlined text-4xl text-[#637588]">add_task</span>
         </div>
         <h3 class="text-xl font-bold text-white mb-2">Build your curriculum</h3>
-        <p class="text-[#9dabb9] text-sm max-w-sm mb-8">Ready to share your knowledge? Create your first course and start impacting students worldwide.</p>
-        <a href="{% url 'dashboard_profesor:create_course' %}" class="bg-primary text-white px-8 py-3 rounded font-bold text-sm uppercase tracking-widest hover:shadow-xl hover:shadow-primary/20 transition-all">
+        <p class="text-[#9dabb9] text-sm max-w-sm mb-8">Create your first course and start impacting students worldwide.</p>
+        <a href="{% url 'dashboard_profesor:create_course' %}"
+           class="bg-primary text-white px-8 py-3 rounded font-bold text-sm uppercase tracking-widest hover:shadow-xl hover:shadow-primary/20 transition-all">
             Create First Course
         </a>
     </div>
     {% endfor %}
 </div>
+
+<!-- Empty state for filtered result (hidden by default) -->
+<div id="no-filter-results" class="hidden py-16 flex flex-col items-center justify-center text-center">
+    <span class="material-symbols-outlined text-5xl text-[#637588] mb-4">search_off</span>
+    <p class="text-[#9dabb9] font-bold">No courses found in this category.</p>
+</div>
+
+<script>
+    function filterCourses(filter, btn) {
+        // ── Actualizar estilo de tabs ─────────────────────────────
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('text-white', 'border-primary');
+            b.classList.add('text-[#637588]', 'border-transparent');
+        });
+        btn.classList.remove('text-[#637588]', 'border-transparent');
+        btn.classList.add('text-white', 'border-primary');
+
+        // ── Filtrar cards ─────────────────────────────────────────
+        const cards = document.querySelectorAll('.course-card');
+        let visible = 0;
+
+        cards.forEach(card => {
+            const status = card.dataset.status; // "published" | "draft"
+            const show   = filter === 'all' || status === filter;
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        // ── Mostrar mensaje si no hay resultados ──────────────────
+        const noResults = document.getElementById('no-filter-results');
+        if (noResults) {
+            noResults.classList.toggle('hidden', visible > 0);
+            noResults.style.display = visible === 0 ? 'flex' : 'none';
+        }
+    }
+</script>
 {% endblock %}

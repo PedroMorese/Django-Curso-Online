@@ -219,11 +219,22 @@ def checkout(request, plan_slug):
 def payment_success(request):
     """
     Página de confirmación de pago exitoso.
-    
-    Muestra un mensaje de éxito y opciones para continuar.
+
+    Muestra mensaje diferenciado según el método de pago usado.
+    Para transferencias bancarias muestra el número de referencia registrado.
     """
     if not request.user.is_authenticated:
         return redirect('home:login')
-    
-    return render(request, 'membership/payment_success.html')
+
+    method         = request.GET.get('method', '')
+    bank_reference = request.GET.get('ref', '')
+    plan_name      = request.GET.get('plan', '')
+
+    context = {
+        'is_bank_transfer': method == 'BANK_TRANSFER',
+        'bank_reference':   bank_reference,
+        'plan_name':        plan_name,
+    }
+
+    return render(request, 'membership/payment_success.html', context)
 

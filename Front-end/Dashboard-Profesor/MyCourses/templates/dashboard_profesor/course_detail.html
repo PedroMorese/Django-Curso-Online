@@ -6,8 +6,13 @@
 {% block container_class %}max-w-[1400px]{% endblock %}
 
 {% block page_actions %}
-<div class="flex items-center gap-4">
-    <a href="{% url 'dashboard_profesor:toggle_publish' course.id %}" 
+<div class="flex items-center gap-3">
+    <button onclick="openModal('edit-course-modal')"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-border-dark text-white text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+        <span class="material-symbols-outlined text-sm">edit</span>
+        Edit Course
+    </button>
+    <a href="{% url 'dashboard_profesor:toggle_publish' course.id %}"
        class="px-4 py-2 rounded-lg {% if course.publicado %}bg-emerald-500/10 text-emerald-500{% else %}bg-amber-500/10 text-amber-500{% endif %} text-xs font-bold uppercase tracking-widest transition-all">
         {% if course.publicado %}Published{% else %}Draft Mode{% endif %}
     </a>
@@ -82,31 +87,156 @@
         </div>
     </div>
 
-    <!-- Sidebar: Course Stats -->
+    <!-- Sidebar: Course Stats + PDFs -->
     <div class="xl:col-span-1 space-y-6">
+        <!-- Performance Hub -->
         <div class="bg-card-dark border border-border-dark rounded-2xl p-8 space-y-6">
             <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#637588]">Performance Hub</h3>
-            
+
             <div class="space-y-4">
                 <div class="flex justify-between items-center text-sm">
                     <span class="text-[#9dabb9]">Total Lessons</span>
                     <span class="text-white font-bold">{{ classes|length }}</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-[#9dabb9]">Estimated Time</span>
-                    <span class="text-white font-bold">12h 45m</span>
+                    <span class="text-[#9dabb9]">With Video</span>
+                    <span class="text-white font-bold" id="thumb-count">&mdash;</span>
                 </div>
                 <div class="flex justify-between items-center text-sm">
-                    <span class="text-[#9dabb9]">Asset Weight</span>
-                    <span class="text-white font-bold">2.4 GB</span>
+                    <span class="text-[#9dabb9]">PDF Attachments</span>
+                    <span class="text-emerald-400 font-bold">{{ pdfs|length }}</span>
                 </div>
             </div>
 
-            <div class="pt-6 border-t border-border-dark">
-                <button class="w-full py-3 rounded-xl bg-white/5 border border-border-dark text-white text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+            <div class="pt-6 border-t border-border-dark space-y-3">
+                <button onclick="openModal('resources-modal')"
+                        class="w-full py-3 rounded-xl bg-white/5 border border-border-dark text-white text-xs font-bold uppercase tracking-widest hover:bg-primary/20 hover:border-primary/40 transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">folder_open</span>
                     Manage Resources
                 </button>
             </div>
+        </div>
+
+        <!-- PDF Attachments Card -->
+        <div class="bg-card-dark border border-border-dark rounded-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-[#637588]">Course PDFs</h3>
+                <button onclick="openModal('add-pdf-modal')"
+                        class="size-7 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                </button>
+            </div>
+
+            {% if pdfs %}
+            <ul class="space-y-2">
+                {% for pdf in pdfs %}
+                <li class="flex items-center gap-3 group">
+                    <div class="size-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-400 flex-shrink-0">
+                        <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+                    </div>
+                    <a href="{{ pdf.url }}" target="_blank" rel="noopener"
+                       class="flex-1 text-xs text-[#9dabb9] hover:text-white transition-colors truncate">
+                        {{ pdf.name }}
+                    </a>
+                    <form method="POST" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove_pdf">
+                        <input type="hidden" name="pdf_index" value="{{ forloop.counter0 }}">
+                        <button type="submit"
+                                class="size-6 flex items-center justify-center rounded text-[#637588] hover:text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-sm">close</span>
+                        </button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="flex flex-col items-center justify-center py-4 text-center">
+                <span class="material-symbols-outlined text-3xl text-[#232d38] mb-2">picture_as_pdf</span>
+                <p class="text-[10px] text-[#637588] uppercase tracking-widest font-bold">No PDFs attached yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Resources Overview -->
+<div id="resources-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+        <!-- Header -->
+        <div class="p-6 border-b border-border-dark flex justify-between items-center bg-primary/5">
+            <div>
+                <h3 class="text-lg font-bold text-white">Course Resources</h3>
+                <p class="text-[9px] text-[#637588] uppercase tracking-widest font-bold mt-0.5">Video &amp; Thumbnail assets per lesson</p>
+            </div>
+            <button onclick="closeModal('resources-modal')" class="text-[#637588] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Lesson Resource List -->
+        <div class="divide-y divide-border-dark max-h-[60vh] overflow-y-auto">
+            {% for class in classes %}
+            <div class="flex items-center gap-4 p-5 hover:bg-white/5 transition-colors">
+                <!-- Thumbnail preview -->
+                <div class="size-14 rounded-xl flex-shrink-0 overflow-hidden bg-background-dark border border-border-dark flex items-center justify-center">
+                    {% if class.imagen_portada %}
+                    <img src="{{ class.imagen_portada }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <span class="material-symbols-outlined text-[#232d38] text-2xl">image_not_supported</span>
+                    {% endif %}
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-white font-semibold text-sm truncate">{{ forloop.counter }}. {{ class.titulo }}</p>
+                    <div class="flex items-center gap-3 mt-1.5">
+                        {% if class.video_url %}
+                        <span class="flex items-center gap-1 text-[10px] font-bold text-primary uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm">play_circle</span>
+                            Video linked
+                        </span>
+                        <a href="{{ class.video_url }}" target="_blank"
+                           class="text-[10px] text-[#637588] hover:text-white transition-colors underline underline-offset-2 truncate max-w-[180px]">
+                            {{ class.video_url|truncatechars:40 }}
+                        </a>
+                        {% else %}
+                        <span class="flex items-center gap-1 text-[10px] font-bold text-[#637588] uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm">videocam_off</span>
+                            No video
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if not class.imagen_portada %}
+                    <p class="text-[10px] text-amber-500 font-bold uppercase tracking-wider mt-1">⚠ No thumbnail</p>
+                    {% endif %}
+                </div>
+
+                <!-- Edit button -->
+                <button onclick="closeModal('resources-modal'); openEditClassModal('{{ class.id }}')"
+                        title="Edit this lesson"
+                        class="size-9 flex items-center justify-center rounded-lg border border-border-dark text-[#637588] hover:text-white hover:border-primary transition-colors flex-shrink-0">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+            </div>
+            {% empty %}
+            <div class="p-12 flex flex-col items-center justify-center text-center">
+                <span class="material-symbols-outlined text-4xl text-[#637588] mb-3">inventory_2</span>
+                <p class="text-[#9dabb9] text-sm font-bold">No lessons yet. Add your first lesson to manage resources.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Footer -->
+        <div class="p-5 border-t border-border-dark flex justify-between items-center">
+            <span class="text-[10px] text-[#637588] uppercase tracking-widest font-bold">
+                {{ classes|length }} lesson{{ classes|length|pluralize }} total
+            </span>
+            <button onclick="closeModal('resources-modal'); openModal('add-class-modal')"
+                    class="flex items-center gap-1.5 bg-primary text-white px-5 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-sm">add</span>
+                Add Lesson
+            </button>
         </div>
     </div>
 </div>
@@ -492,4 +622,335 @@
         </div>
     </div>
 </div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Modal: Edit Course                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="edit-course-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+
+        <div class="p-6 border-b border-border-dark flex justify-between items-center bg-primary/5">
+            <div>
+                <h3 class="text-lg font-bold text-white">Edit Course</h3>
+                <p class="text-[9px] text-[#637588] uppercase tracking-widest font-bold mt-0.5">Update course metadata</p>
+            </div>
+            <button onclick="closeModal('edit-course-modal')" class="text-[#637588] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <form method="POST" class="p-6 space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit_course">
+
+            <!-- Título -->
+            <div class="space-y-1.5">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Course Title *</label>
+                <input type="text" name="titulo" required
+                       value="{{ course.titulo }}"
+                       class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                       placeholder="e.g. Introduction to Python">
+            </div>
+
+            <!-- Descripción -->
+            <div class="space-y-1.5">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Description</label>
+                <textarea name="descripcion" rows="4"
+                          class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38] resize-none"
+                          placeholder="Describe what students will learn...">{{ course.descripcion|default:'' }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-5">
+                <!-- Nivel -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Level</label>
+                    <select name="nivel"
+                            class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all">
+                        {% for val, label in nivel_choices %}
+                        <option value="{{ val }}" {% if course.nivel == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Imagen portada: Upload con preview -->
+                <div class="space-y-1.5">
+                    <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Cover Image</label>
+
+                    <!-- Preview de imagen actual -->
+                    {% if course.imagen_portada %}
+                    <div class="relative rounded-xl overflow-hidden border border-border-dark bg-background-dark mb-2" id="course-cover-preview-wrap">
+                        <img id="course-cover-preview" src="{{ course.imagen_portada }}" class="w-full object-cover max-h-28">
+                        <div class="absolute inset-0 bg-black/40 flex items-end p-2">
+                            <span class="text-[9px] text-white/60 font-bold uppercase tracking-widest">Current cover</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="hidden relative rounded-xl overflow-hidden border border-border-dark bg-background-dark mb-2" id="course-cover-preview-wrap">
+                        <img id="course-cover-preview" src="" class="w-full object-cover max-h-28">
+                    </div>
+                    {% endif %}
+
+                    <!-- Upload zone -->
+                    <div onclick="document.getElementById('course-cover-file').click()"
+                         class="border-2 border-dashed border-border-dark rounded-xl p-4 flex items-center gap-3 group hover:border-primary/50 transition-all cursor-pointer bg-background-dark/30">
+                        <input type="file" id="course-cover-file" class="hidden" accept="image/*"
+                               onchange="handleCourseCoverUpload(this)">
+                        <div class="bg-primary/10 size-9 rounded-lg flex items-center justify-center text-primary group-hover:scale-110 transition-transform flex-shrink-0">
+                            <span class="material-symbols-outlined text-lg" id="course-cover-icon">add_photo_alternate</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-white uppercase tracking-wider" id="course-cover-text">
+                                {% if course.imagen_portada %}Replace image{% else %}Upload cover image{% endif %}
+                            </p>
+                            <p class="text-[8px] text-[#637588] mt-0.5 uppercase tracking-widest font-bold">PNG, JPG, WEBP &middot; 16:9 recommended</p>
+                        </div>
+                        <div id="course-cover-indicator" class="hidden">
+                            <div class="size-2 bg-primary rounded-full animate-ping"></div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden: mantiene la URL actual si no se sube imagen nueva -->
+                    <input type="hidden" name="imagen_portada" id="course-cover-url"
+                           value="{{ course.imagen_portada|default:'' }}">
+                </div>
+            </div>
+
+            <div class="pt-5 border-t border-border-dark flex justify-end gap-3">
+                <button type="button" onclick="closeModal('edit-course-modal')"
+                        class="px-5 py-2 rounded-lg text-[10px] font-bold text-[#637588] hover:text-white uppercase tracking-widest transition-colors">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="bg-primary text-white px-7 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- Modal: Add PDF Attachment                                            -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="add-pdf-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-card-dark border border-border-dark rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl scale-95 transition-transform duration-300" id="modal-container">
+
+        <div class="p-6 border-b border-border-dark flex justify-between items-center bg-red-500/5">
+            <div>
+                <h3 class="text-lg font-bold text-white">Attach PDF</h3>
+                <p class="text-[9px] text-[#637588] uppercase tracking-widest font-bold mt-0.5">Add a PDF resource to this course</p>
+            </div>
+            <button onclick="closeModal('add-pdf-modal')" class="text-[#637588] hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <form method="POST" class="p-6 space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_pdf">
+            <input type="hidden" name="pdf_url" id="pdf-url-input">
+
+            <!-- Nombre del PDF -->
+            <div class="space-y-1.5">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">Document Name *</label>
+                <input type="text" name="pdf_name" required id="pdf-name-input"
+                       class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                       placeholder="e.g. Course Slides, Cheat Sheet...">
+            </div>
+
+            <!-- Upload o URL -->
+            <div class="space-y-3">
+                <label class="block text-[8px] font-black uppercase tracking-widest text-[#637588]">PDF Source</label>
+
+                <!-- Tabs: Upload / URL -->
+                <div class="flex rounded-xl overflow-hidden border border-border-dark">
+                    <button type="button" id="tab-upload" onclick="switchPdfTab('upload')"
+                            class="flex-1 py-2 text-[10px] font-bold uppercase tracking-widest bg-primary/20 text-primary transition-colors">
+                        Upload File
+                    </button>
+                    <button type="button" id="tab-url" onclick="switchPdfTab('url')"
+                            class="flex-1 py-2 text-[10px] font-bold uppercase tracking-widest bg-transparent text-[#637588] hover:text-white transition-colors">
+                        Paste URL
+                    </button>
+                </div>
+
+                <!-- Panel: Upload -->
+                <div id="pdf-panel-upload">
+                    <div onclick="document.getElementById('pdf-file-input').click()"
+                         class="border-2 border-dashed border-border-dark rounded-xl p-6 flex items-center gap-4 group hover:border-red-500/50 transition-all cursor-pointer bg-background-dark/30">
+                        <input type="file" id="pdf-file-input" class="hidden" accept=".pdf,application/pdf"
+                               onchange="handlePdfUpload(this)">
+                        <div class="bg-red-500/10 size-10 rounded-lg flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-xl" id="pdf-upload-icon">upload_file</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider" id="pdf-upload-text">Select PDF File</h4>
+                            <p class="text-[8px] text-[#637588] mt-0.5 uppercase tracking-widest font-bold">Max 50MB · PDF only</p>
+                        </div>
+                        <div id="pdf-upload-indicator" class="hidden">
+                            <div class="size-2 bg-red-400 rounded-full animate-ping"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: URL -->
+                <div id="pdf-panel-url" class="hidden">
+                    <input type="url" id="pdf-direct-url"
+                           oninput="document.getElementById('pdf-url-input').value = this.value"
+                           class="w-full bg-background-dark/60 border border-border-dark rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-[#232d38]"
+                           placeholder="https://example.com/document.pdf">
+                </div>
+            </div>
+
+            <div class="pt-5 border-t border-border-dark flex justify-end gap-3">
+                <button type="button" onclick="closeModal('add-pdf-modal')"
+                        class="px-5 py-2 rounded-lg text-[10px] font-bold text-[#637588] hover:text-white uppercase tracking-widest transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" id="pdf-submit-btn" disabled
+                        class="bg-red-500 text-white px-7 py-2 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-red-500/20 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed">
+                    Attach PDF
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // ── PDF Tab switching ──────────────────────────────────────────────
+    function switchPdfTab(tab) {
+        const isUpload = tab === 'upload';
+        document.getElementById('pdf-panel-upload').classList.toggle('hidden', !isUpload);
+        document.getElementById('pdf-panel-url').classList.toggle('hidden', isUpload);
+        document.getElementById('tab-upload').className = `flex-1 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${isUpload ? 'bg-primary/20 text-primary' : 'bg-transparent text-[#637588] hover:text-white'}`;
+        document.getElementById('tab-url').className    = `flex-1 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${!isUpload ? 'bg-primary/20 text-primary' : 'bg-transparent text-[#637588] hover:text-white'}`;
+        // Reset URL input when switching
+        if (isUpload) {
+            document.getElementById('pdf-direct-url').value = '';
+            document.getElementById('pdf-url-input').value  = '';
+            checkPdfSubmit();
+        }
+    }
+
+    // ── Enable submit when URL has value (manual URL tab) ─────────────
+    document.getElementById('pdf-direct-url').addEventListener('input', checkPdfSubmit);
+    document.getElementById('pdf-name-input').addEventListener('input', checkPdfSubmit);
+    function checkPdfSubmit() {
+        const hasUrl  = document.getElementById('pdf-url-input').value.trim() !== '';
+        const hasName = document.getElementById('pdf-name-input').value.trim() !== '';
+        document.getElementById('pdf-submit-btn').disabled = !(hasUrl && hasName);
+    }
+
+    // ── Upload PDF via media API ───────────────────────────────────────
+    async function handlePdfUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        if (file.type !== 'application/pdf') {
+            alert('Only PDF files are accepted.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const icon = document.getElementById('pdf-upload-icon');
+        const text = document.getElementById('pdf-upload-text');
+        const indicator = document.getElementById('pdf-upload-indicator');
+
+        indicator.classList.remove('hidden');
+        icon.innerText = 'sync';
+        icon.classList.add('animate-spin');
+        text.innerText = 'Uploading...';
+
+        // Pre-fill the name field if empty
+        const nameInput = document.getElementById('pdf-name-input');
+        if (!nameInput.value.trim()) {
+            nameInput.value = file.name.replace('.pdf', '');
+        }
+
+        try {
+            const response = await fetch('/api/media/upload/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                document.getElementById('pdf-url-input').value = data.url;
+                icon.innerText = 'verified';
+                icon.classList.remove('animate-spin');
+                icon.classList.add('text-emerald-500');
+                text.innerText = file.name;
+                checkPdfSubmit();
+            } else {
+                throw new Error(data.error || 'Upload failed');
+            }
+        } catch (e) {
+            icon.innerText = 'error';
+            icon.classList.remove('animate-spin');
+            text.innerText = 'Upload failed. Try pasting a URL.';
+            console.error(e);
+        } finally {
+            indicator.classList.add('hidden');
+        }
+    }
+
+    // ── Upload cover image del curso ───────────────────────────────────
+    async function handleCourseCoverUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+
+        const icon      = document.getElementById('course-cover-icon');
+        const text      = document.getElementById('course-cover-text');
+        const indicator = document.getElementById('course-cover-indicator');
+        const urlInput  = document.getElementById('course-cover-url');
+        const preview   = document.getElementById('course-cover-preview');
+        const previewWrap = document.getElementById('course-cover-preview-wrap');
+
+        // Mostrar preview local inmediatamente
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.src = e.target.result;
+            previewWrap.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+
+        // Iniciar upload
+        indicator.classList.remove('hidden');
+        icon.innerText = 'sync';
+        icon.classList.add('animate-spin');
+        text.innerText = 'Uploading...';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/media/upload/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                urlInput.value = data.url;
+                icon.innerText = 'verified';
+                icon.classList.remove('animate-spin');
+                icon.classList.add('text-emerald-500');
+                text.innerText = 'Image uploaded successfully';
+            } else {
+                throw new Error(data.error || 'Upload failed');
+            }
+        } catch (e) {
+            icon.innerText = 'error';
+            icon.classList.remove('animate-spin');
+            text.innerText = 'Upload failed. Try again.';
+            console.error(e);
+        } finally {
+            indicator.classList.add('hidden');
+        }
+    }
+</script>
 {% endblock %}

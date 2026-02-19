@@ -46,81 +46,103 @@ def admin_required(view_func):
 def overview(request):
     """
     Vista principal del dashboard de administración.
-    
-    Muestra:
-    - Métricas globales (membresías, ingresos, uptime)
-    - Transacciones recientes
-    - Cursos con mejor rendimiento
+
+    Métricas calculadas en tiempo real desde la base de datos:
+    - Total Revenue: suma de pagos COMPLETED
+    - Active Members: membresías ACTIVE con end_date vigente
+    - Expired Subs: membresías EXPIRED o CANCELLED
+    - Recent Transactions: últimos 5 pagos registrados
     """
-    # Importar servicios del backend
-    try:
-        # Import services through the module system
-        import sys
-        import importlib.util
-        
-        # Use apps to get the analytics service
-        from django.apps import apps as django_apps
-        
-        # Try to load analytics service
-        try:
-            spec = importlib.util.spec_from_file_location(
-                "services",
-                str(django_apps.get_app_config('course_app').path.parent / 'Analytics' / 'services.py')
-            )
-            if spec and spec.loader:
-                analytics_module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(analytics_module)
-                AnalyticsService = analytics_module.AnalyticsService
-                
-                # Obtener datos del dominio
-                global_metrics = AnalyticsService.get_global_metrics()
-                revenue_metrics = AnalyticsService.get_revenue_metrics('quarter')
-                recent_transactions = AnalyticsService.get_recent_transactions(5)
-                top_courses = AnalyticsService.get_top_courses(4)
-            else:
-                raise Exception("Could not load analytics")
-        except Exception as e:
-            raise ImportError(f"Failed to load analytics: {e}")
-            
-    except Exception:
-        # Fallback si los servicios no están disponibles
-        global_metrics = {
-            'active_memberships': 12840,
-            'active_memberships_change': 4.2,
-            'expired_memberships': 452,
-            'expired_memberships_change': -1.8,
-            'platform_uptime': 99.9,
-            'uptime_status': 'Stable'
-        }
-        revenue_metrics = {
-            'current_revenue': 128430,
-            'goal': 156000,
-            'progress_percentage': 82,
-            'period': 'quarter'
-        }
-        recent_transactions = [
-            {'user': {'name': 'Jane Doe', 'initials': 'JD'}, 'plan_name': 'Professional Pro', 'status': 'ACTIVE', 'amount': '299.00'},
-            {'user': {'name': 'Mike Kelly', 'initials': 'MK'}, 'plan_name': 'Standard Monthly', 'status': 'PENDING', 'amount': '49.00'},
-            {'user': {'name': 'Robert Smith', 'initials': 'RS'}, 'plan_name': 'Enterprise Yearly', 'status': 'ACTIVE', 'amount': '1200.00'},
-            {'user': {'name': 'Linda Wu', 'initials': 'LW'}, 'plan_name': 'Professional Pro', 'status': 'ACTIVE', 'amount': '299.00'},
-        ]
-        top_courses = [
-            {'title': 'Full Stack Web Development', 'enrolled_count': 1240, 'revenue': 45200, 'change_percentage': 12, 'thumbnail': ''},
-            {'title': 'Data Science Masterclass', 'enrolled_count': 980, 'revenue': 32800, 'change_percentage': 8, 'thumbnail': ''},
-            {'title': 'UI/UX Design Systems', 'enrolled_count': 850, 'revenue': 24100, 'change_percentage': -2, 'thumbnail': ''},
-            {'title': 'Ethical Hacking Intro', 'enrolled_count': 720, 'revenue': 18400, 'change_percentage': 15, 'thumbnail': ''},
-        ]
-    
-    context = {
-        'active_nav': 'overview',
-        'page_title': 'System Control Panel',
-        'metrics': global_metrics,
-        'revenue': revenue_metrics,
-        'transactions': recent_transactions,
-        'top_courses': top_courses,
+    from django.db.models import Sum, Count
+    from django.utils import timezone
+    from decimal import Decimal
+
+    User = get_user_model()
+    Payment      = apps.get_model('payments',    'Payment')
+    UserMembership = apps.get_model('membership', 'UserMembership')
+
+    now = timezone.now()
+
+    # ── Total Revenue ────────────────────────────────────────────────────────
+    total_revenue_result = Payment.objects.filter(
+        status='COMPLETED'
+    ).aggregate(total=Sum('amount'))
+    total_revenue = total_revenue_result['total'] or Decimal('0.00')
+
+    # Progreso respecto a una meta arbitraria (+20 % del actual)
+    revenue_goal = total_revenue * Decimal('1.20') if total_revenue else Decimal('1.00')
+    revenue_progress = int((total_revenue / revenue_goal) * 100) if revenue_goal else 0
+
+    # ── Active Members ───────────────────────────────────────────────────────
+    active_memberships = UserMembership.objects.filter(
+        status='ACTIVE',
+        start_date__lte=now,
+        end_date__gte=now,
+    ).count()
+
+    # ── Expired / Cancelled Subs ─────────────────────────────────────────────
+    expired_memberships = UserMembership.objects.filter(
+        status__in=['EXPIRED', 'CANCELLED']
+    ).count()
+
+    # ── Recent Transactions (últimos 5 pagos) ────────────────────────────────
+    recent_payments = (
+        Payment.objects
+        .select_related('user', 'membership_plan')
+        .order_by('-created_at')[:5]
+    )
+
+    recent_transactions = []
+    for p in recent_payments:
+        full_name = (
+            f"{p.user.first_name} {p.user.last_name}".strip()
+            if p.user.first_name or p.user.last_name
+            else p.user.email
+        )
+        initials = ''.join(
+            part[0].upper()
+            for part in full_name.split()
+            if part
+        )[:2] or 'U'
+
+        recent_transactions.append({
+            'user': {
+                'name':     full_name,
+                'initials': initials,
+            },
+            'plan_name': p.membership_plan.name if p.membership_plan else '—',
+            'status':    p.status,
+            'amount':    f"{p.amount:.2f}",
+        })
+
+    # ── Construir contexto ───────────────────────────────────────────────────
+    metrics = {
+        'active_memberships':      active_memberships,
+        'active_memberships_change': 0,          # Para calcular variación se necesita histórico
+        'expired_memberships':     expired_memberships,
+        'expired_memberships_change': 0,
+        'platform_uptime':         99.9,
+        'uptime_status':           'Stable',
     }
-    
+
+    revenue = {
+        'current_revenue':   total_revenue,
+        'goal':              revenue_goal,
+        'progress_percentage': min(revenue_progress, 100),
+        'period':            'all-time',
+    }
+
+    context = {
+        'active_nav':  'overview',
+        'page_title':  'System Control Panel',
+        'metrics':     metrics,
+        'revenue':     revenue,
+        'transactions': recent_transactions,
+        'top_courses': [],   # Hotspots eliminados — ya no se usa
+    }
+
     return render(request, 'dashboard_admin/overview.html', context)
+
 
 
 @admin_required
