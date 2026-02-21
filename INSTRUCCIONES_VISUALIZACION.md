@@ -1,133 +1,159 @@
-# 📄 Cómo Visualizar el Documento de Operaciones ORM
+# Instrucciones de Visualización y Acceso
 
-Este documento contiene toda la documentación de las operaciones del ORM de Django utilizadas en el proyecto.
-
-## 🎯 Opciones para Visualizar
-
-### **Opción 1: Abrir HTML en Navegador (RECOMENDADO)**
-
-El archivo `orm_database_operations.html` tiene estilos profesionales y está listo para presentar.
-
-**Pasos:**
-1. Haz doble clic en el archivo `orm_database_operations.html`
-2. Se abrirá automáticamente en tu navegador predeterminado
-3. ¡Listo! Puedes navegar por el documento
-
-**Características del HTML:**
-- ✅ Diseño profesional y moderno
-- ✅ Tablas con colores y hover effects
-- ✅ Código con sintaxis resaltada
-- ✅ Responsive (se adapta a móviles)
-- ✅ Optimizado para imprimir (Ctrl+P)
+Guía rápida para navegar y probar la plataforma en desarrollo local.
 
 ---
 
-### **Opción 2: Convertir a PDF**
+## 🚀 Iniciar el Servidor
 
-Para crear un PDF profesional:
+```bash
+# Desde la carpeta del proyecto
+cd Proyecto_db
 
-**Método 1 - Desde el navegador:**
-1. Abre `orm_database_operations.html` en tu navegador
-2. Presiona `Ctrl + P` (o Cmd + P en Mac)
-3. Selecciona "Guardar como PDF" como destino
-4. Ajusta los márgenes si es necesario
-5. Haz clic en "Guardar"
+# Activar entorno virtual
+venv\Scripts\activate   # Windows
+source venv/bin/activate  # Linux/Mac
 
-**Método 2 - Usando herramientas online:**
-1. Ve a https://www.html2pdf.com/ o similar
-2. Sube el archivo `orm_database_operations.html`
-3. Descarga el PDF generado
-
----
-
-### **Opción 3: Ver Markdown**
-
-El archivo `orm_database_operations.md` es la versión original en Markdown.
-
-**Visores recomendados:**
-- **Visual Studio Code**: Abre el archivo y presiona `Ctrl + Shift + V` para vista previa
-- **Typora**: Editor Markdown profesional (https://typora.io/)
-- **MarkdownPad**: Para Windows (http://markdownpad.com/)
-- **GitHub**: Sube el archivo a un repositorio y GitHub lo renderizará automáticamente
-
----
-
-## 📧 Para Enviar a tu Jefe
-
-### **Por Email:**
-1. **Adjunta el archivo HTML** - Tu jefe solo necesita abrirlo en su navegador
-2. **O adjunta el PDF** - Si prefieres un formato más estándar
-
-### **Texto sugerido para el email:**
-
-```
-Asunto: Documentación de Operaciones de Base de Datos - Proyecto de Cursos Online
-
-Estimado [Nombre del Jefe],
-
-Adjunto la documentación completa de todas las operaciones de base de datos implementadas 
-en el proyecto mediante el ORM de Django.
-
-El documento incluye:
-- 35+ operaciones CRUD documentadas
-- SQL equivalente para cada operación del ORM
-- 5 modelos de base de datos (Auth, Course, Class, Membership)
-- 15+ endpoints API implementados
-- Análisis de optimizaciones y mejores prácticas
-
-Puedes abrir el archivo HTML adjunto directamente en tu navegador para una visualización 
-óptima con tablas interactivas y código resaltado.
-
-Quedo atento a cualquier comentario o pregunta.
-
-Saludos,
-[Tu Nombre]
+# Iniciar servidor
+python manage.py runserver
 ```
 
----
-
-## 🖨️ Para Imprimir
-
-1. Abre `orm_database_operations.html` en tu navegador
-2. Presiona `Ctrl + P`
-3. Ajusta:
-   - Orientación: **Vertical**
-   - Márgenes: **Predeterminados** o **Mínimos**
-   - Escala: **100%** o ajusta si es necesario
-4. Imprime o guarda como PDF
-
-El documento está optimizado para impresión con:
-- Colores suaves que se ven bien en papel
-- Tablas que se ajustan automáticamente
-- Saltos de página apropiados
+El servidor estará disponible en: **http://localhost:8000/**
 
 ---
 
-## 🔧 Solución de Problemas
+## 🌐 Accesos por Rol
 
-### El HTML no se ve bien
-- Asegúrate de abrir el archivo con un navegador moderno (Chrome, Firefox, Edge)
-- No uses Internet Explorer
+### Área Pública (sin login)
+| Sección             | URL                                                | Descripción                |
+| ------------------- | -------------------------------------------------- | -------------------------- |
+| Landing Page        | http://localhost:8000/                             | Home con cursos destacados |
+| Catálogo            | http://localhost:8000/courses/                     | Cursos publicados          |
+| Preview Curso       | http://localhost:8000/courses/1/                   | Detalle de un curso        |
+| Planes de Membresía | http://localhost:8000/membership/                  | Opciones de suscripción    |
+| Checkout            | http://localhost:8000/membership/checkout/monthly/ | Proceso de pago            |
 
-### Las tablas se ven cortadas al imprimir
-- Reduce la escala al 90% o 85% en las opciones de impresión
-- Cambia la orientación a horizontal para tablas anchas
+### Cliente (Estudiante) — requiere login + membresía ACTIVE
+| Sección          | URL                                        | Descripción               |
+| ---------------- | ------------------------------------------ | ------------------------- |
+| Reproductor      | http://localhost:8000/learn/1/             | Primera clase del curso 1 |
+| Clase específica | http://localhost:8000/learn/1/class/1/     | Clase 1 del curso 1       |
+| Vista general    | http://localhost:8000/learn/1/overview/    | Lista de clases del curso |
+| Certificado      | http://localhost:8000/learn/1/certificado/ | Emitir/ver certificado    |
+| Mis Certificados | http://localhost:8000/certificados/        | Galería de certificados   |
 
-### Quiero editar el contenido
-- Edita el archivo `orm_database_operations.md` (Markdown)
-- Ejecuta `python convert_to_html.py` para regenerar el HTML
+### Dashboard Profesor — requiere login con role=PROFESOR
+| Sección       | URL                                                | Descripción               |
+| ------------- | -------------------------------------------------- | ------------------------- |
+| Mis Cursos    | http://localhost:8000/dashboard/profesor/          | Listado de cursos propios |
+| Crear Curso   | http://localhost:8000/dashboard/profesor/create/   | Formulario nuevo curso    |
+| Detalle Curso | http://localhost:8000/dashboard/profesor/course/1/ | Gestión de curso y clases |
+| Perfil        | http://localhost:8000/dashboard/profesor/profile/  | Perfil del profesor       |
+
+### Dashboard Admin — requiere login con role=ADMIN (o is_staff)
+| Sección          | URL                                                        | Descripción                   |
+| ---------------- | ---------------------------------------------------------- | ----------------------------- |
+| Overview         | http://localhost:8000/dashboard/admin/                     | Métricas en tiempo real       |
+| Usuarios         | http://localhost:8000/dashboard/admin/users/               | Gestión de usuarios           |
+| Crear Usuario    | http://localhost:8000/dashboard/admin/users/create/        | Nuevo usuario                 |
+| Cursos           | http://localhost:8000/dashboard/admin/courses/             | Catálogo admin                |
+| Suscripciones    | http://localhost:8000/dashboard/admin/subscriptions/       | Membresías activas/pendientes |
+| Reportes         | http://localhost:8000/dashboard/admin/reports/             | Ingresos y métricas           |
+| Config Membresía | http://localhost:8000/dashboard/admin/settings/membership/ | Planes de membresía           |
+
+### Otros
+| Sección               | URL                                  |
+| --------------------- | ------------------------------------ |
+| Django Admin          | http://localhost:8000/admin/         |
+| Documentación interna | http://localhost:8000/documentation/ |
 
 ---
 
-## 📂 Archivos Incluidos
+## 👤 Usuarios de Prueba
 
+Ver [TEST_USERS.md](TEST_USERS.md) para las credenciales actuales.
+
+### Credenciales rápidas (si se corrió `create_test_users.py`):
+
+| Rol      | Email             | Contraseña |
+| -------- | ----------------- | ---------- |
+| Admin    | admin@test.com    | admin123   |
+| Profesor | profesor@test.com | prof123    |
+| Cliente  | cliente@test.com  | cliente123 |
+
+---
+
+## 🧪 Verificar el Sistema
+
+### 1. Verificar control de acceso (membresía)
 ```
-Proyecto_db/
-├── orm_database_operations.html    ← Versión HTML (RECOMENDADO)
-├── orm_database_operations.md      ← Versión Markdown (fuente)
-└── INSTRUCCIONES_VISUALIZACION.md  ← Este archivo
+1. Iniciar sesión como cliente SIN membresía activa
+2. Ir a http://localhost:8000/learn/1/
+3. Debe redirigir a /membership/ con mensaje de advertencia ✅
+```
+
+### 2. Verificar activación de membresía (Admin)
+```
+1. Iniciar sesión como cliente → seleccionar un plan → completar checkout
+2. Iniciar sesión como Admin → ir a /dashboard/admin/subscriptions/
+3. Editar la suscripción PENDING → cambiar status a ACTIVE
+4. El cliente ahora puede acceder al reproductor ✅
+```
+
+### 3. Verificar certificados
+```
+1. Como cliente con membresía activa, ir al reproductor de un curso
+2. Navegar hasta la última clase
+3. Aparece el botón "Complete Course"
+4. Hacer clic → ir a /learn/<id>/certificado/
+5. Se emite el certificado con UUID único ✅
+6. Ir a /certificados/ para ver la galería ✅
+```
+
+### 4. Verificar reportes (Admin)
+```
+1. Ir a /dashboard/admin/reports/
+2. Probar filtros: Monthly, Quarterly, Yearly
+3. Los datos del gráfico cambian según el período ✅
+4. Botón "Export PDF" genera descarga ✅
 ```
 
 ---
 
-**¡Éxito con tu presentación! 🚀**
+## 🔧 Comandos Útiles de Desarrollo
+
+```bash
+# Crear migraciones después de cambiar modelos
+python manage.py makemigrations
+
+# Aplicar migraciones
+python manage.py migrate
+
+# Shell interactivo de Django
+python manage.py shell
+
+# Ver SQL de una migración
+python manage.py sqlmigrate course_app 0001
+
+# Crear superusuario
+python manage.py createsuperuser
+
+# Crear usuarios de prueba
+python create_test_users.py
+```
+
+---
+
+## 🐞 Problemas Comunes
+
+| Problema                     | Solución                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| "Table not found"            | Ejecutar `python manage.py migrate`                                             |
+| "No module named..."         | Activar el entorno virtual                                                      |
+| Error 500 en el player       | Verificar que exista un curso con `publicado=True` y clases asociadas           |
+| "No tienes membresía activa" | El Admin debe activar la membresía en `/dashboard/admin/subscriptions/`         |
+| CSS no carga                 | Ejecutar `python manage.py collectstatic` (producción) o verificar `DEBUG=True` |
+
+---
+
+**Última actualización**: Febrero 2026

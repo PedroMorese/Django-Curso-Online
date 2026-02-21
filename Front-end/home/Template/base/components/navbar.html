@@ -37,8 +37,13 @@
                 href="{% url 'home:membership_plans' %}">
                 Membership
             </a>
+
+            <!-- Certificates -->
+            <a class="text-[#9dabb9] text-sm font-medium leading-normal hover:text-primary transition-colors"
+                href="{% url 'home:my_certificates' %}">
+                Certificados
+            </a>
             
-           
             {% else %}
             <!-- Public navigation -->
             <a class="text-[#9dabb9] text-sm font-medium leading-normal hover:text-primary transition-colors"
@@ -97,6 +102,11 @@
                             class="flex items-center gap-3 px-4 py-2 text-sm text-[#9dabb9] hover:bg-background-dark hover:text-white transition-colors">
                             <span class="material-symbols-outlined text-lg">person</span>
                             Profile
+                        </a>
+                        <a href="{% url 'home:my_certificates' %}"
+                            class="flex items-center gap-3 px-4 py-2 text-sm text-[#9dabb9] hover:bg-background-dark hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-lg">workspace_premium</span>
+                            Mis Certificados
                         </a>
                     </div>
                     <div class="border-t border-border-dark">

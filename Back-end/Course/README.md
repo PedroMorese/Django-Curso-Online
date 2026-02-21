@@ -1,8 +1,8 @@
-# ✅ CRUD de Cursos - Implementación Completa
+# ✅ Módulo Course — Implementación Completa
 
-## 📋 Resumen de Implementación
+## 📋 Resumen
 
-Se ha implementado exitosamente el **CRUD completo** para la tabla de Cursos en tu plataforma de educación online.
+Módulo de **Cursos y Certificados** de la plataforma de educación online. Contiene los modelos `Course` y `Certificate`, las APIs CRUD y toda la lógica relacionada con el contenido de cursos.
 
 ---
 
@@ -67,24 +67,41 @@ Se ha implementado exitosamente el **CRUD completo** para la tabla de Cursos en 
 
 ---
 
-## 🗄️ Estructura del Modelo Course
+## 🗄️ Modelos
 
+### `Course`
 ```python
-class Course(models.Model):
+class Course(models.Model):  # db_table='curso', app_label='course_app'
     # Campos principales
     titulo                  # CharField(255)
-    descripcion            # TextField (opcional)
-    imagen_portada         # URLField (opcional)
+    descripcion             # TextField (opcional)
+    imagen_portada          # URLField (opcional)
+    pdf_adjuntos            # TextField — JSON con lista de URLs de PDFs
     
     # Relaciones
-    profesor               # ForeignKey → User
+    profesor                # ForeignKey → Persona (cursos_creados)
     
     # Metadata
-    fecha_creacion         # DateTimeField (auto)
-    fecha_actualizacion    # DateTimeField (auto)
-    publicado              # BooleanField (default: False)
-    nivel                  # CharField (PRINCIPIANTE/INTERMEDIO/AVANZADO)
-    duracion_estimada      # IntegerField (minutos, opcional)
+    fecha_creacion          # DateTimeField (default: timezone.now)
+    fecha_actualizacion     # DateTimeField (auto_now=True)
+    publicado               # BooleanField (default: False)
+    nivel                   # CharField: PRINCIPIANTE | INTERMEDIO | AVANZADO
+    duracion_estimada       # IntegerField (minutos, opcional)
+    
+    # Propiedades: total_clases, esta_publicado
+    # Métodos: publicar(), despublicar()
+```
+
+### `Certificate` _(añadido)_
+```python
+class Certificate(models.Model):  # db_table='certificado', app_label='course_app'
+    usuario                 # ForeignKey → Persona (certificados)
+    curso                   # ForeignKey → Course (certificados)
+    fecha_emision           # DateTimeField (default: timezone.now)
+    codigo_verificacion     # UUIDField (unique, auto-generado, inmutable)
+    
+    # unique_together = ('usuario', 'curso')  → 1 certificado por (usuario, curso)
+    # Propiedad: codigo_display (UUID en mayúsculas)
 ```
 
 ---
@@ -124,12 +141,12 @@ class Course(models.Model):
 
 ## 🎨 Características Implementadas
 
-### ✅ Funcionalidades CRUD
+### ✅ Funcionalidades CRUD de Cursos
 
-- [x] **Create** - Crear nuevos cursos
-- [x] **Read** - Listar y ver detalles de cursos
-- [x] **Update** - Actualizar información de cursos
-- [x] **Delete** - Eliminar cursos
+- [x] **Create** — Crear nuevos cursos (solo PROFESOR/ADMIN)
+- [x] **Read** — Listar y ver detalles de cursos
+- [x] **Update** — Actualizar información de cursos
+- [x] **Delete** — Eliminar cursos
 
 ### ✅ Funcionalidades Adicionales
 
@@ -142,6 +159,16 @@ class Course(models.Model):
 - [x] Control de acceso basado en roles (RBAC)
 - [x] Validación de permisos por propiedad
 - [x] Manejo de errores completo
+- [x] Campo `pdf_adjuntos` — PDFs adjuntos al curso en JSON
+
+### ✅ Sistema de Certificados
+
+- [x] Modelo `Certificate` con UUID único por (usuario, curso)
+- [x] Certificado emitido al completar la última clase (`is_last_class=True`)
+- [x] Idempotente: `get_or_create()` evita duplicados
+- [x] Vista frontend: `course_certificate()` + template `certificado.html`
+- [x] Galería: `my_certificates()` + template `mis_certificados.html`
+- [x] Requiere membresía activa para generar certificado
 
 ### ✅ Optimizaciones
 
@@ -267,28 +294,16 @@ curl http://localhost:8000/api/courses/1/
 
 ---
 
-## 🚀 Próximos Pasos Sugeridos
+## ✅ Integración con Otros Módulos
 
-1. **CRUD de Clases** (`Back-end/Class/`)
-   - Crear modelo `Class`
-   - Implementar vistas CRUD
-   - Relacionar con cursos
-
-2. **Relación Curso-Clase**
-   - Tabla intermedia `Cursos_clases`
-   - Endpoints para agregar/quitar clases de un curso
-   - Ordenamiento de clases dentro de un curso
-
-3. **Frontend para Gestión de Cursos**
-   - Formulario de creación de cursos
-   - Lista de cursos del profesor
-   - Editor de cursos
-   - Botón de publicar/despublicar
-
-4. **Sistema de Membresías**
-   - Modelo de membresía
-   - Control de acceso basado en membresía activa
-   - Integración con sistema de pagos
+| Módulo                         | Integración                                        |
+| ------------------------------ | -------------------------------------------------- |
+| `class_app.Class`              | FK → Course.clases (related_name)                  |
+| `course_app.Certificate`       | FK → Course.certificados (related_name)            |
+| `membership.UserMembership`    | Verificado en el Course Player antes de dar acceso |
+| `Auth.Persona`                 | profesor=FK para ownership control                 |
+| `Dashboard-Admin.Overview`     | CRUD de cursos desde el panel admin                |
+| `Dashboard-Profesor.MyCourses` | CRUD de cursos y clases desde el panel profesor    |
 
 ---
 
@@ -323,23 +338,19 @@ curl http://localhost:8000/api/courses/1/
 
 ---
 
-## 🎉 Estado del Proyecto
+## 🎉 Estado del Módulo
 
 ```
-✅ CRUD de Cursos - COMPLETADO
+✅ CRUD de Cursos (API + Dashboard Profesor + Dashboard Admin)
+✅ Modelo Certificate con UUID y unique_together
+✅ Campo pdf_adjuntos (JSON de URLs)
+✅ Frontend: Course Player con navegación entre clases
+✅ Frontend: Certificado individual + galería de certificados
+✅ Control de acceso: membresía activa requerida
 ✅ Migraciones aplicadas
-✅ Servidor corriendo
-✅ Documentación creada
-✅ Listo para usar
+✅ Documentación actualizada
 ```
 
 ---
 
-## 💡 Notas Finales
-
-- El servidor está corriendo en `http://localhost:8000`
-- Todos los endpoints están bajo `/api/courses/`
-- La documentación completa está en `Back-end/Course/API_DOCUMENTATION.md`
-- Para probar, sigue la guía en `Back-end/Course/TESTING_GUIDE.md`
-
-**¡El CRUD de Cursos está listo para usar! 🚀**
+**Última actualización**: Febrero 2026

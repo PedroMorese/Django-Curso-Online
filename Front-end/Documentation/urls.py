@@ -9,5 +9,5 @@ app_name = 'documentation'
 
 urlpatterns = [
     path('', views.documentation_index, name='index'),
-    path('<slug:doc_slug>/', views.documentation_view, name='view'),
+    path('<path:doc_slug>/', views.documentation_view, name='view'),
 ]

@@ -50,6 +50,7 @@ GET /api/courses/?profesor_id=5
       "titulo": "Introducción a Python",
       "descripcion": "Aprende Python desde cero",
       "imagen_portada": "https://example.com/python.jpg",
+      "pdf_adjuntos": ["https://example.com/recursos/guia.pdf"],
       "profesor": {
         "id": 2,
         "email": "profesor@example.com",
@@ -97,6 +98,7 @@ Crea un nuevo curso. **Requiere autenticación** y rol **PROFESOR** o **ADMIN**.
 | `nivel`             | string       | ❌ No      | Nivel: `PRINCIPIANTE`, `INTERMEDIO`, `AVANZADO` (default: `PRINCIPIANTE`) |
 | `duracion_estimada` | integer      | ❌ No      | Duración en minutos                                                       |
 | `publicado`         | boolean      | ❌ No      | Estado de publicación (default: `false`)                                  |
+| `pdf_adjuntos`      | JSON string  | ❌ No      | Lista de URLs de PDFs adjuntos, ej: `["url1", "url2"]`                    |
 
 ### Ejemplo Response (201 Created)
 
@@ -433,6 +435,32 @@ fetch('/api/courses/my-courses/', {
 
 ---
 
+## 8. Certificados (Endpoints Frontend)
+
+Los certificados **no son una API JSON** sino vistas frontend con autenticación y membresía activa requerida.
+
+| Método   | URL                               | Descripción                                   | Requiere                 |
+| -------- | --------------------------------- | --------------------------------------------- | ------------------------ |
+| GET/POST | `/learn/<course_id>/certificado/` | Emite o recupera certificado                  | Login + membresía ACTIVE |
+| GET      | `/certificados/`                  | Galería de todos los certificados del usuario | Login                    |
+
+### Comportamiento del endpoint de certificado
+
+```
+GET /learn/1/certificado/
+    ↓
+1. Verificar login (@login_required)
+2. Verificar membresía ACTIVE con end_date >= now
+3. Certificate.get_or_create(usuario=user, curso=course)
+4. Si created=True → mensaje de felicitación
+5. Render certificado.html con:
+   - curso: objeto Course
+   - certificado: objeto Certificate (con codigo_verificacion UUID)
+   - instructor: course.profesor
+```
+
+---
+
 ## Notas Importantes
 
 1. **Autenticación**: Los endpoints que requieren autenticación verifican `request.user.is_authenticated`
@@ -440,12 +468,9 @@ fetch('/api/courses/my-courses/', {
 3. **Permisos**: Los profesores solo pueden editar/eliminar sus propios cursos. Los admins pueden editar/eliminar cualquier curso.
 4. **Cursos no publicados**: Solo son visibles para el dueño y admins.
 5. **Formato de fechas**: Todas las fechas están en formato ISO 8601 (UTC).
+6. **pdf_adjuntos**: Se almacena como `TextField` con JSON. Parsear con `json.loads()` al usar.
+7. **Certificados**: Idempotentes — `get_or_create()` garantiza un solo certificado por (usuario, curso).
 
 ---
 
-## Próximos Pasos
-
-1. Crear migraciones: `python manage.py makemigrations`
-2. Aplicar migraciones: `python manage.py migrate`
-3. Crear un superusuario: `python manage.py createsuperuser`
-4. Probar los endpoints con Postman o desde el frontend
+**Última actualización**: Febrero 2026

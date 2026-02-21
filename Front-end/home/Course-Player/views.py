@@ -5,6 +5,7 @@ Este módulo contiene las vistas UX para:
 - Reproducción de clases
 - Navegación entre lecciones
 - Recursos descargables
+- Emisión de certificados de participación
 
 RESPONSABILIDADES:
 - Validar acceso del usuario (membresía)
@@ -117,6 +118,9 @@ def course_player(request, course_id, class_id=None):
             current_index = 1
     progress = int((current_index / total_classes) * 100) if total_classes > 0 else 0
 
+    # Es la última clase → habilitar botón "Complete Course"
+    is_last_class = (next_class is None and current_class is not None)
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -126,6 +130,7 @@ def course_player(request, course_id, class_id=None):
         'progress': progress,
         'current_index': current_index,
         'total_classes': total_classes,
+        'is_last_class': is_last_class,
     }
 
     return render(request, 'course_player/player.html', context)
@@ -161,3 +166,53 @@ def course_overview(request, course_id):
     }
 
     return render(request, 'course_player/overview.html', context)
+
+
+@login_required
+def course_certificate(request, course_id):
+    """
+    Emite (o recupera) el certificado de participación del usuario para un curso.
+
+    - GET  → muestra el certificado ya emitido (o lo emite si no existe).
+    - POST → mismo comportamiento; se usa cuando viene del botón "Complete Course".
+
+    Requiere membresía activa para evitar que usuarios sin membresía
+    generen certificados accediendo directamente a la URL.
+    """
+    # ── 1. Verificar membresía ─────────────────────────────────────────────
+    if not _require_active_membership(request):
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para obtener un certificado.'
+        )
+        return redirect('home:membership_plans')
+
+    # ── 2. Obtener curso ───────────────────────────────────────────────────
+    Course      = apps.get_model('course_app', 'Course')
+    Certificate = apps.get_model('course_app', 'Certificate')
+
+    course = get_object_or_404(Course, id=course_id, publicado=True)
+
+    # ── 3. Emitir o recuperar el certificado ───────────────────────────────
+    certificado, created = Certificate.objects.get_or_create(
+        usuario=request.user,
+        curso=course,
+    )
+
+    if created:
+        messages.success(
+            request,
+            f'🎉 ¡Felicitaciones! Has completado "{course.titulo}". '
+            'Tu certificado ha sido emitido.'
+        )
+
+    # ── 4. Datos del instructor ────────────────────────────────────────────
+    instructor = getattr(course, 'profesor', None)
+
+    context = {
+        'curso'        : course,
+        'certificado'  : certificado,
+        'instructor'   : instructor,
+    }
+
+    return render(request, 'course_player/certificado.html', context)

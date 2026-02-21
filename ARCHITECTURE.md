@@ -1,102 +1,277 @@
-# Documentación de Arquitectura y Diseño UI/UX - Plataforma de Educación Online
+# Arquitectura del Sistema — Plataforma de Educación Online
 
-## 1. Introducción
-Este documento detalla la arquitectura de software, especificaciones técnicas y propuesta de diseño para la plataforma de cursos online con modelo de membresía. El sistema está diseñado para ser escalable, seguro y con una separación clara entre la lógica de negocio (Backend) y la presentación (Frontend).
+## 1. Visión General
 
-## 2. Arquitectura de Sistema
+La plataforma sigue el patrón **MVT (Model-View-Template)** de Django con una separación explícita entre Backend y Frontend en la estructura de carpetas. No se usa Django REST Framework para las vistas principales; las APIs son vistas Django estándar que devuelven JSON o renderizan templates.
 
-### 2.1 Visión General
-Se utiliza el framework **Django** siguiendo el patrón de arquitectura **MVT (Model-View-Template)**, pero con una organización de carpetas personalizada que separa claramente los componentes de Backend y Frontend para facilitar el mantenimiento.
-
-### 2.2 Estructura de Carpetas Propuesta
 ```
-mi_proyecto/
+┌─────────────────────────────────────────────────────────┐
+│                     USUARIO (Browser)                   │
+└────────────────────────┬────────────────────────────────┘
+                         │ HTTP
+┌────────────────────────▼────────────────────────────────┐
+│              Django URL Router (djangocrud/urls.py)     │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  /auth/          → Back-end.Auth                 │   │
+│  │  /api/courses/   → Back-end.Course               │   │
+│  │  /api/classes/   → Back-end.Class                │   │
+│  │  /api/membership/→ Back-end.membership           │   │
+│  │  /api/payments/  → Back-end.payments             │   │
+│  │  /api/media/     → Back-end.Media                │   │
+│  │  /dashboard/admin/   → Dashboard-Admin.Overview  │   │
+│  │  /dashboard/profesor/→ Dashboard-Profesor.MyCourses│  │
+│  │  /profile/       → Front-end.Profile             │   │
+│  │  /documentation/ → Front-end.Documentation       │   │
+│  │  /               → Front-end.home                │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         ▼               ▼               ▼
+   ┌──────────┐   ┌──────────────┐  ┌─────────┐
+   │ Backend  │   │   Services   │  │Frontend │
+   │ (Models) │◄──│ (Analytics)  │  │(Views + │
+   │          │   │              │  │Templates│
+   └──────────┘   └──────────────┘  └─────────┘
+         │
+   ┌──────────┐
+   │ SQLite3  │
+   │   DB     │
+   └──────────┘
+```
+
+---
+
+## 2. Estructura Real de Carpetas
+
+```
+Proyecto_db/
 ├── manage.py
-├── djangocrud/             # Configuración global de Django (Settings, WSGI, URLs raíz)
-├── backend/                # Lógica de negocio y base de datos
-│   ├── auth/               # Gestión de usuarios, roles y permisos
-│   ├── membership/         # Planes de membresía y lógica de suscripción
-│   ├── course/             # Gestión de cursos y categorías
-│   ├── class/              # Gestión de clases y recursos
-│   ├── payments/           # Integración de pagos y pasarelas
-│   └── services/           # Procesos de negocio (lógica desacoplada de vistas)
-├── frontend/               # Presentación y templates
-│   ├── templates/          # HTML organizado por rol
-│   │   ├── base/           # Layouts base compartidos
-│   │   ├── client/         # Vistas para el estudiante
-│   │   ├── professor/      # Dashboard y gestión de cursos
-│   │   └── admin/          # Panel de administración total
-│   ├── static/             # Activos estáticos
-│   │   ├── css/            # Estilos (Vanilla CSS / Tailwind)
-│   │   ├── js/             # Lógica de cliente y validaciones
-│   │   └── images/         # Recursos visuales
-│   └── components/         # Fragmentos HTML reutilizables (partial templates)
-├── db.sqlite3              # Base de datos SQLite3
-└── requirements.txt        # Dependencias del proyecto
+├── djangocrud/                         # Config global Django
+│   ├── settings.py
+│   ├── urls.py                         # Router raíz
+│   └── wsgi.py
+│
+├── Back-end/                           # Lógica de negocio
+│   ├── __init__.py
+│   ├── Auth/                           # app_label: 'Auth'
+│   │   ├── models.py                   # Persona (CustomUser)
+│   │   ├── views.py                    # Login, logout, registro
+│   │   └── urls.py
+│   ├── Course/                         # app_label: 'course_app'
+│   │   ├── models.py                   # Course, Certificate
+│   │   ├── views.py                    # API CRUD cursos
+│   │   ├── urls.py
+│   │   ├── API_DOCUMENTATION.md
+│   │   ├── README.md
+│   │   └── TESTING_GUIDE.md
+│   ├── Class/                          # app_label: 'class_app'
+│   │   ├── models.py                   # Class
+│   │   ├── views.py
+│   │   └── urls.py
+│   ├── membership/                     # app_label: 'membership'
+│   │   ├── models.py                   # MembershipPlan, UserMembership
+│   │   ├── views.py
+│   │   ├── urls.py
+│   │   └── API_MEMBERSHIP_SETTINGS.md
+│   ├── payments/                       # app_label: 'payments'
+│   │   ├── models.py                   # Payment
+│   │   ├── views.py
+│   │   └── urls.py
+│   ├── Analytics/                      # Sin app_label propio (servicio)
+│   │   ├── apps.py
+│   │   └── services.py                 # AnalyticsService
+│   └── Media/                          # app_label: 'Media'
+│       └── views.py                    # Subida de archivos
+│
+├── Front-end/                          # Capa de presentación
+│   ├── home/                           # app_label: 'home'
+│   │   ├── views.py                    # Vistas públicas + player + certificados
+│   │   ├── urls.py                     # Rutas públicas
+│   │   ├── Membership/                 # Sub-módulo membresía
+│   │   │   ├── views.py                # plans, checkout, payment_success, subscribe
+│   │   │   └── templates/membership/  # plans.html, checkout.html, success.html
+│   │   ├── Course-Player/             # Sub-módulo reproductor
+│   │   │   ├── views.py               # course_player, course_overview, course_certificate
+│   │   │   └── urls.py                # app_name: course_player
+│   │   └── Template/
+│   │       ├── Home.html
+│   │       ├── base/
+│   │       ├── catalog/               # course_list.html, course_preview.html
+│   │       └── course_player/         # player.html, certificado.html, mis_certificados.html
+│   ├── Dashboard-Admin/
+│   │   └── Overview/                  # app_name: dashboard_admin
+│   │       ├── views.py               # overview, users CRUD, courses CRUD,
+│   │       │                          # subscriptions, reports, export_report_pdf,
+│   │       │                          # membership_settings
+│   │       ├── urls.py
+│   │       └── templates/dashboard_admin/
+│   │           ├── overview.html
+│   │           ├── users_list.html
+│   │           ├── user_edit.html
+│   │           ├── user_create.html
+│   │           ├── courses_list.html
+│   │           ├── course_view.html
+│   │           ├── course_edit.html
+│   │           ├── subscriptions_list.html
+│   │           └── reports.html
+│   ├── Dashboard-Profesor/
+│   │   └── MyCourses/                 # app_name: dashboard_profesor
+│   │       ├── views.py               # my_courses, create_course, course_detail,
+│   │       │                          # delete_class (con modal confirmación), toggle_publish
+│   │       ├── urls.py
+│   │       └── templates/
+│   ├── Profile/                       # app_name: profile
+│   └── Documentation/                 # Documentación visual interna
 ```
 
-## 3. Modelo de Datos (Base de Datos)
+---
 
-### 3.1 Entidades Principales
-- **Persona (Custom User)**: Extensión de `AbstractUser` para incluir el campo `rol` (Cliente, Profesor, Admin).
-- **Membresia**: Define los planes (Mensual, Anual) con su precio y duración.
-- **Pago**: Registro de transacciones individuales.
-- **Persona_Membresia_Pago**: Tabla relacional que vincula al usuario con su membresía actual y el historial de pagos.
-- **Curso**: Contenedor principal de contenido.
-- **Clases**: Unidades de contenido dentro de un curso.
-- **Cursos_Clases**: Relación many-to-many o foreign key para organizar el contenido.
+## 3. Modelos de Base de Datos
 
-### 3.2 Diagrama de Relaciones (Efectivo)
-- Un **Usuario** tiene una **Membresía Activa** (Control de acceso).
-- Un **Profesor** es dueño de N **Cursos**.
-- Un **Curso** contiene N **Clases**.
-- Un **Pago** activa o renueva la **Membresía**.
+### 3.1 Diagrama de Relaciones
 
-## 4. Flujo de Navegación por Rol
+```
+Persona (CustomUser)
+  │
+  ├──[1:N]──► Course (profesor=FK)
+  │               │
+  │               ├──[1:N]──► Class (curso=FK)
+  │               └──[1:N]──► Certificate (curso=FK)
+  │
+  ├──[1:N]──► UserMembership (user=FK)
+  │               │
+  │               └──[N:1]──► MembershipPlan
+  │
+  ├──[1:N]──► Payment (user=FK)
+  │               │
+  │               └──[N:1]──► MembershipPlan
+  │
+  └──[1:N]──► Certificate (usuario=FK)
+```
+
+### 3.2 Tablas Reales en SQLite3
+
+| Modelo Django    | Tabla SQLite            | App Label    |
+| ---------------- | ----------------------- | ------------ |
+| `Persona`        | `auth_user` (extendida) | `Auth`       |
+| `Course`         | `curso`                 | `course_app` |
+| `Certificate`    | `certificado`           | `course_app` |
+| `Class`          | `clase`                 | `class_app`  |
+| `MembershipPlan` | `membership_plan`       | `membership` |
+| `UserMembership` | `user_membership`       | `membership` |
+| `Payment`        | `payments_payment`      | `payments`   |
+
+---
+
+## 4. Flujos de Navegación por Rol
 
 ### 4.1 Cliente (Estudiante)
-1. **Landing Page**: Visualización de catálogo (bloqueado para no-miembros).
-2. **Registro/Login**: Creación de cuenta y selección de membresía.
-3. **Dashboard Cliente**: Acceso a cursos inscritos (si tiene membresía activa).
-4. **Reproductor de Clase**: Consumo de video y descarga de recursos.
+```
+Landing (/) 
+  → Registro/Login (modal)
+  → Catálogo (/courses/)
+    → Preview de Curso (/courses/<id>/)
+      [Sin membresía] → Planes (/membership/)
+        → Checkout (/membership/checkout/<slug>/)
+        → Pago exitoso
+      [Con membresía] → Reproductor (/learn/<id>/)
+        → Clase específica (/learn/<id>/class/<cid>/)
+        → Certificado (/learn/<id>/certificado/)
+        → Galería de certificados (/certificados/)
+```
 
 ### 4.2 Profesor
-1. **Dashboard Profesor**: Estadísticas de sus cursos.
-2. **Editor de Cursos**: Crear/Editar/Eliminar cursos.
-3. **Gestor de Contenido**: Añadir videos y archivos a las clases.
+```
+Login → Dashboard Profesor (/dashboard/profesor/)
+  → Mis Cursos (lista con publicado/borrador)
+  → Crear Curso (/dashboard/profesor/create/)
+  → Detalle de Curso (/dashboard/profesor/course/<id>/)
+    → Agregar Clase (formulario inline)
+    → Editar Clase (formulario inline)
+    → Eliminar Clase (modal de confirmación)
+    → Toggle Publicar (/toggle-publish/)
+  → Perfil (/dashboard/profesor/profile/)
+```
 
 ### 4.3 Administrador
-1. **Panel General**: Métricas de ingresos y usuarios activos.
-2. **Gestión de Membresías**: Configurar precios y planes.
-3. **Moderación**: Control total sobre usuarios y cursos subidos.
+```
+Login → Dashboard Admin (/dashboard/admin/)
+  → Overview (métricas en tiempo real: revenue, membresías, transacciones)
+  → Usuarios (/dashboard/admin/users/)
+    → Crear / Editar / Eliminar usuario
+  → Cursos (/dashboard/admin/courses/)
+    → Ver / Editar / Eliminar curso
+  → Suscripciones (/dashboard/admin/subscriptions/)
+    → Editar plan y estado
+    → Cancelar suscripción (→ EXPIRED)
+    → Eliminar registro
+  → Reportes (/dashboard/admin/reports/)
+    → Filtrar por período (monthly / quarterly / yearly)
+    → Exportar PDF (/reports/export-pdf/)
+  → Configuración Membresía (/settings/membership/)
+```
 
-## 5. Especificaciones de UI/UX
+---
 
-### 5.1 Lineamientos de Diseño
-- **Estética Moderno-Minimalista**: Inspirado en Platzi (limpieza) y Coursera (seriedad académica).
-- **Esquema de Colores**:
-    - Primario: Azul Profundo o Índigo (Confianza).
-    - Acento: Violeta o Verde Esmeralda (Energía/Progreso).
-    - Fondo: Modo Dark refinado o Blanco Off-white para evitar fatiga visual.
-- **Tipografía**: Fuentes Sans-serif modernas (Inter o Roboto).
+## 5. Capas y Responsabilidades
 
-### 5.2 Componentes UI Mapeados
-| Feature          | Tabla DB               | Componente UI                  |
-| :--------------- | :--------------------- | :----------------------------- |
-| Login/Registro   | Persona                | `LoginForm`, `RoleGuard`       |
-| Estado Membresía | Persona_Membresia_Pago | `MembershipStatusCard`         |
-| Catálogo         | Curso                  | `CourseGrid`, `CourseCard`     |
-| Clase            | Clases                 | `VideoPlayer`, `ResourceList`  |
-| Gestión Profesor | Cursos/Clases          | `CourseEditor`, `ClassForm`    |
-| Admin Panel      | Todos                  | `AdminStatsCards`, `UserTable` |
+| Capa               | Ubicación                        | Responsabilidad                                           |
+| ------------------ | -------------------------------- | --------------------------------------------------------- |
+| **Models**         | `Back-end/*/models.py`           | Estructura de datos, validaciones, propiedades calculadas |
+| **Backend Views**  | `Back-end/*/views.py`            | APIs funcionales, operaciones CRUD, respuestas JSON       |
+| **Services**       | `Back-end/Analytics/services.py` | Lógica de negocio compleja, agregación de datos           |
+| **Frontend Views** | `Front-end/*/views.py`           | Orquestación de datos, renderizado de templates           |
+| **Templates**      | `*/templates/`                   | HTML, presentación visual                                 |
+| **URLs**           | `*/urls.py`                      | Definición de rutas                                       |
 
-## 6. Reglas de Negocio Críticas
-1. **Acceso Restringido**: Middleware que verifica `user.is_authenticated` y `membership.is_active` para acceder a cualquier clase.
-2. **Rol Único**: Un usuario no puede cambiar su rol una vez registrado (salvo intervención de admin).
-3. **Membresía Única**: No se permiten suscripciones concurrentes; la nueva reemplaza o extiende la actual.
-4. **Separación de Datos**: Los profesores no tienen acceso a la tabla `Pago`.
+---
 
-## 7. Propuesta de Escalabilidad
-- **Backend**: Implementar **Services Pattern** para que la lógica de pagos y membresías no resida en las views, permitiendo en el futuro cambiar a APIs con Django Rest Framework fácilmente.
-- **Frontend**: Uso de **Django Components** (fragmentos reutilizables) para evitar duplicación de código en dashboards.
-- **Infraestructura**: Preparado para migrar de SQLite a **PostgreSQL** mediante variables de entorno.
+## 6. Control de Acceso
+
+### Decorador Admin
+```python
+def admin_required(view_func):
+    # Verifica: is_staff OR is_superuser OR role == 'ADMIN'
+    # Redirige a home:index si no cumple
+```
+
+### Verificación de Membresía
+```python
+def _require_active_membership(request) -> bool:
+    # Consulta: status='ACTIVE' AND start_date<=now AND end_date>=now
+    # NO captura excepciones → errores del ORM son visibles
+```
+
+### Aplicaciones de Control
+- `@login_required` en todas las vistas del reproductor y certificados
+- `@admin_required` en todas las vistas del dashboard de administración
+- `@login_required` (verificación de rol `PROFESOR`) en el dashboard de profesor
+
+---
+
+## 7. Reglas de Negocio
+
+1. **Acceso Restringido**: `UserMembership.status='ACTIVE'` + `end_date >= now` para ver clases y certificados.
+2. **Rol Único**: Un `Persona` tiene un solo campo `role`; sin roles compuestos.
+3. **Membresía Única Activa**: Las nuevas suscripciones se crean en `PENDING`; el Admin las activa.
+4. **Sincronización Membresía-Pago**: Cambiar `UserMembership.status` de PENDING→ACTIVE también marca el `Payment` asociado como COMPLETED.
+5. **Certificado Único**: `unique_together = (usuario, curso)` en `Certificate`; se usa `get_or_create`.
+6. **Separación de Datos**: Los profesores nunca acceden a `Payment` ni estadísticas de alumnos.
+
+---
+
+## 8. Escalabilidad
+
+| Área     | Estado Actual          | Migración Futura                               |
+| -------- | ---------------------- | ---------------------------------------------- |
+| BD       | SQLite3                | PostgreSQL (cambio de `DATABASES` en settings) |
+| Auth     | Token de sesión Django | JWT con DRF                                    |
+| APIs     | Vistas Django estándar | Django REST Framework                          |
+| Pagos    | Modo DEMO (simulado)   | Stripe / PayPal SDK                            |
+| Archivos | Local `media/`         | AWS S3 / Cloudinary                            |
+| Deploy   | `runserver` local      | Gunicorn + Nginx                               |
+
+---
+
+**Última actualización**: Febrero 2026

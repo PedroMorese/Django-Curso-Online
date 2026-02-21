@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -90,3 +91,55 @@ class Course(models.Model):
         """Despublica el curso"""
         self.publicado = False
         self.save(update_fields=['publicado'])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Certificate
+# ─────────────────────────────────────────────────────────────────────────────
+
+class Certificate(models.Model):
+    """
+    Certificado de participación emitido cuando un cliente completa un curso.
+
+    Se emite una sola vez por (usuario, curso). Si el usuario llega a la última
+    clase y hace clic en "Complete Course", se crea o recupera el registro.
+    """
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='certificados',
+        verbose_name='Usuario',
+    )
+    curso = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='certificados',
+        verbose_name='Curso',
+    )
+    fecha_emision = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='Fecha de Emisión',
+    )
+    codigo_verificacion = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        verbose_name='Código de Verificación',
+    )
+
+    class Meta:
+        db_table = 'certificado'
+        app_label = 'course_app'
+        verbose_name = 'Certificado'
+        verbose_name_plural = 'Certificados'
+        # Un usuario solo puede tener un certificado por curso
+        unique_together = [('usuario', 'curso')]
+
+    def __str__(self):
+        return f'Certificado: {self.usuario} — {self.curso.titulo}'
+
+    @property
+    def codigo_display(self):
+        """UUID formateado en mayúsculas para mostrarlo en el template."""
+        return str(self.codigo_verificacion).upper()

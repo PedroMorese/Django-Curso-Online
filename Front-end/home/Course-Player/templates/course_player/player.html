@@ -227,10 +227,12 @@
                         <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                     </a>
                     {% else %}
-                    <a href="{% url 'home:course_catalog' %}"
-                       class="flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors text-sm font-bold">
-                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                        Complete Course
+                    <a href="{% url 'home:course_certificate' course_id=course.id %}"
+                       class="relative flex items-center gap-2 px-6 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors text-sm font-bold group">
+                        {# Anillo pulsante para llamar la atención #}
+                        <span class="absolute -inset-0.5 rounded-lg bg-green-400/30 animate-pulse group-hover:hidden"></span>
+                        <span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+                        Obtener Certificado
                     </a>
                     {% endif %}
                 </div>

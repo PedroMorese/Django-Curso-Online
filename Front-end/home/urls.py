@@ -30,4 +30,7 @@ urlpatterns = [
     # Course Player (requires auth)
     path('learn/<int:course_id>/', views.course_player_redirect, name='course_player'),
     path('learn/<int:course_id>/class/<int:class_id>/', views.course_player_class_redirect, name='course_player_class'),
+    path('learn/<int:course_id>/certificado/', views.course_certificate_redirect, name='course_certificate'),
+    # Galería de certificados del usuario
+    path('certificados/', views.my_certificates, name='my_certificates'),
 ]

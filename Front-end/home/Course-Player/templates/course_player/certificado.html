@@ -1,0 +1,219 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{# ── Título de la pestaña ─────────────────────────────────────────────── #}
+{% block title %}Certificado de Finalización - EduPlatform{% endblock %}
+
+{# ── CSS exclusivo de esta página ─────────────────────────────────────── #}
+{% block extra_css %}
+<style>
+    .certificate-bg-pattern {
+        background-image: radial-gradient(circle at 2px 2px, rgba(19, 127, 236, 0.05) 1px, transparent 0);
+        background-size: 40px 40px;
+    }
+    @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 12s linear infinite;
+    }
+    @media print {
+        .no-print  { display: none !important; }
+        .print-border { border: 1px solid #e2e8f0 !important; }
+        body { background: white !important; color: black !important; }
+        .dark .bg-background-dark { background: white !important; }
+        .dark .text-slate-100     { color: #0f172a !important; }
+    }
+</style>
+{% endblock %}
+
+
+
+{# ── Cuerpo de la página ──────────────────────────────────────────────── #}
+{% block main %}
+<div class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 md:py-12">
+
+        <!-- Action Toolbar -->
+        <div class="no-print flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl font-bold">Tu Logro</h2>
+                <p class="text-slate-400">
+                    Emitido el {% if certificado.fecha_emision %}{{ certificado.fecha_emision|date:"d \d\e F, Y" }}{% else %}—{% endif %}
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()"
+                        class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg font-semibold text-sm transition-all">
+                    <span class="material-symbols-outlined text-sm">download</span>
+                    Descargar PDF
+                </button>
+                <button onclick="shareLesson()"
+                        class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg font-semibold text-sm transition-all">
+                    <span class="material-symbols-outlined text-sm">share</span>
+                    Compartir
+                </button>
+                <a href="{% url 'home:index' %}"
+                   class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-semibold text-sm shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined text-sm">home</span>
+                    Ir al Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- ── Certificate Card ──────────────────────────────────────────── -->
+        <div class="relative mx-auto max-w-[1000px] aspect-[1.414/1] bg-white dark:bg-[#0d1218] rounded-xl shadow-2xl overflow-hidden print-border ring-1 ring-slate-800 dark:ring-primary/30">
+
+            <!-- Decorative background -->
+            <div class="absolute inset-0 certificate-bg-pattern opacity-40"></div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -ml-32 -mb-32"></div>
+
+            <!-- Corner accents -->
+            <div class="absolute top-8 left-8  w-16 h-16 border-t-2 border-l-2 border-primary/40 rounded-tl-xl"></div>
+            <div class="absolute top-8 right-8 w-16 h-16 border-t-2 border-r-2 border-primary/40 rounded-tr-xl"></div>
+            <div class="absolute bottom-8 left-8  w-16 h-16 border-b-2 border-l-2 border-primary/40 rounded-bl-xl"></div>
+            <div class="absolute bottom-8 right-8 w-16 h-16 border-b-2 border-r-2 border-primary/40 rounded-br-xl"></div>
+
+            <!-- Content -->
+            <div class="relative h-full flex flex-col items-center justify-between p-16 md:p-24 text-center">
+
+                <!-- Logo & header -->
+                <div class="space-y-4">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <span class="material-symbols-outlined text-4xl text-primary font-light">school</span>
+                        </div>
+                    </div>
+                    <p class="uppercase tracking-[0.4em] text-sm font-medium text-primary/70">
+                        Reconocimiento Oficial
+                    </p>
+                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                        Certificado de Finalización
+                    </h1>
+                </div>
+
+                <!-- Recipient -->
+                <div class="space-y-4 w-full">
+                    <p class="text-lg text-slate-400 font-light italic">Se certifica que</p>
+                    <div class="relative inline-block">
+                        <h2 class="text-5xl md:text-6xl font-bold text-primary px-8">
+                            {{ user.get_full_name|default:user.username }}
+                        </h2>
+                        <div class="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+                    </div>
+                    <div class="max-w-2xl mx-auto pt-6">
+                        <p class="text-lg text-slate-300 leading-relaxed">
+                            ha completado satisfactoriamente todos los requisitos del programa de formación especializado en
+                        </p>
+                        <h3 class="mt-4 text-2xl md:text-3xl font-bold text-white">
+                            {% if curso %}{{ curso.titulo }}{% else %}—{% endif %}
+                        </h3>
+                    </div>
+                </div>
+
+                <!-- Footer / Signatures -->
+                <div class="w-full grid grid-cols-1 md:grid-cols-3 items-end gap-8 pt-12">
+
+                    <!-- Date & ID -->
+                    <div class="text-left space-y-2 order-2 md:order-1">
+                        <div class="text-xs uppercase tracking-widest text-slate-500">Fecha de Logro</div>
+                        <div class="font-semibold text-slate-200">
+                            {% if certificado.fecha_emision %}{{ certificado.fecha_emision|date:"d \d\e F, Y" }}{% else %}—{% endif %}
+                        </div>
+                        <div class="pt-4">
+                            <div class="text-xs uppercase tracking-widest text-slate-500">ID de Verificación</div>
+                            <div class="font-mono text-sm text-primary">
+                                {% if certificado.codigo_verificacion %}{{ certificado.codigo_verificacion }}{% else %}—{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seal -->
+                    <div class="flex justify-center order-1 md:order-2">
+                        <div class="relative w-24 h-24">
+                            <svg class="w-full h-full text-primary/20 animate-spin-slow" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none"
+                                        stroke="currentColor" stroke-width="1" stroke-dasharray="4 4"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/40">
+                                    <span class="material-symbols-outlined text-white text-3xl">verified_user</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signature -->
+                    <div class="text-right space-y-2 order-3">
+                        <div class="inline-block border-b border-slate-700 pb-2 mb-2">
+                            <p class="font-['Brush_Script_MT',_cursive] text-4xl text-slate-200 px-4">
+                                {% if instructor %}{{ instructor.get_full_name }}{% else %}EduPlatform{% endif %}
+                            </p>
+                        </div>
+                        <div class="text-xs uppercase tracking-widest text-slate-500">Instructor Principal</div>
+                        <div class="font-semibold text-slate-200">EduPlatform Academy</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- ── End Certificate Card ─────────────────────────────────────── -->
+
+        <!-- Verification / Credits section -->
+        <div class="no-print mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Verifiable Credential -->
+            <div class="bg-primary/5 rounded-xl p-8 border border-primary/20">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-primary/10 rounded-lg">
+                        <span class="material-symbols-outlined text-primary">verified</span>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold">Credencial Verificable</h4>
+                        <p class="mt-2 text-slate-400 text-sm leading-relaxed">
+                            Este certificado está firmado digitalmente y puede ser verificado por cualquier empleador o institución usando el ID único. Mantenemos un registro permanente de este logro en nuestros servidores seguros.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{# ── JS exclusivo de esta página ──────────────────────────────────────── #}
+{% block extra_js %}
+<script>
+function shareLesson() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Mi Certificado - EduPlatform',
+            text: 'Acabo de obtener mi certificado en EduPlatform',
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('Enlace copiado al portapapeles ✓');
+        });
+    }
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.className =
+        'fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-700 text-white text-sm px-5 py-3 rounded-xl shadow-xl z-[9999]';
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.4s';
+        setTimeout(() => toast.remove(), 400);
+    }, 2500);
+}
+</script>
+{% endblock %}

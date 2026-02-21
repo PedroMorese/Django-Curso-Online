@@ -323,6 +323,8 @@ def course_player_redirect(request, course_id):
     current_index = 1 if current_class else 0
     progress = int((current_index / total_classes) * 100) if total_classes > 0 else 0
 
+    is_last_class = (next_class is None and current_class is not None)
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -332,6 +334,7 @@ def course_player_redirect(request, course_id):
         'progress': progress,
         'current_index': current_index,
         'total_classes': total_classes,
+        'is_last_class': is_last_class,
     }
 
     return render(request, 'course_player/player.html', context)
@@ -392,6 +395,8 @@ def course_player_class_redirect(request, course_id, class_id):
             idx = 1
     progress = int((idx / total_classes) * 100) if total_classes > 0 else 0
 
+    is_last_class = (next_class is None and current_class is not None)
+
     context = {
         'course': course,
         'current_class': current_class,
@@ -401,6 +406,79 @@ def course_player_class_redirect(request, course_id, class_id):
         'progress': progress,
         'current_index': idx,
         'total_classes': total_classes,
+        'is_last_class': is_last_class,
     }
 
     return render(request, 'course_player/player.html', context)
+
+
+@login_required
+def course_certificate_redirect(request, course_id):
+    """
+    Emite (o recupera) el certificado de participación para un curso.
+    URL: /learn/<course_id>/certificado/
+
+    Requiere membresía activa.
+    """
+    # ── Membresía ──────────────────────────────────────────────────────────
+    UserMembership = apps.get_model('membership', 'UserMembership')
+    now = timezone.now()
+    has_active = UserMembership.objects.filter(
+        user=request.user,
+        status='ACTIVE',
+        start_date__lte=now,
+        end_date__gte=now,
+    ).exists()
+    if not has_active:
+        messages.warning(
+            request,
+            'Necesitas una membresía activa para obtener un certificado.'
+        )
+        return redirect('home:membership_plans')
+
+    # ── Curso y Certificado ────────────────────────────────────────────────
+    Course      = apps.get_model('course_app', 'Course')
+    Certificate = apps.get_model('course_app', 'Certificate')
+
+    course = get_object_or_404(Course, id=course_id, publicado=True)
+
+    certificado, created = Certificate.objects.get_or_create(
+        usuario=request.user,
+        curso=course,
+    )
+
+    if created:
+        messages.success(
+            request,
+            f'🎉 ¡Felicitaciones! Has completado "{course.titulo}". '
+            'Tu certificado ha sido emitido.'
+        )
+
+    instructor = getattr(course, 'profesor', None)
+
+    return render(request, 'course_player/certificado.html', {
+        'curso'       : course,
+        'certificado' : certificado,
+        'instructor'  : instructor,
+    })
+
+
+@login_required
+def my_certificates(request):
+    """
+    Galería de certificados obtenidos por el usuario autenticado.
+    Solo muestra certificados del propio usuario (rol CLIENTE).
+    """
+    Certificate = apps.get_model('course_app', 'Certificate')
+
+    certificados = (
+        Certificate.objects
+        .filter(usuario=request.user)
+        .select_related('curso', 'curso__profesor')
+        .order_by('-fecha_emision')
+    )
+
+    return render(request, 'course_player/mis_certificados.html', {
+        'certificados': certificados,
+    })
+
