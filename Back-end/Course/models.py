@@ -143,3 +143,50 @@ class Certificate(models.Model):
     def codigo_display(self):
         """UUID formateado en mayúsculas para mostrarlo en el template."""
         return str(self.codigo_verificacion).upper()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CourseView  —  conteo único de espectadores por curso
+# ─────────────────────────────────────────────────────────────────────────────
+
+class CourseView(models.Model):
+    """
+    Registra que un usuario con membresía activa vio un curso.
+
+    Reglas de negocio:
+    - Un solo registro por par (usuario, curso).
+    - Solo se crea si el usuario está autenticado Y tiene membresía activa.
+    - Se usa get_or_create, por lo que nunca duplica.
+    - El profesor puede consultar el total de viewers únicos de sus cursos.
+    """
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='curso_views',
+        verbose_name='Usuario',
+    )
+    curso = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='views',
+        verbose_name='Curso',
+    )
+    primera_vista = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='Primera Visita',
+    )
+
+    class Meta:
+        db_table = 'course_view'
+        app_label = 'course_app'
+        verbose_name = 'Vista de Curso'
+        verbose_name_plural = 'Vistas de Cursos'
+        unique_together = [('usuario', 'curso')]
+        indexes = [
+            models.Index(fields=['curso']),
+            models.Index(fields=['usuario']),
+        ]
+
+    def __str__(self):
+        return f'{self.usuario.email} → {self.curso.titulo}'

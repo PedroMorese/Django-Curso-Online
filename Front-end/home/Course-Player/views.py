@@ -75,6 +75,10 @@ def course_player(request, course_id, class_id=None):
     # Obtener el curso
     course = get_object_or_404(Course, id=course_id, publicado=True)
 
+    # Registrar vista única (solo usuarios autenticados con membresía activa)
+    CourseView = apps.get_model('course_app', 'CourseView')
+    CourseView.objects.get_or_create(usuario=request.user, curso=course)
+
     # Obtener todas las clases del curso
     try:
         Class = apps.get_model('class_app', 'Class')
@@ -153,6 +157,10 @@ def course_overview(request, course_id):
 
     Course = apps.get_model('course_app', 'Course')
     course = get_object_or_404(Course, id=course_id, publicado=True)
+
+    # Registrar vista única (solo usuarios autenticados con membresía activa)
+    CourseView = apps.get_model('course_app', 'CourseView')
+    CourseView.objects.get_or_create(usuario=request.user, curso=course)
 
     try:
         Class = apps.get_model('class_app', 'Class')

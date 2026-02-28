@@ -6,7 +6,7 @@
 
 {% block teacher_content %}
 <!-- Stats Summary -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
     <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
         <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Total Courses</span>
         <div class="flex items-baseline gap-2">
@@ -26,6 +26,13 @@
         <div class="flex items-baseline gap-2">
             <span class="text-3xl font-bold text-amber-400">{{ draft_count }}</span>
             <span class="text-xs text-[#637588] font-bold">Pending publish</span>
+        </div>
+    </div>
+    <div class="p-6 rounded-xl bg-charcoal border border-border-dark flex flex-col gap-1">
+        <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-[#637588]">Total Viewers</span>
+        <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-sky-400">{{ total_viewers }}</span>
+            <span class="text-xs text-[#637588] font-bold">Unique members</span>
         </div>
     </div>
 </div>
@@ -95,9 +102,15 @@
             <div>
                 <div class="flex justify-between items-start mb-1.5">
                     <span class="text-[10px] uppercase tracking-widest text-[#637588] font-bold">{{ course.nivel }}</span>
-                    <span class="text-[10px] text-primary font-bold">
-                        {{ course.class_count }} lesson{{ course.class_count|pluralize }}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-primary font-bold">
+                            {{ course.class_count }} lesson{{ course.class_count|pluralize }}
+                        </span>
+                        <span class="flex items-center gap-0.5 text-[10px] text-sky-400 font-bold" title="Unique viewers">
+                            <span class="material-symbols-outlined" style="font-size:12px">visibility</span>
+                            {{ course.viewer_count }}
+                        </span>
+                    </div>
                 </div>
                 <h3 class="text-base font-bold text-white line-clamp-2 group-hover:text-primary transition-colors leading-snug">
                     {{ course.titulo }}

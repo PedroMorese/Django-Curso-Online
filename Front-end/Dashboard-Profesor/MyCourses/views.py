@@ -56,9 +56,11 @@ def my_courses(request):
         Course.objects.filter(profesor=request.user).order_by('-fecha_creacion')
     )
 
-    # Anotar número real de clases en cada curso
+    # Anotar número real de clases y viewers únicos en cada curso
+    CourseView = apps.get_model('course_app', 'CourseView')
     for course in courses:
         course.class_count = Class.objects.filter(curso=course).count()
+        course.viewer_count = CourseView.objects.filter(curso=course).count()
 
     # Contar por estado y separar listas
     total_courses    = len(courses)
@@ -66,6 +68,18 @@ def my_courses(request):
     draft_courses     = [c for c in courses if not c.publicado]
     published_count  = len(published_courses)
     draft_count      = len(draft_courses)
+
+    # Usuarios ÚNICOS en todos los cursos del profesor combinados.
+    # distinct() sobre usuario_id evita contar a la misma persona
+    # más de una vez aunque haya visto múltiples cursos.
+    course_ids = [c.id for c in courses]
+    total_viewers = (
+        CourseView.objects
+        .filter(curso_id__in=course_ids)
+        .values('usuario')
+        .distinct()
+        .count()
+    )
 
     context = {
         'active_nav':      'courses',
@@ -76,6 +90,7 @@ def my_courses(request):
         'draft_count':     draft_count,
         'published_courses': published_courses,
         'draft_courses':   draft_courses,
+        'total_viewers':   total_viewers,
     }
     
     return render(request, 'dashboard_profesor/my_courses.html', context)

@@ -295,6 +295,11 @@ def course_player_redirect(request, course_id):
     Course = apps.get_model('course_app', 'Course')
     course = get_object_or_404(Course, id=course_id, publicado=True)
 
+    # ── Registrar vista única (usuario autenticado + membresía activa) ─────
+    CourseView = apps.get_model('course_app', 'CourseView')
+    CourseView.objects.get_or_create(usuario=request.user, curso=course)
+    # ──────────────────────────────────────────────────────────────────────
+
     try:
         Class = apps.get_model('class_app', 'Class')
         all_classes = Class.objects.filter(curso=course).order_by('orden')
@@ -363,6 +368,11 @@ def course_player_class_redirect(request, course_id, class_id):
 
     Course = apps.get_model('course_app', 'Course')
     course = get_object_or_404(Course, id=course_id, publicado=True)
+
+    # ── Registrar vista única (usuario autenticado + membresía activa) ─────
+    CourseView = apps.get_model('course_app', 'CourseView')
+    CourseView.objects.get_or_create(usuario=request.user, curso=course)
+    # ──────────────────────────────────────────────────────────────────────
 
     try:
         Class = apps.get_model('class_app', 'Class')
