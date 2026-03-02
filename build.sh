@@ -2,11 +2,14 @@
 # Exit on error
 set -o errexit
 
-# Modify this line as needed for your package manager (pip, poetry, etc.)
-#pip install -r requirements.txt
+# Instalar dependencias
+pip install -r requirements.txt
 
-# Convert static asset files
+# Crear directorio staticfiles si no existe
+mkdir -p staticfiles
+
+# Convertir archivos estáticos
 python manage.py collectstatic --no-input
 
-# Apply any outstanding database migrations
+# Aplicar migraciones pendientes
 python manage.py migrate
