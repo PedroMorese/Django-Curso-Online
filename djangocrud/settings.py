@@ -117,7 +117,7 @@ DATABASES = {
         #     'init_command': 'PRAGMA journal_mode=WAL;',
         
     }
-}
+
 
 
 # Password validation
