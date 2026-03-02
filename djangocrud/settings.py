@@ -106,9 +106,8 @@ WSGI_APPLICATION = 'djangocrud.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        engine='django.db.backends.postgresql',
+        default='postgresql://postgres:postgres@localhost:5432/postgres',
+        conn_max_age=600
     )
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
